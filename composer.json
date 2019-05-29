@@ -29,7 +29,7 @@
     },
     "extra":  {
         "branch-alias":  {
-            "dev-master": " "
+            "dev-master": "1.0.x-dev"
         }
     },
     "require":  {
@@ -37,7 +37,8 @@
         "ttek/tk-base": "~3.0",
         "ttek/theme-cube": "~1.0",
 
-        "ttek-plg/mailog": "~1.0"
+        "ttek-plg/mailog": "~1.0",
+        "ccxt/ccxt": "~1.0"
     },
     "require-dev":  {
     }
