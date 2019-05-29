@@ -1,0 +1,35 @@
+
+.alert {
+  margin-bottom: 10px;
+  margin-top: 10px;
+}
+
+.tk-form-events .btn {
+  margin-right: 10px;
+}
+
+.tk-login-panel {
+  margin: 40px auto;
+  width: 30%;
+}
+.not-member {
+  margin-top: 20px;
+}
+
+/**
+ * \Tk\Form\Renderer\Dom\Form
+ */
+#contactForm .has-error .text-danger {
+  margin: 5px 0px 5px 28.7%;
+  font-weight: bold;
+  font-style: italic;
+}
+
+
+.tk-ribbon.tk-ribbon-danger {
+  background: #cd0000;
+  color: #FFF;
+  font-weight: 600;
+  padding: 4px 10px;
+  text-align: center;
+}
