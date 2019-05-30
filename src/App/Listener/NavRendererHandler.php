@@ -71,9 +71,17 @@ class NavRendererHandler implements Subscriber
                     $sub = $menu->append(Item::create('Development', '#', 'fa fa-bug'));
                     $sub->append(Item::create('Events', \Bs\Uri::createHomeUrl('/dev/dispatcherEvents.html'), 'fa fa-empire'));
                 }
-                break;
+                //break;
             case \Bs\Db\Role::TYPE_USER:
-                break;
+
+                $exchangeList = \App\Db\ExchangeMap::create()->findFiltered(array('userId' => $this->getConfig()->getUser()->getId()), \Tk\Db\Tool::create('driver'));
+                $sub = $menu->append(Item::create('Exchanges', '#', 'fa fa-btc'));
+                if ($exchangeList->count()) {
+                    foreach ($exchangeList as $exchange) {
+                        $sub->append(Item::create($exchange->getName(), \Bs\Uri::createHomeUrl('/'.$exchange->driver.'/account.html'), $exchange->icon));
+                    }
+                }
+                //break;
         }
         //vd($menu->__toString());
     }

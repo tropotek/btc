@@ -29,8 +29,18 @@ $routes->add('send', new \Tk\Routing\Route('/send.html', 'App\Controller\Send::d
 // Admin Pages
 $routes->add('admin-dashboard', new \Tk\Routing\Route('/admin/index.html', 'App\Controller\Admin\Dashboard::doDefault'));
 $routes->add('admin-dashboard-base', new \Tk\Routing\Route('/admin/', 'App\Controller\Admin\Dashboard::doDefault'));
+$routes->add('admin-user-profile', new \Tk\Routing\Route('/admin/profile.html', 'App\Controller\Admin\User\Profile::doDefault'));
 $routes->add('admin-settings', new \Tk\Routing\Route('/admin/settings.html', 'App\Controller\Admin\Settings::doDefault'));
+
 
 // User Pages
 $routes->add('user-dashboard', new \Tk\Routing\Route('/user/index.html', 'App\Controller\User\Dashboard::doDefault'));
 $routes->add('user-dashboard-base', new \Tk\Routing\Route('/user/', 'App\Controller\User\Dashboard::doDefault'));
+$routes->add('user-profile', new \Tk\Routing\Route('/user/profile.html', 'App\Controller\Admin\User\Profile::doDefault'));
+
+
+
+$routes->add('btc-exchange-manager', new \Tk\Routing\Route('/{role}/exchangeManager.html', 'App\Controller\Btc\Exchange\Manager::doDefault'));
+$routes->add('btc-exchange-edit', new \Tk\Routing\Route('/{role}/exchangeEdit.html', 'App\Controller\Btc\Exchange\Edit::doDefault'));
+$routes->add('btc-account', new \Tk\Routing\Route('/{role}/{exchange}/account.html', 'App\Controller\Btc\Account::doDefault'));
+
