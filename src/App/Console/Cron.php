@@ -72,13 +72,15 @@ class Cron extends \Bs\Console\Iface
                 continue;
             }
             //$market = $api->market($marketId);
-            $trades = $api->fetchTrades($marketId, microtime(true)-100000);
-            $market = $api->markets[$marketId];
+            //$t = $api->fetchTrades($marketId, microtime(true)-100000);
+            //$t = $api->markets[$marketId];
+            //$t = $api->fetchOrderBook($marketId, 2);
+            $t = $api->fetchTicker($marketId);
 
             //$v1 = \ccxt\Exchange::decimalToPrecision($amount);
             $v2 = \ccxt\Exchange::number_to_string($amount);
 
-            vd($trades, $amount, $v2);
+            vd($t, $amount, $v2);
 
 
         }
