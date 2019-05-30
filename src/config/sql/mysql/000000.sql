@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS `exchange` (
   `secret` VARCHAR(128) NOT NULL DEFAULT '',        -- The private API key
   `icon` VARCHAR(128) NOT NULL DEFAULT '',
   `description` TEXT,
+  `active` TINYINT(1) NOT NULL DEFAULT 1,
   `options` TEXT,                                   -- TODO: use for extra options that an exchange would rquire (array/JSON)
 
   `del` BOOL NOT NULL DEFAULT 0,

@@ -57,7 +57,7 @@ class Cron extends \Bs\Console\Iface
      */
     public function processExchange(\App\Db\Exchange $exchange)
     {
-        vd($exchange->getAccountSummary());
+        $this->write($exchange->);
 
     }
 
