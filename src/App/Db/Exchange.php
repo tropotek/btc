@@ -98,7 +98,7 @@ class Exchange extends \Tk\Db\Map\Model implements \Tk\ValidInterface
      * Return the CCXT Exchange API object
      * @return \ccxt\Exchange
      */
-    public function getExchangeObj()
+    public function getApi()
     {
         if (!$this->_exchange) {
             $driver = '\\ccxt\\' . $this->driver;
@@ -110,6 +110,45 @@ class Exchange extends \Tk\Db\Map\Model implements \Tk\ValidInterface
         }
         return $this->_exchange;
     }
+
+    /**
+     * @return array
+     */
+    public function getAccountSummary()
+    {
+        $api = $this->getApi();
+        $api->loadMarkets();
+        $balance = $api->fetchBalance();
+        $currency = 'AUD';
+        $marketTotals = $balance['total'];
+        $totals = array();
+        foreach ($marketTotals as $coin => $amount) {
+            $marketId = strtoupper($coin) . '/' . strtoupper($currency);
+            if (!array_key_exists($marketId, $api->markets)) {
+                continue;
+            }
+            $t = $api->fetchTicker($marketId);
+
+            $totals[$coin] = 0;
+            if ($amount > 0) {
+                $totals[$coin] = $t['bid'] * $amount;       // I think this reflects a more accurate total
+                //$totals[$coin] = $t['ask'] * $amount;
+            }
+        }
+        return $totals;
+    }
+
+    /**
+     * @return int|mixed
+     */
+    public function getTotalEquity()
+    {
+        $marketTotals = $this->getAccountSummary();
+        return array_sum($marketTotals);
+    }
+
+
+
     /**
      * Here's an overview of base exchange properties with values added for example:
 

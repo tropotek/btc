@@ -40,7 +40,7 @@ class Cron extends \Bs\Console\Iface
     {
         parent::execute($input, $output);
         //$output->setVerbosity(OutputInterface::VERBOSITY_VERBOSE);
-        vd(\Tk\Date::create()->format(\Tk\Date::FORMAT_ISO_DATETIME));
+        //vd(\Tk\Date::create()->format(\Tk\Date::FORMAT_ISO_DATETIME));
 
         $exchangeList = \App\Db\ExchangeMap::create()->findFiltered(array(
             'active' => true
@@ -57,36 +57,7 @@ class Cron extends \Bs\Console\Iface
      */
     public function processExchange(\App\Db\Exchange $exchange)
     {
-        $api = $exchange->getExchangeObj();
-        $api->loadMarkets();
-
-        //$api->loadMarkets();
-        $balance = $api->fetchBalance();
-
-        $currency = 'AUD';
-        $marketTotals = $balance['total'];
-        $totals = array();
-        foreach ($marketTotals as $coin => $amount) {
-            $marketId = strtoupper($coin) . '/' . strtoupper($currency);
-            if (!array_key_exists($marketId, $api->markets)) {
-                continue;
-            }
-            //$market = $api->market($marketId);
-            //$t = $api->fetchTrades($marketId, microtime(true)-100000);
-            //$t = $api->markets[$marketId];
-            //$t = $api->fetchOrderBook($marketId, 2);
-            $t = $api->fetchTicker($marketId);
-
-            //$v1 = \ccxt\Exchange::decimalToPrecision($amount);
-            $v2 = \ccxt\Exchange::number_to_string($amount);
-
-            vd($t, $amount, $v2);
-
-
-        }
-
-
-        vd($totals);
+        vd($exchange->getAccountSummary());
 
     }
 
