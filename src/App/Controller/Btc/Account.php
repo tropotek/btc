@@ -66,26 +66,47 @@ class Account extends \Bs\Controller\AdminIface
 
         $template->appendCssUrl('//cdnjs.cloudflare.com/ajax/libs/dygraph/2.1.0/dygraph.min.css');
         $template->appendJsUrl('//cdnjs.cloudflare.com/ajax/libs/dygraph/2.1.0/dygraph.min.js');
+
+        $data = array();
+        foreach ($this->totals as $t) {
+            $row = $template->getRepeat('row');
+            $row->insertText('amount', round($t->amount, 4));
+            $row->insertText('created', $t->created);
+            $row->appendRepeat();
+            $data[] = [$t->created, $t->amount];
+        }
+
+        $data = array_reverse($data);
+        $data = json_encode($data);
+
         $js = <<<JS
 $(document).ready(function() {
   
-  var stockData = [
-     [ new Date("2009/07/12"), 100 ],
-     [ new Date("2009/07/19"), 150 ]
-  ];
+  var stockData = $data;
+  var stockData2 = [];
+  $.each(stockData, function (i, v) {
+    v[0] = new Date(v[0]);
+    v[1] = parseFloat(v[1]);
+    stockData2.push(v);
+  });
   
-  var g = new Dygraph(document.getElementById("stock_div"), stockData,
+  var g = new Dygraph(document.getElementById("stock_div"), stockData2,
    {
-     labels: [ "Date", "Amount $" ]
-     customBars: true
+      labels: [ "Date", "Amount $" ],
+      //legend: 'always',
+      title: 'Equity vs Time',
+      //showRoller: true,
+      //rollPeriod: 14,
+      //customBars: true,
    });
   
 });
 JS;
+        $template->appendJs($js);
 
 
         $html = sprintf('
-<div class="row">
+<div class="row" style="background-color: #EFEFEF;padding-top: 10px;">
   <div class="col-md-6"><p>Total Equity: $%.4f</p></div>
   <div class="col-md-6"><p>Available: $%.4f</p></div>
 </div>
@@ -93,12 +114,6 @@ JS;
 
         $template->prependHtml('panel', $html);
 
-        foreach ($this->totals as $t) {
-            $row = $template->getRepeat('row');
-            $row->insertText('amount', round($t->amount, 4));
-            $row->insertText('created', $t->created);
-            $row->appendRepeat();
-        }
 
 
 
@@ -123,12 +138,14 @@ JS;
 <div>
 
   <div class="tk-panel" data-panel-icon="fa fa-btc" var="panel">
-  
-    <div id="stock_div"></div>
-  
-    <table class="table table-bordered table-striped">
+    
+    <p>&nbsp;</p>
+    <div class="row" id="stock_div" style="width: 100%; height: 500px;">asdasdasd</div>
+    <p>&nbsp;</p>
+    
+    <table class="table table-bordered table-striped" choice="hide">
       <tr>
-        <th>Amount</th>
+        <th>Equity</th>
         <th>Date</th>
       </tr>
       <tr repeat="row">

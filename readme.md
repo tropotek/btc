@@ -58,8 +58,6 @@ For example if we where editing the public.html template:
 
 
 
-https://github.com/ccxt/ccxt/wiki/Manual
-
 
 
 
