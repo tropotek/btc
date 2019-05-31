@@ -67,6 +67,7 @@ class NavRendererHandler implements Subscriber
         switch ($this->getRoleType()) {
             case \Bs\Db\Role::TYPE_ADMIN:
                 $menu->append(Item::create('Settings', \Bs\Uri::createHomeUrl('/settings.html'), 'fa fa-cogs'));
+                $menu->append(Item::create('My Exchanges', \Bs\Uri::createHomeUrl('/exchangeManager.html'), 'fa fa-btc'));
                 if ($this->getConfig()->isDebug()) {
                     $sub = $menu->append(Item::create('Development', '#', 'fa fa-bug'));
                     $sub->append(Item::create('Events', \Bs\Uri::createHomeUrl('/dev/dispatcherEvents.html'), 'fa fa-empire'));

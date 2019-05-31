@@ -29,6 +29,7 @@ class ExchangeMap extends Mapper
             $this->dbMap->addPropertyMap(new Db\Text('username'));
             $this->dbMap->addPropertyMap(new Db\Text('apiKey', 'api_key'));
             $this->dbMap->addPropertyMap(new Db\Text('secret'));
+            $this->dbMap->addPropertyMap(new Db\Text('currency'));
             $this->dbMap->addPropertyMap(new Db\Text('icon'));
             $this->dbMap->addPropertyMap(new Db\Text('description'));
             $this->dbMap->addPropertyMap(new Db\Boolean('active'));
@@ -53,6 +54,7 @@ class ExchangeMap extends Mapper
             $this->formMap->addPropertyMap(new Form\Text('username'));
             $this->formMap->addPropertyMap(new Form\Text('apiKey'));
             $this->formMap->addPropertyMap(new Form\Text('secret'));
+            $this->formMap->addPropertyMap(new Form\Text('currency'));
             $this->formMap->addPropertyMap(new Form\Text('icon'));
             $this->formMap->addPropertyMap(new Form\Text('description'));
             $this->formMap->addPropertyMap(new Form\Boolean('active'));
@@ -111,6 +113,9 @@ class ExchangeMap extends Mapper
         }
         if (!empty($filter['driver'])) {
             $where .= sprintf('a.driver = %s AND ', $this->quote($filter['driver']));
+        }
+        if (!empty($filter['curency'])) {
+            $where .= sprintf('a.currency = %s AND ', $this->quote($filter['curency']));
         }
         if (!empty($filter['apiKey'])) {
             $where .= sprintf('a.api_key = %s AND ', $this->quote($filter['apiKey']));

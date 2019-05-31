@@ -10,6 +10,9 @@ namespace App\Db;
 class Exchange extends \Tk\Db\Map\Model implements \Tk\ValidInterface
 {
 
+    use \Bs\Db\Traits\UserTrait;
+    use \Bs\Db\Traits\TimestampTrait;
+
     /**
      * @var int
      */
@@ -39,6 +42,11 @@ class Exchange extends \Tk\Db\Map\Model implements \Tk\ValidInterface
      * @var string
      */
     public $secret = '';
+
+    /**
+     * @var string
+     */
+    public $currency = 'AUD';
 
     /**
      * @var string
@@ -81,8 +89,7 @@ class Exchange extends \Tk\Db\Map\Model implements \Tk\ValidInterface
      */
     public function __construct()
     {
-        $this->modified = new \DateTime();
-        $this->created = new \DateTime();
+        $this->_TimestampTrait();
 
     }
 
@@ -112,39 +119,191 @@ class Exchange extends \Tk\Db\Map\Model implements \Tk\ValidInterface
     }
 
     /**
+     * @param bool $includeCurrency
+     * @param null|string $currency
      * @return array
      */
-    public function getAccountSummary()
+    public function getAccountSummary($includeCurrency = true, $currency = null)
     {
+        if (!$currency)
+            $currency = $this->getCurrency();
+
         $api = $this->getApi();
         $api->loadMarkets();
         $balance = $api->fetchBalance();
-        $currency = 'AUD';
         $marketTotals = $balance['total'];
         $totals = array();
+
         foreach ($marketTotals as $coin => $amount) {
             $marketId = strtoupper($coin) . '/' . strtoupper($currency);
-            if (!array_key_exists($marketId, $api->markets)) {
-                continue;
+            if (array_key_exists($marketId, $api->markets)) {
+                $t = $api->fetchTicker($marketId);
+                $totals[$coin] = 0;
+                if ($amount > 0) {
+                    $totals[$coin] = $t['bid'] * $amount;       // I think this reflects a more accurate total
+                    //$totals[$coin] = $t['ask'] * $amount;
+                }
             }
-            $t = $api->fetchTicker($marketId);
-
-            $totals[$coin] = 0;
-            if ($amount > 0) {
-                $totals[$coin] = $t['bid'] * $amount;       // I think this reflects a more accurate total
-                //$totals[$coin] = $t['ask'] * $amount;
+            else if ($coin == $currency && $includeCurrency) {
+                $totals[$coin] = $amount;
             }
         }
         return $totals;
     }
 
     /**
-     * @return int|mixed
+     * @param bool $includeCurrency
+     * @param null|string $currency
+     * @return float
      */
-    public function getTotalEquity()
+    public function getTotalEquity($includeCurrency = true, $currency = null)
     {
-        $marketTotals = $this->getAccountSummary();
+        $marketTotals = $this->getAccountSummary($includeCurrency, $currency);
         return array_sum($marketTotals);
+    }
+
+    /**
+     * @return string
+     */
+    public function getDriver()
+    {
+        return $this->driver;
+    }
+
+    /**
+     * @param string $driver
+     * @return Exchange
+     */
+    public function setDriver(string $driver)
+    {
+        $this->driver = $driver;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUsername()
+    {
+        return $this->username;
+    }
+
+    /**
+     * @param string $username
+     * @return Exchange
+     */
+    public function setUsername(string $username)
+    {
+        $this->username = $username;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getApiKey()
+    {
+        return $this->apiKey;
+    }
+
+    /**
+     * @param string $apiKey
+     * @return Exchange
+     */
+    public function setApiKey(string $apiKey)
+    {
+        $this->apiKey = $apiKey;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSecret()
+    {
+        return $this->secret;
+    }
+
+    /**
+     * @param string $secret
+     * @return Exchange
+     */
+    public function setSecret(string $secret)
+    {
+        $this->secret = $secret;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCurrency()
+    {
+        return $this->currency;
+    }
+
+    /**
+     * @param string $currency
+     * @return Exchange
+     */
+    public function setCurrency(string $currency)
+    {
+        $this->currency = $currency;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getIcon()
+    {
+        return $this->icon;
+    }
+
+    /**
+     * @param string $icon
+     * @return Exchange
+     */
+    public function setIcon(string $icon)
+    {
+        $this->icon = $icon;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param string $description
+     * @return Exchange
+     */
+    public function setDescription(string $description)
+    {
+        $this->description = $description;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getActive()
+    {
+        return $this->active;
+    }
+
+    /**
+     * @param string $active
+     * @return Exchange
+     */
+    public function setActive(string $active)
+    {
+        $this->active = $active;
+        return $this;
     }
 
 
@@ -233,6 +392,14 @@ class Exchange extends \Tk\Db\Map\Model implements \Tk\ValidInterface
 
         if (!$this->driver) {
             $errors['driver'] = 'Invalid value: driver';
+        }
+
+        if (!$this->currency) {
+            $errors['currency'] = 'Invalid value: currency';
+        }
+
+        if (!$this->icon) {
+            $errors['icon'] = 'Invalid value: icon';
         }
 
         if (!$this->apiKey) {

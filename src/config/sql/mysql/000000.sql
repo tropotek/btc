@@ -23,7 +23,8 @@ CREATE TABLE IF NOT EXISTS `exchange` (
   `username` VARCHAR(255) NOT NULL DEFAULT '',
   `api_key` VARCHAR(128) NOT NULL DEFAULT '',       -- The public api key
   `secret` VARCHAR(128) NOT NULL DEFAULT '',        -- The private API key
-  `icon` VARCHAR(128) NOT NULL DEFAULT '',
+  `currency` VARCHAR(8) NOT NULL DEFAULT 'AUD',
+  `icon` VARCHAR(255) NOT NULL DEFAULT '',          -- CSS or image path
   `description` TEXT,
   `active` TINYINT(1) NOT NULL DEFAULT 1,
   `options` TEXT,                                   -- TODO: use for extra options that an exchange would rquire (array/JSON)
@@ -33,6 +34,34 @@ CREATE TABLE IF NOT EXISTS `exchange` (
   `created` DATETIME NOT NULL,
   KEY (`user_id`)
 ) ENGINE = InnoDB;
+
+
+
+-- --------------------------------------------------------
+--  store snapshots of the total equity in your exchange
+-- --------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `equity_total` (
+    `exchange_id` INT UNSIGNED NOT NULL DEFAULT 0,
+    `currency` VARCHAR(128) NOT NULL DEFAULT '',        -- EG: AUD, USD, BTC, ETH, etc
+    `amount` VARCHAR(128) NOT NULL DEFAULT '',
+    `created` DATETIME NOT NULL,
+    PRIMARY KEY (`exchange_id`, `currency`, `created`)
+) ENGINE = InnoDB;
+
+
+
+
+CREATE TABLE IF NOT EXISTS `market_value` (
+    `exchange_id` INT UNSIGNED NOT NULL DEFAULT 0,
+    `market` VARCHAR(128) NOT NULL DEFAULT '',          -- EG: BTC, XRP
+    `currency` VARCHAR(128) NOT NULL DEFAULT '',        -- EG: AUD, USD, BTC, ETH, etc
+    `amount` VARCHAR(128) NOT NULL DEFAULT '',          -- The value of this market at this currency
+    `created` DATETIME NOT NULL,
+    PRIMARY KEY (`exchange_id`, `market`, `currency`, `created`)
+) ENGINE = InnoDB;
+
+
+
 
 
 

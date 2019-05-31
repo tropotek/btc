@@ -49,7 +49,7 @@ class Cron extends \Bs\Console\Iface
             $this->processExchange($exchange);
         }
 
-        $this->write('Cron Script Executed...', OutputInterface::VERBOSITY_VERBOSE);
+        //$this->write('Cron Script Executed...', OutputInterface::VERBOSITY_VERBOSE);
     }
 
     /**
@@ -57,7 +57,10 @@ class Cron extends \Bs\Console\Iface
      */
     public function processExchange(\App\Db\Exchange $exchange)
     {
-        $this->write($exchange->);
+        $curr = 'AUD';
+        $this->write(print_r($exchange->getAccountSummary(true, $curr), true));
+        $eq = $exchange->getTotalEquity(true, $curr);
+        $this->write('Total Equity: ' . $eq . ' ' . $curr);
 
     }
 

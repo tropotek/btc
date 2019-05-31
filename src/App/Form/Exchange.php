@@ -29,7 +29,9 @@ class Exchange extends \Bs\FormIface
     {
         $layout = $this->getRenderer()->getLayout();
         //$layout->setDefaultCol('col');
+        $layout->removeRow('username', 'col');
         $layout->removeRow('secret', 'col');
+        $layout->removeRow('icon', 'col');
 
 
         $list = \Tk\Form\Field\Select::arrayToSelectList(\ccxt\Exchange::$exchanges);
@@ -37,6 +39,9 @@ class Exchange extends \Bs\FormIface
         $this->appendField(new Field\Input('username'));
         $this->appendField(new Field\Input('apiKey'));
         $this->appendField(new Field\Input('secret'));
+
+        $list = array('AUD' => 'AUD');
+        $this->appendField(new Field\Select('currency', $list))->prependOption('-- Select --', '');
         $this->appendField(new Field\Input('icon'));
         $this->appendField(new Field\Checkbox('active'))->setNotes('If active, the cron job will process this exchange.');
         $this->appendField(new Field\Textarea('description'));
