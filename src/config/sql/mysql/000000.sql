@@ -42,23 +42,24 @@ CREATE TABLE IF NOT EXISTS `exchange` (
 -- --------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `equity_total` (
     `exchange_id` INT UNSIGNED NOT NULL DEFAULT 0,
-    `currency` VARCHAR(128) NOT NULL DEFAULT '',        -- EG: AUD, USD, BTC, ETH, etc
-    `amount` VARCHAR(128) NOT NULL DEFAULT '',
+    `currency` VARCHAR(128) NOT NULL DEFAULT 'AUD',        -- EG: AUD, USD, BTC, ETH, etc
+    `amount` VARCHAR(128) NOT NULL DEFAULT '0',
     `created` DATETIME NOT NULL,
     PRIMARY KEY (`exchange_id`, `currency`, `created`)
 ) ENGINE = InnoDB;
 
 
-
-
-CREATE TABLE IF NOT EXISTS `market_value` (
+CREATE TABLE IF NOT EXISTS `equity_value` (
     `exchange_id` INT UNSIGNED NOT NULL DEFAULT 0,
-    `market` VARCHAR(128) NOT NULL DEFAULT '',          -- EG: BTC, XRP
-    `currency` VARCHAR(128) NOT NULL DEFAULT '',        -- EG: AUD, USD, BTC, ETH, etc
-    `amount` VARCHAR(128) NOT NULL DEFAULT '',          -- The value of this market at this currency
+    `market` VARCHAR(128) NOT NULL DEFAULT 'BTC',          -- EG: BTC, XRP
+    `currency` VARCHAR(128) NOT NULL DEFAULT 'AUD',        -- EG: AUD, USD, BTC, ETH, etc
+    `amount` VARCHAR(128) NOT NULL DEFAULT '0',          -- The value of this market at this currency
     `created` DATETIME NOT NULL,
     PRIMARY KEY (`exchange_id`, `market`, `currency`, `created`)
 ) ENGINE = InnoDB;
+
+
+
 
 
 

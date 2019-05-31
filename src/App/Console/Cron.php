@@ -54,13 +54,18 @@ class Cron extends \Bs\Console\Iface
 
     /**
      * @param \App\Db\Exchange $exchange
+     * @throws \Tk\Db\Exception
      */
     public function processExchange(\App\Db\Exchange $exchange)
     {
-        $curr = 'AUD';
-        $this->write(print_r($exchange->getAccountSummary(true, $curr), true));
-        $eq = $exchange->getTotalEquity(true, $curr);
-        $this->write('Total Equity: ' . $eq . ' ' . $curr);
+        //$curr = 'BTC';
+        //$this->write(print_r($exchange->getAccountSummary(), true));
+        $eq = $exchange->getTotalEquity();
+        \App\Db\ExchangeMap::create()->addEquityTotal($exchange->getId(), $exchange->getCurrency(), $eq);
+
+        $this->write('Total Equity: ' . $eq . ' ' . $exchange->getCurrency());
+        $avail = $exchange->getAvailableCurrency();
+        $this->write('Available Currency: ' . \ccxt\Exchange::number_to_string($avail) . ' ' . $exchange->getCurrency() );
 
     }
 

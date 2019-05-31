@@ -119,11 +119,10 @@ class Exchange extends \Tk\Db\Map\Model implements \Tk\ValidInterface
     }
 
     /**
-     * @param bool $includeCurrency
      * @param null|string $currency
      * @return array
      */
-    public function getAccountSummary($includeCurrency = true, $currency = null)
+    public function getAccountSummary($currency = null)
     {
         if (!$currency)
             $currency = $this->getCurrency();
@@ -144,22 +143,32 @@ class Exchange extends \Tk\Db\Map\Model implements \Tk\ValidInterface
                     //$totals[$coin] = $t['ask'] * $amount;
                 }
             }
-            else if ($coin == $currency && $includeCurrency) {
-                $totals[$coin] = $amount;
-            }
         }
         return $totals;
     }
 
     /**
-     * @param bool $includeCurrency
      * @param null|string $currency
      * @return float
      */
-    public function getTotalEquity($includeCurrency = true, $currency = null)
+    public function getTotalEquity($currency = null)
     {
-        $marketTotals = $this->getAccountSummary($includeCurrency, $currency);
+        $marketTotals = $this->getAccountSummary($currency);
         return array_sum($marketTotals);
+    }
+
+    /**
+     * @return float
+     */
+    public function getAvailableCurrency()
+    {
+        $api = $this->getApi();
+        $api->loadMarkets();
+        $balance = $api->fetchBalance();
+        $totals = $balance['total'];
+        if (isset($totals[$this->currency]))
+            return $totals[$this->currency];
+        return 0.0;
     }
 
     /**

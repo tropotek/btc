@@ -139,4 +139,44 @@ class ExchangeMap extends Mapper
         return $where;
     }
 
+
+    /**
+     * @param int $exchangeId
+     * @param string $currency
+     * @param string $amount
+     * @throws \Tk\Db\Exception
+     */
+    public function addEquityTotal($exchangeId, $currency, $amount)
+    {
+        $stm = $this->getDb()->prepare('INSERT INTO equity_total (exchange_id, currency, amount, created)  VALUES (?, ?, ?, NOW())');
+        $stm->execute(array(
+            $exchangeId, $currency, $amount
+        ));
+
+    }
+
+    /**
+     * @param int $exchangeId
+     * @param string $currency
+     * @param \DateTime $dateFrom
+     * @param null|\Tk\Db\Tool $tool
+     * @return array
+     * @throws \Tk\Db\Exception
+     */
+    public function findEquityTotals($exchangeId, $currency, $dateFrom = null, $tool = null)
+    {
+        if (!$tool)
+            $tool = \Tk\Db\Tool::create('created DESC');
+        if (!$dateFrom)
+            $dateFrom = \Tk\Date::create()->sub(new \DateInterval('P1D'));
+        $stm = $this->getDb()->prepare('SELECT * FROM equity_total a WHERE exchange_id = ? AND currency = ? AND created > ? ' . $tool->toSql());
+        $stm->execute(array(
+            $exchangeId, $currency, $dateFrom->format(\Tk\Date::FORMAT_ISO_DATETIME)
+        ));
+        return $stm->fetchAll();
+    }
+
+
+
+
 }
