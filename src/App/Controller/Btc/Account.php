@@ -46,13 +46,27 @@ class Account extends \Bs\Controller\AdminIface
         $this->setPageTitle($this->exchange->getName() . ' Exchange Account');
 
 
-        $this->totals = \App\Db\ExchangeMap::create()->findEquityTotals($this->exchange->getId(), 'AUD');
+        $this->totals = \App\Db\ExchangeMap::create()->findEquityTotals($this->exchange->getId(), $this->exchange->getCurrency(), null, \Tk\Db\Tool::create('created '));
         $this->equity = 0;
         if (count($this->totals)) {
             $this->equity = $this->totals[0]->amount;
         }
 
+        if ($request->has('get')) {
+             $this->doData($request);
+        }
 
+
+    }
+
+    public function doData(\Tk\Request $request)
+    {
+        foreach ($this->totals as $t) {
+            $data[] = [$t->created, $t->amount];
+        }
+
+        \Tk\ResponseJson::createJson($data)->send();
+        exit;
     }
 
     /**
@@ -67,39 +81,46 @@ class Account extends \Bs\Controller\AdminIface
         $template->appendCssUrl('//cdnjs.cloudflare.com/ajax/libs/dygraph/2.1.0/dygraph.min.css');
         $template->appendJsUrl('//cdnjs.cloudflare.com/ajax/libs/dygraph/2.1.0/dygraph.min.js');
 
-        $data = array();
-        foreach ($this->totals as $t) {
-            $row = $template->getRepeat('row');
-            $row->insertText('amount', round($t->amount, 4));
-            $row->insertText('created', $t->created);
-            $row->appendRepeat();
-            $data[] = [$t->created, $t->amount];
-        }
 
-        $data = array_reverse($data);
-        $data = json_encode($data);
+
+
+
 
         $js = <<<JS
-$(document).ready(function() {
-  
-  var stockData = $data;
-  var stockData2 = [];
-  $.each(stockData, function (i, v) {
-    v[0] = new Date(v[0]);
-    v[1] = parseFloat(v[1]);
-    stockData2.push(v);
+$(document).ready(function () {
+
+  function getData(onSuccess) {
+    $.get(document.location, {'get': 't'}, function (data) {
+      var d = [];
+      $.each(data, function (i, v) {
+        v[0] = new Date(v[0]);
+        v[1] = parseFloat(v[1]);
+        d.push(v);
+      });
+      onSuccess.apply(this, [d]);
+    });
+  }
+    
+  var g = null;
+  getData(function (data) {
+    g = new Dygraph(document.getElementById("stock_div"), data,
+      {
+        labels: ["Date", "Amount $"],
+        title: 'Equity vs Time',
+        //showRangeSelector: true,
+        //legend: 'always',
+        // customBars: true,
+      });
+    $('#stock_div .dygraph-legend').css('top', '-15px');
+    window.intervalId = setInterval(function () {
+      getData(function (data) {
+        console.log(data);
+        g.updateOptions({'file': data});
+      });
+    }, 5 * 60000);
   });
-  
-  var g = new Dygraph(document.getElementById("stock_div"), stockData2,
-   {
-      labels: [ "Date", "Amount $" ],
-      //legend: 'always',
-      title: 'Equity vs Time',
-      //showRoller: true,
-      //rollPeriod: 14,
-      //customBars: true,
-   });
-  
+
+
 });
 JS;
         $template->appendJs($js);
@@ -114,14 +135,17 @@ JS;
 
         $template->prependHtml('panel', $html);
 
-
-
-
-
-
-
         $template->setAttr('panel', 'data-panel-icon', $this->exchange->icon);
         $template->setAttr('panel', 'data-panel-title', $this->exchange->driver . ' - [ID ' . $this->exchange->getId() . ']');
+
+
+//        foreach ($this->totals as $t) {
+//            $row = $template->getRepeat('row');
+//            $row->insertText('amount', round($t->amount, 4));
+//            $row->insertText('created', $t->created);
+//            $row->appendRepeat();
+//            $tyemplate->show('table');
+//        }
         
         return $template;
     }
@@ -140,10 +164,10 @@ JS;
   <div class="tk-panel" data-panel-icon="fa fa-btc" var="panel">
     
     <p>&nbsp;</p>
-    <div class="row" id="stock_div" style="width: 100%; height: 500px;">asdasdasd</div>
+    <div class="row" id="stock_div" style="width: 100%; height: 500px;"></div>
     <p>&nbsp;</p>
     
-    <table class="table table-bordered table-striped" choice="hide">
+    <table class="table table-bordered table-striped" choice="table">
       <tr>
         <th>Equity</th>
         <th>Date</th>
