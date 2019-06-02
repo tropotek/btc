@@ -43,10 +43,11 @@ class Account extends \Bs\Controller\AdminIface
             \Tk\Uri::create()->redirect();
         }
 
-        $this->setPageTitle($this->exchange->getName() . ' Exchange Account');
 
         $this->days = (int)$request->get('d', 2);
         $this->dateFrom = \Tk\Date::create()->sub(new \DateInterval('P'.$this->days.'D'));
+
+        $this->setPageTitle($this->exchange->getName() . ' Exchange Account');
 
 
         if ($request->has('get')) {
@@ -111,7 +112,7 @@ class Account extends \Bs\Controller\AdminIface
         $template->prependHtml('panel', $html);
 
         $template->setAttr('panel', 'data-panel-icon', $this->exchange->getIcon());
-        $template->setAttr('panel', 'data-panel-title', $this->exchange->getDriver() . ' - [ID ' . $this->exchange->getId() . ']');
+        $template->setAttr('panel', 'data-panel-title', $this->exchange->getDriver() . ' ' . $this->days . ' Days - [ID ' . $this->exchange->getId() . ']');
 
 
 
@@ -144,7 +145,7 @@ $(document).ready(function () {
       g = new Dygraph(div.get(0), data,
         {
           labels: ["Date", "Amount $"],
-          title: div.data('market') + ' Equity vs Time [' + div.data('days') + ' Days]',
+          title: div.data('market') + ' Equity',
           //showRangeSelector: true,
           //legend: 'always',
           // customBars: true,
@@ -169,7 +170,6 @@ JS;
             $row->setAttr('graph', 'data-market', $market);
             $row->setAttr('graph', 'data-days', $this->days);
             $row->appendRepeat();
-            vd($market);
         }
         
         return $template;
@@ -188,11 +188,11 @@ JS;
 
   <div class="tk-panel" data-panel-icon="fa fa-btc" var="panel">
     
-    <p>&nbsp;</p>
     
-    <div class="graph" style="width: 100%; height: 500px;" var="graph" repeat="graph"></div>
+    <div class="row">
+      <div class="graph col-md-6" style="width: 100%; height: 300px;" var="graph" repeat="graph"></div>
+    </div>
     
-    <p>&nbsp;</p>
     
   </div>
     
