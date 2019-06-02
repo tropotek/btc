@@ -142,40 +142,64 @@ class ExchangeMap extends Mapper
 
     /**
      * @param int $exchangeId
+     * @param string $market
      * @param string $currency
      * @param string $amount
      * @throws \Tk\Db\Exception
      */
-    public function addEquityTotal($exchangeId, $currency, $amount)
+    public function addEquityTotal($exchangeId, $market, $currency, $amount)
     {
-        $stm = $this->getDb()->prepare('INSERT INTO equity_total (exchange_id, currency, amount, created)  VALUES (?, ?, ?, NOW())');
+        $stm = $this->getDb()->prepare('INSERT INTO equity_total (exchange_id, market, currency, amount, created)  VALUES (?, ?, ?, ?, NOW())');
         $stm->execute(array(
-            $exchangeId, $currency, $amount
+            $exchangeId, $market, $currency, $amount
         ));
 
     }
 
     /**
      * @param int $exchangeId
+     * @param string $market
      * @param string $currency
      * @param \DateTime $dateFrom
      * @param null|\Tk\Db\Tool $tool
      * @return array
      * @throws \Tk\Db\Exception
      */
-    public function findEquityTotals($exchangeId, $currency, $dateFrom = null, $tool = null)
+    public function findEquityTotals($exchangeId, $market, $currency, $dateFrom = null, $tool = null)
     {
         if (!$tool)
             $tool = \Tk\Db\Tool::create('created DESC');
         if (!$dateFrom)
             $dateFrom = \Tk\Date::create()->sub(new \DateInterval('P1D'));
-        $stm = $this->getDb()->prepare('SELECT * FROM equity_total a WHERE exchange_id = ? AND currency = ? AND created > ? ' . $tool->toSql());
+        $stm = $this->getDb()->prepare('SELECT * FROM equity_total a WHERE exchange_id = ? AND market = ? AND currency = ? AND created > ? ' . $tool->toSql());
         $stm->execute(array(
-            $exchangeId, $currency, $dateFrom->format(\Tk\Date::FORMAT_ISO_DATETIME)
+            $exchangeId, $market, $currency, $dateFrom->format(\Tk\Date::FORMAT_ISO_DATETIME)
         ));
         return $stm->fetchAll();
     }
 
+    /**
+     * Find all available equity markets in the DB
+     *
+     * @param int $exchangeId
+     * @param null $dateFrom
+     * @param null $tool
+     * @return array
+     * @throws \Tk\Db\Exception
+     */
+    public function findEquityMarkets($exchangeId, $dateFrom = null, $tool = null)
+    {
+        if (!$tool)
+            $tool = \Tk\Db\Tool::create('market');
+        if (!$dateFrom)
+            $dateFrom = \Tk\Date::create()->sub(new \DateInterval('P1D'));
+        $stm = $this->getDb()->prepare('SELECT DISTINCT market FROM equity_total a WHERE exchange_id = ? AND created > ? ' . $tool->toSql());
+        $stm->execute(array(
+            $exchangeId, $dateFrom->format(\Tk\Date::FORMAT_ISO_DATETIME)
+        ));
+        $o = $stm->fetchAll(\PDO::FETCH_COLUMN);
+        return $o;
+    }
 
 
 

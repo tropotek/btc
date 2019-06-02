@@ -38,9 +38,8 @@ class Cron extends \Bs\Console\Iface
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        parent::execute($input, $output);
-        //$output->setVerbosity(OutputInterface::VERBOSITY_VERBOSE);
-        //vd(\Tk\Date::create()->format(\Tk\Date::FORMAT_ISO_DATETIME));
+        $this->setInput($input);
+        $this->setOutput($output);
 
         $exchangeList = \App\Db\ExchangeMap::create()->findFiltered(array(
             'active' => true
@@ -48,8 +47,6 @@ class Cron extends \Bs\Console\Iface
         foreach ($exchangeList as $exchange) {
             $this->processExchange($exchange);
         }
-
-        //$this->write('Cron Script Executed...', OutputInterface::VERBOSITY_VERBOSE);
     }
 
     /**
@@ -58,17 +55,21 @@ class Cron extends \Bs\Console\Iface
      */
     public function processExchange(\App\Db\Exchange $exchange)
     {
-        //$curr = 'BTC';
+        // Save total equity values
         $eq = $exchange->getTotalEquity();
-        \App\Db\ExchangeMap::create()->addEquityTotal($exchange->getId(), $exchange->getCurrency(), $eq);
+        \App\Db\ExchangeMap::create()->addEquityTotal($exchange->getId(), \App\Db\Exchange::MARKET_ALL, $exchange->getCurrency(), $eq);
 
-        $this->write('Total Equity: ' . $eq . ' ' . $exchange->getCurrency());
-        $avail = $exchange->getAvailableCurrency();
-        $this->write('Available Currency: ' . \ccxt\Exchange::number_to_string($avail) . ' ' . $exchange->getCurrency() );
+        // Save individual coin equities
+        $summaryList = $exchange->getAccountSummary();
+        foreach ($summaryList as $market => $val) {
+            if ($val == 0) continue;
+            \App\Db\ExchangeMap::create()->addEquityTotal($exchange->getId(), $market, $exchange->getCurrency(), $val);
+        }
 
 
-        $this->write(print_r($exchange->getAccountSummary(), true));
-
+//        $this->write('Total Equity: ' . $eq . ' ' . $exchange->getCurrency());
+//        $avail = $exchange->getAvailableCurrency();
+//        $this->write('Available Currency: ' . \ccxt\Exchange::number_to_string($avail) . ' ' . $exchange->getCurrency() );
 
 
     }

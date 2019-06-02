@@ -17,9 +17,8 @@ class Account extends \Bs\Controller\AdminIface
      */
     protected $exchange = null;
 
-    protected $totals = array();
-    protected $equity = 0;
     protected $days = 2;
+    protected $dateFrom = null;
 
 
     /**
@@ -47,13 +46,8 @@ class Account extends \Bs\Controller\AdminIface
         $this->setPageTitle($this->exchange->getName() . ' Exchange Account');
 
         $this->days = (int)$request->get('d', 2);
+        $this->dateFrom = \Tk\Date::create()->sub(new \DateInterval('P'.$this->days.'D'));
 
-        $dateFrom = \Tk\Date::create()->sub(new \DateInterval('P'.$this->days.'D'));
-        $this->totals = \App\Db\ExchangeMap::create()->findEquityTotals($this->exchange->getId(), $this->exchange->getCurrency(), $dateFrom, \Tk\Db\Tool::create('created '));
-        $this->equity = 0;
-        if (count($this->totals)) {
-            $this->equity = $this->totals[count($this->totals)-1]->amount;
-        }
 
         if ($request->has('get')) {
              $this->doData($request);
@@ -62,9 +56,26 @@ class Account extends \Bs\Controller\AdminIface
 
     }
 
+    /**
+     * @param string $market
+     * @throws \Tk\Db\Exception
+     */
+    protected function getMarketData($market = 'ALL')
+    {
+        return \App\Db\ExchangeMap::create()->findEquityTotals($this->exchange->getId(), $market,
+            $this->exchange->getCurrency(), $this->dateFrom, \Tk\Db\Tool::create('created'));
+    }
+
+    
+    /**
+     * @param Request $request
+     * @throws \Tk\Db\Exception
+     */
     public function doData(\Tk\Request $request)
     {
-        foreach ($this->totals as $t) {
+        $totals = $this->getMarketData($request->get('m'));
+        $data = [];
+        foreach ($totals as $t) {
             $data[] = [$t->created, $t->amount];
         }
 
@@ -90,61 +101,77 @@ class Account extends \Bs\Controller\AdminIface
 
         $template = parent::show();
 
-        $template->setAttr('graph', 'data-days', $this->days);
+        $html = sprintf('
+<div class="row" style="background-color: #EFEFEF;padding-top: 10px;">
+  <div class="col-md-6"><p>Total Equity: $%.4f</p></div>
+  <div class="col-md-6"><p>Available: $%.4f</p></div>
+</div>
+', round($this->exchange->getTotalEquity(), 4), round($this->exchange->getAvailableCurrency(), 4));
+
+        $template->prependHtml('panel', $html);
+
+        $template->setAttr('panel', 'data-panel-icon', $this->exchange->getIcon());
+        $template->setAttr('panel', 'data-panel-title', $this->exchange->getDriver() . ' - [ID ' . $this->exchange->getId() . ']');
+
+
+
+
+
+
+
         $template->appendCssUrl('//cdnjs.cloudflare.com/ajax/libs/dygraph/2.1.0/dygraph.min.css');
         $template->appendJsUrl('//cdnjs.cloudflare.com/ajax/libs/dygraph/2.1.0/dygraph.min.js');
 
         $js = <<<JS
 $(document).ready(function () {
 
-  function getData(onSuccess) {
-    $.get(document.location, {'get': 't'}, function (data) {
+  function getData(market, onSuccess) {
+    $.get(document.location, {'get': 't', 'm': market}, function (data) {
       var d = [];
       $.each(data, function (i, v) {
         v[0] = new Date(v[0]);
         v[1] = parseFloat(v[1]);
         d.push(v);
       });
-      onSuccess.apply(this, [d]);
+      onSuccess.apply(this, [d, market]);
     });
   }
-    
-  var g = null;
-  getData(function (data) {
-    var div = document.getElementById("stock_div");
-    g = new Dygraph(div, data,
-      {
-        labels: ["Date", "Amount $"],
-        title: 'Equity vs Time [' + div.getAttribute('data-days') + ' Days]',
-        //showRangeSelector: true,
-        //legend: 'always',
-        // customBars: true,
-      });
-    $('#stock_div .dygraph-legend').css('top', '-15px');
-    window.intervalId = setInterval(function () {
-      getData(function (data) {
-        g.updateOptions({'file': data});
-      });
-    }, 5 * 60 * 1000);
+  
+  $('div.graph').each(function () {
+    var div = $(this);
+    var g = null;
+    getData(div.data('market'), function (data) {
+      g = new Dygraph(div.get(0), data,
+        {
+          labels: ["Date", "Amount $"],
+          title: div.data('market') + ' Equity vs Time [' + div.data('days') + ' Days]',
+          //showRangeSelector: true,
+          //legend: 'always',
+          // customBars: true,
+        });
+      div.find('.dygraph-legend').css('top', '-15px');
+      window.intervalId = setInterval(function () {
+        getData(div.data('market') ,function (data) {
+          g.updateOptions({'file': data});
+        });
+      }, 5 * 60 * 1000);
+    });
+  
   });
 
 });
 JS;
         $template->appendJs($js);
 
-
-        $html = sprintf('
-<div class="row" style="background-color: #EFEFEF;padding-top: 10px;">
-  <div class="col-md-6"><p>Total Equity: $%.4f</p></div>
-  <div class="col-md-6"><p>Available: $%.4f</p></div>
-</div>
-', round($this->equity, 4), round($this->exchange->getAvailableCurrency(), 4));
-
-        $template->prependHtml('panel', $html);
-
-        $template->setAttr('panel', 'data-panel-icon', $this->exchange->icon);
-        $template->setAttr('panel', 'data-panel-title', $this->exchange->driver . ' - [ID ' . $this->exchange->getId() . ']');
-
+        $marketList = \App\Db\ExchangeMap::create()->findEquityMarkets($this->exchange->getId(), $this->dateFrom);
+        foreach ($marketList as $market) {
+            $row = $template->getRepeat('graph');
+            $row->setAttr('graph', 'data-market', $market);
+            $row->setAttr('graph', 'data-days', $this->days);
+            $row->appendRepeat();
+            vd($market);
+        }
+        
         return $template;
     }
 
@@ -162,7 +189,9 @@ JS;
   <div class="tk-panel" data-panel-icon="fa fa-btc" var="panel">
     
     <p>&nbsp;</p>
-    <div class="row" id="stock_div" style="width: 100%; height: 500px;" var="graph"></div>
+    
+    <div class="graph" style="width: 100%; height: 500px;" var="graph" repeat="graph"></div>
+    
     <p>&nbsp;</p>
     
   </div>

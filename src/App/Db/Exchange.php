@@ -1,6 +1,8 @@
 <?php
 namespace App\Db;
 
+use Tk\Db\Exception;
+
 /**
  * @author Mick Mifsud
  * @created 2019-05-30
@@ -9,6 +11,7 @@ namespace App\Db;
  */
 class Exchange extends \Tk\Db\Map\Model implements \Tk\ValidInterface
 {
+    const MARKET_ALL = 'ALL';
 
     use \Bs\Db\Traits\UserTrait;
     use \Bs\Db\Traits\TimestampTrait;
@@ -102,6 +105,7 @@ class Exchange extends \Tk\Db\Map\Model implements \Tk\ValidInterface
     }
 
     /**
+     * Live Call
      * Return the CCXT Exchange API object
      * @return \ccxt\Exchange
      */
@@ -119,6 +123,7 @@ class Exchange extends \Tk\Db\Map\Model implements \Tk\ValidInterface
     }
 
     /**
+     * Live Call
      * @param null|string $currency
      * @return array
      */
@@ -149,15 +154,24 @@ class Exchange extends \Tk\Db\Map\Model implements \Tk\ValidInterface
 
     /**
      * @param null|string $currency
-     * @return float
+     * @return float|string
      */
     public function getTotalEquity($currency = null)
     {
-        $marketTotals = $this->getAccountSummary($currency);
-        return array_sum($marketTotals);
+        if (!$currency)
+            $currency = $this->getCurrency();
+        try {
+            $obj = current(ExchangeMap::create()->findEquityTotals($this->getId(), self::MARKET_ALL, $currency,
+                null, \Tk\Db\Tool::create('created DESC', 1)));
+            if ($obj && !empty($obj->amount)) {
+                return $obj->amount;
+            }
+        } catch (Exception $e) { }
+        return 0;
     }
 
     /**
+     * Live Call
      * @return float
      */
     public function getAvailableCurrency()

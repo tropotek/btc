@@ -42,25 +42,18 @@ CREATE TABLE IF NOT EXISTS `exchange` (
 -- --------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `equity_total` (
     `exchange_id` INT UNSIGNED NOT NULL DEFAULT 0,
-    `currency` VARCHAR(128) NOT NULL DEFAULT 'AUD',        -- EG: AUD, USD, BTC, ETH, etc
+    `market` VARCHAR(8) NOT NULL DEFAULT 'ALL',          -- EG: BTC, XRP, ALL = 'All available market totals'
+    `currency` VARCHAR(8) NOT NULL DEFAULT 'AUD',        -- EG: AUD, USD, BTC, ETH, etc
     `amount` VARCHAR(128) NOT NULL DEFAULT '0',
-    `created` DATETIME NOT NULL,
-    PRIMARY KEY (`exchange_id`, `currency`, `created`)
-) ENGINE = InnoDB;
-
-
-CREATE TABLE IF NOT EXISTS `equity_value` (
-    `exchange_id` INT UNSIGNED NOT NULL DEFAULT 0,
-    `market` VARCHAR(128) NOT NULL DEFAULT 'BTC',          -- EG: BTC, XRP
-    `currency` VARCHAR(128) NOT NULL DEFAULT 'AUD',        -- EG: AUD, USD, BTC, ETH, etc
-    `amount` VARCHAR(128) NOT NULL DEFAULT '0',          -- The value of this market at this currency
     `created` DATETIME NOT NULL,
     PRIMARY KEY (`exchange_id`, `market`, `currency`, `created`)
 ) ENGINE = InnoDB;
 
-
-
-
+-- Edit existing, remove for new installs
+alter table equity_total add market VARCHAR(8) default 'ALL' not null after exchange_id;
+alter table equity_total modify currency varchar(8) default 'AUD' not null;
+alter table equity_total drop primary key;
+alter table equity_total add primary key (exchange_id, market, currency, created);
 
 
 
