@@ -45,8 +45,9 @@ class Account extends \Bs\Controller\AdminIface
 
         $this->setPageTitle($this->exchange->getName() . ' Exchange Account');
 
+        $days = (int)$request->get('d', 2);
 
-        $dateFrom = \Tk\Date::create()->sub(new \DateInterval('P2D'));
+        $dateFrom = \Tk\Date::create()->sub(new \DateInterval('P'.$days.'D'));
         $this->totals = \App\Db\ExchangeMap::create()->findEquityTotals($this->exchange->getId(), $this->exchange->getCurrency(), $dateFrom, \Tk\Db\Tool::create('created '));
         $this->equity = 0;
         if (count($this->totals)) {
@@ -76,16 +77,20 @@ class Account extends \Bs\Controller\AdminIface
      */
     public function show()
     {
-        $template = parent::show();
+        // TODO: Ajax this....
+        $this->getActionPanel()->append(\Tk\Ui\Link::createBtn('1 Day', \Tk\Uri::create()->set('d', '1')));
+        $this->getActionPanel()->append(\Tk\Ui\Link::createBtn('2 Days', \Tk\Uri::create()->set('d', '2')));
+        $this->getActionPanel()->append(\Tk\Ui\Link::createBtn('3 Days', \Tk\Uri::create()->set('d', '3')));
+        $this->getActionPanel()->append(\Tk\Ui\Link::createBtn('5 Days', \Tk\Uri::create()->set('d', '5')));
+        $this->getActionPanel()->append(\Tk\Ui\Link::createBtn('7 Days', \Tk\Uri::create()->set('d', '7')));
+        $this->getActionPanel()->append(\Tk\Ui\Link::createBtn('14 Days', \Tk\Uri::create()->set('d', '14')));
+        $this->getActionPanel()->append(\Tk\Ui\Link::createBtn('28 Days', \Tk\Uri::create()->set('d', '28')));
+        $this->getActionPanel()->append(\Tk\Ui\Link::createBtn('1 Year', \Tk\Uri::create()->set('d', '365')));
 
+        $template = parent::show();
 
         $template->appendCssUrl('//cdnjs.cloudflare.com/ajax/libs/dygraph/2.1.0/dygraph.min.css');
         $template->appendJsUrl('//cdnjs.cloudflare.com/ajax/libs/dygraph/2.1.0/dygraph.min.js');
-
-
-
-
-
 
         $js = <<<JS
 $(document).ready(function () {
@@ -115,12 +120,10 @@ $(document).ready(function () {
     $('#stock_div .dygraph-legend').css('top', '-15px');
     window.intervalId = setInterval(function () {
       getData(function (data) {
-        console.log(data);
         g.updateOptions({'file': data});
       });
     }, 5 * 60000);
   });
-
 
 });
 JS;
@@ -139,15 +142,6 @@ JS;
         $template->setAttr('panel', 'data-panel-icon', $this->exchange->icon);
         $template->setAttr('panel', 'data-panel-title', $this->exchange->driver . ' - [ID ' . $this->exchange->getId() . ']');
 
-
-//        foreach ($this->totals as $t) {
-//            $row = $template->getRepeat('row');
-//            $row->insertText('amount', round($t->amount, 4));
-//            $row->insertText('created', $t->created);
-//            $row->appendRepeat();
-//            $tyemplate->show('table');
-//        }
-        
         return $template;
     }
 
@@ -168,17 +162,6 @@ JS;
     <div class="row" id="stock_div" style="width: 100%; height: 500px;"></div>
     <p>&nbsp;</p>
     
-    <table class="table table-bordered table-striped" choice="table">
-      <tr>
-        <th>Equity</th>
-        <th>Date</th>
-      </tr>
-      <tr repeat="row">
-        <td var="amount"></td>
-        <td var="created"></td>
-      </tr>
-    </table>
-  
   </div>
     
 </div>
