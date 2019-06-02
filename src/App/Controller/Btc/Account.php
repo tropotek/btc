@@ -46,10 +46,11 @@ class Account extends \Bs\Controller\AdminIface
         $this->setPageTitle($this->exchange->getName() . ' Exchange Account');
 
 
-        $this->totals = \App\Db\ExchangeMap::create()->findEquityTotals($this->exchange->getId(), $this->exchange->getCurrency(), null, \Tk\Db\Tool::create('created '));
+        $dateFrom = \Tk\Date::create()->sub(new \DateInterval('P2D'));
+        $this->totals = \App\Db\ExchangeMap::create()->findEquityTotals($this->exchange->getId(), $this->exchange->getCurrency(), $dateFrom, \Tk\Db\Tool::create('created '));
         $this->equity = 0;
         if (count($this->totals)) {
-            $this->equity = $this->totals[0]->amount;
+            $this->equity = $this->totals[count($this->totals)-1]->amount;
         }
 
         if ($request->has('get')) {
