@@ -19,6 +19,7 @@ class Account extends \Bs\Controller\AdminIface
 
     protected $totals = array();
     protected $equity = 0;
+    protected $days = 2;
 
 
     /**
@@ -45,9 +46,9 @@ class Account extends \Bs\Controller\AdminIface
 
         $this->setPageTitle($this->exchange->getName() . ' Exchange Account');
 
-        $days = (int)$request->get('d', 2);
+        $this->days = (int)$request->get('d', 2);
 
-        $dateFrom = \Tk\Date::create()->sub(new \DateInterval('P'.$days.'D'));
+        $dateFrom = \Tk\Date::create()->sub(new \DateInterval('P'.$this->days.'D'));
         $this->totals = \App\Db\ExchangeMap::create()->findEquityTotals($this->exchange->getId(), $this->exchange->getCurrency(), $dateFrom, \Tk\Db\Tool::create('created '));
         $this->equity = 0;
         if (count($this->totals)) {
@@ -89,6 +90,7 @@ class Account extends \Bs\Controller\AdminIface
 
         $template = parent::show();
 
+        $template->setAttr('graph', 'data-days', $this->days);
         $template->appendCssUrl('//cdnjs.cloudflare.com/ajax/libs/dygraph/2.1.0/dygraph.min.css');
         $template->appendJsUrl('//cdnjs.cloudflare.com/ajax/libs/dygraph/2.1.0/dygraph.min.js');
 
@@ -109,10 +111,11 @@ $(document).ready(function () {
     
   var g = null;
   getData(function (data) {
-    g = new Dygraph(document.getElementById("stock_div"), data,
+    var div = document.getElementById("stock_div");
+    g = new Dygraph(div, data,
       {
         labels: ["Date", "Amount $"],
-        title: 'Equity vs Time',
+        title: 'Equity vs Time [' + div.getAttribute('data-days') + ' Days]',
         //showRangeSelector: true,
         //legend: 'always',
         // customBars: true,
@@ -122,7 +125,7 @@ $(document).ready(function () {
       getData(function (data) {
         g.updateOptions({'file': data});
       });
-    }, 5 * 60000);
+    }, 5 * 60 * 1000);
   });
 
 });
@@ -159,7 +162,7 @@ JS;
   <div class="tk-panel" data-panel-icon="fa fa-btc" var="panel">
     
     <p>&nbsp;</p>
-    <div class="row" id="stock_div" style="width: 100%; height: 500px;"></div>
+    <div class="row" id="stock_div" style="width: 100%; height: 500px;" var="graph"></div>
     <p>&nbsp;</p>
     
   </div>
