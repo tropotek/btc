@@ -66,7 +66,6 @@ class Cron extends \Bs\Console\Iface
             \App\Db\ExchangeMap::create()->addEquityTotal($exchange->getId(), $market, $exchange->getCurrency(), $val);
         }
 
-
         $this->write('Total Equity: ' . $eq . ' ' . $exchange->getCurrency());
         $avail = $exchange->getAvailableCurrency();
         $this->write('Available Currency: ' . \ccxt\Exchange::number_to_string($avail) . ' ' . $exchange->getCurrency() );

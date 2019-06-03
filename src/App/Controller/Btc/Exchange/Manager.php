@@ -40,7 +40,7 @@ class Manager extends \Bs\Controller\AdminManagerIface
      */
     public function show()
     {
-        $this->getActionPanel()->append(\Tk\Ui\Link::createBtn('Add Exchange', \Bs\Uri::createHomeUrl('/exchangeEdit.html'), 'fa fa-btc'));
+        $this->getActionPanel()->append(\Tk\Ui\Link::createBtn('Add Exchange', \Bs\Uri::createHomeUrl('/exchangeEdit.html'), 'fa fa-building'));
         $template = parent::show();
 
         $template->appendTemplate('table', $this->table->show());
@@ -57,7 +57,7 @@ class Manager extends \Bs\Controller\AdminManagerIface
     {
         $xhtml = <<<HTML
 <div>
-  <div class="tk-panel" data-panel-icon="fa fa-btc" var="table"></div>
+  <div class="tk-panel" data-panel-icon="fa fa-building" var="table"></div>
 </div>
 HTML;
 

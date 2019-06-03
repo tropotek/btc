@@ -148,16 +148,13 @@ $(document).ready(function () {
           ylabel: div.data('currency'),
           labels: ["Date", div.data('currency')],
           title: div.data('name') + ' [' + div.data('market') + '] - Vol: ' + div.data('vol'),
-          //showRangeSelector: true,
-          //legend: 'always',
-          // customBars: true,
         });
       div.find('.dygraph-legend').css('top', '-15px');
       window.intervalId = setInterval(function () {
         getData(div.data('market') ,function (data) {
           g.updateOptions({'file': data});
         });
-      }, 5 * 60 * 1000);
+      }, 3 * 60 * 1000);
     });
   
   });

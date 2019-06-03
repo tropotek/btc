@@ -68,10 +68,10 @@ class NavRendererHandler implements Subscriber
             //$menu->append(Item::create('Settings', \Bs\Uri::createHomeUrl('/settings.html'), 'fa fa-cogs'));
         }
         if ($user->hasPermission(\Bs\Db\Permission::TYPE_USER)) {
-            $menu->append(Item::create('My Exchanges', \Bs\Uri::createHomeUrl('/exchangeManager.html'), 'fa fa-btc'));
+            $menu->append(Item::create('My Exchanges', \Bs\Uri::createHomeUrl('/exchangeManager.html'), 'fa fa-cog'));
 
             $exchangeList = \App\Db\ExchangeMap::create()->findFiltered(array('userId' => $this->getConfig()->getUser()->getId()), \Tk\Db\Tool::create('driver'));
-            $sub = $menu->append(Item::create('Exchanges', '#', 'fa fa-btc'));
+            $sub = $menu->append(Item::create('Exchanges', '#', 'fa fa-money'));
             if ($exchangeList->count()) {
                 foreach ($exchangeList as $exchange) {
                     $sub->append(Item::create($exchange->getName(), \Bs\Uri::createHomeUrl('/'.$exchange->driver.'/account.html'), $exchange->icon));
