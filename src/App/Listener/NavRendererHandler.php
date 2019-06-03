@@ -38,14 +38,13 @@ class NavRendererHandler implements Subscriber
     protected function initDropdownMenu($menu)
     {
         $user = $this->getConfig()->getUser();
+        if (!$user) return;
 
-        if ($user) {
-            $menu->append(Item::create('Profile', \Bs\Uri::createHomeUrl('/profile.html'), 'fa fa-user'));
-            if ($user->hasPermission(\Bs\Db\Permission::TYPE_ADMIN)) {
-                $menu->prepend(Item::create('Site Preview', \Bs\Uri::create('/index.html'), 'fa fa-home'))->getLink()
-                    ->setAttr('target', '_blank');
-                $menu->append(Item::create('Settings', \Bs\Uri::createHomeUrl('/settings.html'), 'fa fa-cogs'));
-            }
+        $menu->append(Item::create('Profile', \Bs\Uri::createHomeUrl('/profile.html'), 'fa fa-user'));
+        if ($user->hasPermission(\Bs\Db\Permission::TYPE_ADMIN)) {
+            $menu->prepend(Item::create('Site Preview', \Bs\Uri::create('/index.html'), 'fa fa-home'))->getLink()
+                ->setAttr('target', '_blank');
+            $menu->append(Item::create('Settings', \Bs\Uri::createHomeUrl('/settings.html'), 'fa fa-cogs'));
         }
 
         $menu->append(Item::create('About', '#', 'fa fa-info-circle')
@@ -63,23 +62,19 @@ class NavRendererHandler implements Subscriber
     protected function initSideMenu($menu)
     {
         $user = $this->getConfig()->getUser();
+        if (!$user) return;
 
+        $menu->append(Item::create('Dashboard', \Bs\Uri::createHomeUrl('/index.html'), 'fa fa-dashboard'));
+        if ($user->hasPermission(\Bs\Db\Permission::TYPE_ADMIN)) {
+            //$menu->append(Item::create('Settings', \Bs\Uri::createHomeUrl('/settings.html'), 'fa fa-cogs'));
+        }
 
-        if ($user) {
-            $menu->append(Item::create('Dashboard', \Bs\Uri::createHomeUrl('/index.html'), 'fa fa-dashboard'));
-
-            if ($user->hasPermission(\Bs\Db\Permission::TYPE_ADMIN)) {
-                //$menu->append(Item::create('Settings', \Bs\Uri::createHomeUrl('/settings.html'), 'fa fa-cogs'));
-            }
-
-            $menu->append(Item::create('My Exchanges', \Bs\Uri::createHomeUrl('/exchangeManager.html'), 'fa fa-cog'));
-
-            $exchangeList = \App\Db\ExchangeMap::create()->findFiltered(array('userId' => $this->getConfig()->getUser()->getId()), \Tk\Db\Tool::create('driver'));
-            $sub = $menu->append(Item::create('Exchanges', '#', 'fa fa-money'));
-            if ($exchangeList->count()) {
-                foreach ($exchangeList as $exchange) {
-                    $sub->append(Item::create($exchange->getName(), \Bs\Uri::createHomeUrl('/'.$exchange->driver.'/account.html'), $exchange->icon));
-                }
+        $menu->append(Item::create('My Exchanges', \Bs\Uri::createHomeUrl('/exchangeManager.html'), 'fa fa-cog'));
+        $exchangeList = \App\Db\ExchangeMap::create()->findFiltered(array('userId' => $this->getConfig()->getUser()->getId()), \Tk\Db\Tool::create('driver'));
+        $sub = $menu->append(Item::create('Exchanges', '#', 'fa fa-money'));
+        if ($exchangeList->count()) {
+            foreach ($exchangeList as $exchange) {
+                $sub->append(Item::create($exchange->getName(), \Bs\Uri::createHomeUrl('/'.$exchange->driver.'/account.html'), $exchange->icon));
             }
         }
 
