@@ -62,7 +62,7 @@ class Cron extends \Bs\Console\Iface
         // Save individual coin equities
         $summaryList = $exchange->getAccountSummary();
         foreach ($summaryList as $market => $val) {
-            if ($val == 0) continue;
+            if (round($val ,4) <= 0) continue;
             \App\Db\ExchangeMap::create()->addEquityTotal($exchange->getId(), $market, $exchange->getCurrency(), $val);
         }
 

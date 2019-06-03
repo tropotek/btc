@@ -145,7 +145,8 @@ $(document).ready(function () {
     getData(div.data('market'), function (data) {
       g = new Dygraph(div.get(0), data,
         {
-          labels: ["Date", "Amount $"],
+          ylabel: div.data('currency'),
+          labels: ["Date", div.data('currency')],
           title: div.data('name') + ' [' + div.data('market') + '] - Vol: ' + div.data('vol'),
           //showRangeSelector: true,
           //legend: 'always',
@@ -172,6 +173,7 @@ JS;
         foreach ($marketList as $market) {
             $row = $template->getRepeat('graph');
             $row->setAttr('graph', 'data-market', $market);
+            $row->setAttr('graph', 'data-currency', $this->exchange->getCurrency());
             $row->setAttr('graph', 'data-name', $this->exchange->getMarketName($market));
             $row->setAttr('graph', 'data-days', $this->days);
             $vol = 0;
