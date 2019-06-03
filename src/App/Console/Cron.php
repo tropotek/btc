@@ -56,7 +56,7 @@ class Cron extends \Bs\Console\Iface
     public function processExchange(\App\Db\Exchange $exchange)
     {
         // Save total equity values
-        $eq = $exchange->getTotalEquity();
+        $eq = $exchange->getLiveTotalEquity();
         \App\Db\ExchangeMap::create()->addEquityTotal($exchange->getId(), \App\Db\Exchange::MARKET_ALL, $exchange->getCurrency(), $eq);
 
         // Save individual coin equities
@@ -67,9 +67,9 @@ class Cron extends \Bs\Console\Iface
         }
 
 
-//        $this->write('Total Equity: ' . $eq . ' ' . $exchange->getCurrency());
-//        $avail = $exchange->getAvailableCurrency();
-//        $this->write('Available Currency: ' . \ccxt\Exchange::number_to_string($avail) . ' ' . $exchange->getCurrency() );
+        $this->write('Total Equity: ' . $eq . ' ' . $exchange->getCurrency());
+        $avail = $exchange->getAvailableCurrency();
+        $this->write('Available Currency: ' . \ccxt\Exchange::number_to_string($avail) . ' ' . $exchange->getCurrency() );
 
 
     }

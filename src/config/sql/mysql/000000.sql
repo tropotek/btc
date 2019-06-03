@@ -50,13 +50,13 @@ CREATE TABLE IF NOT EXISTS `equity_total` (
 ) ENGINE = InnoDB;
 
 -- Edit existing, remove for new installs
-alter table equity_total add market VARCHAR(8) default 'ALL' not null after exchange_id;
-alter table equity_total modify currency varchar(8) default 'AUD' not null;
-alter table equity_total drop primary key;
-alter table equity_total add primary key (exchange_id, market, currency, created);
+# alter table equity_total add market VARCHAR(8) default 'ALL' not null after exchange_id;
+# alter table equity_total modify currency varchar(8) default 'AUD' not null;
+# alter table equity_total drop primary key;
+# alter table equity_total add primary key (exchange_id, market, currency, created);
 
 
-
+INSERT INTO `user_permission` (`role_id`, `name`) VALUES (1, 'type.user');
 
 
 

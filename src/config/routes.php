@@ -43,4 +43,5 @@ $routes->add('user-profile', new \Tk\Routing\Route('/user/profile.html', 'App\Co
 $routes->add('btc-exchange-manager', new \Tk\Routing\Route('/{role}/exchangeManager.html', 'App\Controller\Btc\Exchange\Manager::doDefault'));
 $routes->add('btc-exchange-edit', new \Tk\Routing\Route('/{role}/exchangeEdit.html', 'App\Controller\Btc\Exchange\Edit::doDefault'));
 $routes->add('btc-account', new \Tk\Routing\Route('/{role}/{exchange}/account.html', 'App\Controller\Btc\Account::doDefault'));
+$routes->add('btc-summary', new \Tk\Routing\Route('/{role}/{exchange}/summary.html', 'App\Controller\Btc\Summary::doDefault'));
 

@@ -37,22 +37,22 @@ class NavRendererHandler implements Subscriber
      */
     protected function initDropdownMenu($menu)
     {
+        $user = $this->getConfig()->getUser();
+
         $menu->append(Item::create('Profile', \Bs\Uri::createHomeUrl('/profile.html'), 'fa fa-user'));
-        switch ($this->getRoleType()) {
-            case \Bs\Db\Role::TYPE_ADMIN:
-                $menu->prepend(Item::create('Site Preview', \Bs\Uri::create('/index.html'), 'fa fa-home'))->getLink()
-                    ->setAttr('target', '_blank');
-                $menu->append(Item::create('Settings', \Bs\Uri::createHomeUrl('/settings.html'), 'fa fa-cogs'));
-                break;
-            case \Bs\Db\Role::TYPE_USER:
-                break;
+
+        if ($user->hasPermission(\Bs\Db\Permission::TYPE_ADMIN)) {
+            $menu->prepend(Item::create('Site Preview', \Bs\Uri::create('/index.html'), 'fa fa-home'))->getLink()
+                ->setAttr('target', '_blank');
+            $menu->append(Item::create('Settings', \Bs\Uri::createHomeUrl('/settings.html'), 'fa fa-cogs'));
         }
+
         $menu->append(Item::create('About', '#', 'fa fa-info-circle')
             ->setAttr('data-toggle', 'modal')->setAttr('data-target', '#aboutModal'));
         $menu->append(Item::create()->addCss('divider'));
         $menu->append(Item::create('Logout', '#', 'fa fa-sign-out')
             ->setAttr('data-toggle', 'modal')->setAttr('data-target', '#logoutModal'));
-        //vd($menu->__toString());
+
     }
 
     /**
@@ -64,26 +64,31 @@ class NavRendererHandler implements Subscriber
 
         $menu->append(Item::create('Dashboard', \Bs\Uri::createHomeUrl('/index.html'), 'fa fa-dashboard'));
 
-        switch ($this->getRoleType()) {
-            case \Bs\Db\Role::TYPE_ADMIN:
-                $menu->append(Item::create('Settings', \Bs\Uri::createHomeUrl('/settings.html'), 'fa fa-cogs'));
-                $menu->append(Item::create('My Exchanges', \Bs\Uri::createHomeUrl('/exchangeManager.html'), 'fa fa-btc'));
-                if ($this->getConfig()->isDebug()) {
-                    $sub = $menu->append(Item::create('Development', '#', 'fa fa-bug'));
-                    $sub->append(Item::create('Events', \Bs\Uri::createHomeUrl('/dev/dispatcherEvents.html'), 'fa fa-empire'));
-                }
-                //break;
-            case \Bs\Db\Role::TYPE_USER:
-
-                $exchangeList = \App\Db\ExchangeMap::create()->findFiltered(array('userId' => $this->getConfig()->getUser()->getId()), \Tk\Db\Tool::create('driver'));
-                $sub = $menu->append(Item::create('Exchanges', '#', 'fa fa-btc'));
-                if ($exchangeList->count()) {
-                    foreach ($exchangeList as $exchange) {
-                        $sub->append(Item::create($exchange->getName(), \Bs\Uri::createHomeUrl('/'.$exchange->driver.'/account.html'), $exchange->icon));
-                    }
-                }
-                //break;
+        if ($user->hasPermission(\Bs\Db\Permission::TYPE_ADMIN)) {
+            //$menu->append(Item::create('Settings', \Bs\Uri::createHomeUrl('/settings.html'), 'fa fa-cogs'));
         }
+        if ($user->hasPermission(\Bs\Db\Permission::TYPE_USER)) {
+            $menu->append(Item::create('My Exchanges', \Bs\Uri::createHomeUrl('/exchangeManager.html'), 'fa fa-btc'));
+
+            $exchangeList = \App\Db\ExchangeMap::create()->findFiltered(array('userId' => $this->getConfig()->getUser()->getId()), \Tk\Db\Tool::create('driver'));
+            $sub = $menu->append(Item::create('Exchanges', '#', 'fa fa-btc'));
+            if ($exchangeList->count()) {
+                foreach ($exchangeList as $exchange) {
+                    $sub->append(Item::create($exchange->getName(), \Bs\Uri::createHomeUrl('/'.$exchange->driver.'/account.html'), $exchange->icon));
+                }
+            }
+        }
+
+
+//        if ($user->hasPermission(\Bs\Db\Permission::TYPE_ADMIN) && $this->getConfig()->isDebug()) {
+//            if ($this->getConfig()->isDebug()) {
+//                $sub = $menu->append(Item::create('Development', '#', 'fa fa-bug'));
+//                $sub->append(Item::create('Events', \Bs\Uri::createHomeUrl('/dev/dispatcherEvents.html'), 'fa fa-empire'));
+//            }
+//        }
+
+
+
         //vd($menu->__toString());
     }
 

@@ -84,7 +84,7 @@ class Exchange extends \Tk\Db\Map\Model implements \Tk\ValidInterface
     /**
      * @var \ccxt\Exchange
      */
-    protected $_exchange;
+    protected $_api;
 
 
     /**
@@ -111,15 +111,15 @@ class Exchange extends \Tk\Db\Map\Model implements \Tk\ValidInterface
      */
     public function getApi()
     {
-        if (!$this->_exchange) {
+        if (!$this->_api) {
             $driver = '\\ccxt\\' . $this->driver;
-            $this->_exchange = new $driver(array(
+            $this->_api = new $driver(array(
                 'apiKey' => $this->apiKey,
                 'secret' => $this->secret
                 // TODO: add more options over time as needed
             ));
         }
-        return $this->_exchange;
+        return $this->_api;
     }
 
     /**
@@ -150,6 +150,17 @@ class Exchange extends \Tk\Db\Map\Model implements \Tk\ValidInterface
             }
         }
         return $totals;
+    }
+
+    /**
+     * Live Call
+     * @param null $currency
+     * @return float|int
+     */
+    public function getLiveTotalEquity($currency = null)
+    {
+        $marketTotals = $this->getAccountSummary($currency);
+        return array_sum($marketTotals);
     }
 
     /**
@@ -330,6 +341,79 @@ class Exchange extends \Tk\Db\Map\Model implements \Tk\ValidInterface
     }
 
 
+    private static $marketNames = [
+        'AUD'   => 'Australian Dollar',
+        'BTC'   => 'Bitcoin',
+        'LTC' => 'Litecoin',
+        'ETH' => 'Ethereum',
+        'ETC' => 'Ethereum-Classic',
+        'XRP' => 'Ripple',
+        'OMG' => 'OmiseGO',
+        'POWR' => 'Power Ledger',
+        'BCHABC' => 'BCHABC',
+        'BCHSV' => 'BCHSV',
+        'BAT' => 'Basic Attention',
+        'GNT' => 'Golem',
+        'XLM' => 'Stellar Lumens'
+    ];
+
+    /**
+     * Return the full market name if known
+     *
+     * @param string $market
+     * @return mixed
+     */
+    public function getMarketName($market)
+    {
+        if (array_key_exists($market, self::$marketNames))
+            return self::$marketNames[$market];
+        return $market;
+    }
+
+
+    /**
+     * @return array
+     */
+    public function validate()
+    {
+        $errors = array();
+
+
+        if (!$this->userId) {
+            $errors['userId'] = 'Invalid value: userId';
+        }
+
+//        if (!$this->username) {
+//            $errors['username'] = 'Invalid value: name';
+//        }
+
+        if (!$this->driver) {
+            $errors['driver'] = 'Invalid value: driver';
+        }
+
+        if (!$this->currency) {
+            $errors['currency'] = 'Invalid value: currency';
+        }
+
+        if (!$this->icon) {
+            $errors['icon'] = 'Invalid value: icon';
+        }
+
+        if (!$this->apiKey) {
+            $errors['apiKey'] = 'Invalid value: apiKey';
+        }
+
+        if (!$this->secret) {
+            $errors['secret'] = 'Invalid value: secret';
+        }
+
+        
+        return $errors;
+    }
+
+}
+
+
 
     /**
      * Here's an overview of base exchange properties with values added for example:
@@ -392,49 +476,3 @@ class Exchange extends \Tk\Db\Map\Model implements \Tk\ValidInterface
     'uid':      '123456',               // string user id
     }
      */
-
-
-
-
-    
-    /**
-     * @return array
-     */
-    public function validate()
-    {
-        $errors = array();
-
-
-        if (!$this->userId) {
-            $errors['userId'] = 'Invalid value: userId';
-        }
-
-//        if (!$this->username) {
-//            $errors['username'] = 'Invalid value: name';
-//        }
-
-        if (!$this->driver) {
-            $errors['driver'] = 'Invalid value: driver';
-        }
-
-        if (!$this->currency) {
-            $errors['currency'] = 'Invalid value: currency';
-        }
-
-        if (!$this->icon) {
-            $errors['icon'] = 'Invalid value: icon';
-        }
-
-        if (!$this->apiKey) {
-            $errors['apiKey'] = 'Invalid value: apiKey';
-        }
-
-        if (!$this->secret) {
-            $errors['secret'] = 'Invalid value: secret';
-        }
-
-        
-        return $errors;
-    }
-
-}

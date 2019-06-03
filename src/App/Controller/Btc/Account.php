@@ -90,6 +90,10 @@ class Account extends \Bs\Controller\AdminIface
      */
     public function show()
     {
+
+        $this->getActionPanel()->append(\Tk\Ui\Link::createBtn('Account Summary',
+            \Bs\Uri::createHomeUrl('/'.$this->exchange->driver.'/summary.html'), 'fa fa-list-alt'));
+
         // TODO: Ajax this....
         $this->getActionPanel()->append(\Tk\Ui\Link::createBtn('1 Day', \Tk\Uri::create()->set('d', '1')));
         $this->getActionPanel()->append(\Tk\Ui\Link::createBtn('2 Days', \Tk\Uri::create()->set('d', '2')));
@@ -110,14 +114,8 @@ class Account extends \Bs\Controller\AdminIface
 ', round($this->exchange->getTotalEquity(), 4), round($this->exchange->getAvailableCurrency(), 4));
 
         $template->prependHtml('panel', $html);
-
         $template->setAttr('panel', 'data-panel-icon', $this->exchange->getIcon());
         $template->setAttr('panel', 'data-panel-title', $this->exchange->getDriver() . ' ' . $this->days . ' Days - [ID ' . $this->exchange->getId() . ']');
-
-
-
-
-
 
 
         $template->appendCssUrl('//cdnjs.cloudflare.com/ajax/libs/dygraph/2.1.0/dygraph.min.css');
