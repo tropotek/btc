@@ -57,5 +57,5 @@ CREATE TABLE IF NOT EXISTS `equity_total` (
 #INSERT INTO `user_permission` (`role_id`, `name`) VALUES (1, 'type.user');
 
 
-
+DELETE FROM equity_total WHERE market = 'ETH' OR market = 'BCH';
 
