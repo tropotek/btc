@@ -67,7 +67,7 @@ class NavRendererHandler implements Subscriber
         if ($user->hasPermission(\Bs\Db\Permission::TYPE_ADMIN)) {
             //$menu->append(Item::create('Settings', \Bs\Uri::createHomeUrl('/settings.html'), 'fa fa-cogs'));
         }
-        if ($user->hasPermission(\Bs\Db\Permission::TYPE_USER)) {
+        if ($user) {
             $menu->append(Item::create('My Exchanges', \Bs\Uri::createHomeUrl('/exchangeManager.html'), 'fa fa-cog'));
 
             $exchangeList = \App\Db\ExchangeMap::create()->findFiltered(array('userId' => $this->getConfig()->getUser()->getId()), \Tk\Db\Tool::create('driver'));
@@ -79,17 +79,6 @@ class NavRendererHandler implements Subscriber
             }
         }
 
-
-//        if ($user->hasPermission(\Bs\Db\Permission::TYPE_ADMIN) && $this->getConfig()->isDebug()) {
-//            if ($this->getConfig()->isDebug()) {
-//                $sub = $menu->append(Item::create('Development', '#', 'fa fa-bug'));
-//                $sub->append(Item::create('Events', \Bs\Uri::createHomeUrl('/dev/dispatcherEvents.html'), 'fa fa-empire'));
-//            }
-//        }
-
-
-
-        //vd($menu->__toString());
     }
 
 
@@ -133,16 +122,5 @@ class NavRendererHandler implements Subscriber
     public function getConfig()
     {
         return \Bs\Config::getInstance();
-    }
-
-    /**
-     * @return string
-     */
-    public function getRoleType()
-    {
-        $t = 'public';
-        if ($this->getConfig()->getUser())
-            $t = $this->getConfig()->getUser()->getRoleType();
-        return $t;
     }
 }
