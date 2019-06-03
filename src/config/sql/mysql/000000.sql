@@ -54,9 +54,7 @@ CREATE TABLE IF NOT EXISTS `equity_total` (
 # alter table equity_total modify currency varchar(8) default 'AUD' not null;
 # alter table equity_total drop primary key;
 # alter table equity_total add primary key (exchange_id, market, currency, created);
-
-
-INSERT INTO `user_permission` (`role_id`, `name`) VALUES (1, 'type.user');
+#INSERT INTO `user_permission` (`role_id`, `name`) VALUES (1, 'type.user');
 
 
 

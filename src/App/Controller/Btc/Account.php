@@ -143,7 +143,7 @@ $(document).ready(function () {
       g = new Dygraph(div.get(0), data,
         {
           labels: ["Date", "Amount $"],
-          title: div.data('market') + ' Equity',
+          title: div.data('name') + ' [' + div.data('market') + ']',
           //showRangeSelector: true,
           //legend: 'always',
           // customBars: true,
@@ -166,6 +166,7 @@ JS;
         foreach ($marketList as $market) {
             $row = $template->getRepeat('graph');
             $row->setAttr('graph', 'data-market', $market);
+            $row->setAttr('graph', 'data-name', $this->exchange->getMarketName($market));
             $row->setAttr('graph', 'data-days', $this->days);
             $row->appendRepeat();
         }

@@ -1,15 +1,22 @@
 <?php
 namespace App\Controller\Btc;
 
-use Tk\Request;
+use App\Db\ExchangeMap;
+use Bs\Controller\AdminIface;
+use ccxt\Exchange;
+use Dom\Loader;
 use Dom\Template;
+use Exception;
+use Tk\Alert;
+use Tk\Request;
+use Tk\Uri;
 
 /**
  * @author Michael Mifsud <info@tropotek.com>
  * @link http://www.tropotek.com/
  * @license Copyright 2015 Michael Mifsud
  */
-class Summary extends \Bs\Controller\AdminIface
+class Summary extends AdminIface
 {
 
     /**
@@ -19,7 +26,7 @@ class Summary extends \Bs\Controller\AdminIface
 
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function __construct()
     {
@@ -28,34 +35,26 @@ class Summary extends \Bs\Controller\AdminIface
 
 
     /**
-     * @param \Tk\Request $request
+     * @param Request $request
      * @param string $exchange
-     * @throws \Exception
+     * @throws Exception
      */
-    public function doDefault(\Tk\Request $request, $exchange)
+    public function doDefault(Request $request, $exchange)
     {
-        $this->exchange = \App\Db\ExchangeMap::create()->findFiltered(array('driver' => $exchange, 'userId' => $this->getConfig()->getUser()->getId()))->current();
+        $this->exchange = ExchangeMap::create()->findFiltered(array('driver' => $exchange, 'userId' => $this->getConfig()->getUser()->getId()))->current();
         if (!$this->exchange) {
-            \Tk\Alert::addError('Exchange not found!');
-            \Tk\Uri::create()->redirect();
+            Alert::addError('Exchange not found!');
+            Uri::create()->redirect();
         }
-
-
-
-
-
     }
 
     /**
      * @return Template
-     * @throws \Exception
+     * @throws Exception
      */
     public function show()
     {
         $template = parent::show();
-
-//        $marketList = $this->exchange->getAccountSummary();
-//        $marketList[$this->exchange->getCurrency()] = $this->exchange->getAvailableCurrency();
 
         $this->exchange->getApi()->loadMarkets();
         $balance = $this->exchange->getApi()->fetchBalance();
@@ -66,13 +65,11 @@ class Summary extends \Bs\Controller\AdminIface
             $row = $template->getRepeat('row');
             $row->insertText('market', $market);
             $row->insertText('name', $this->exchange->getMarketName($market));
-            $row->insertText('amount', \ccxt\Exchange::number_to_string($amount));
+            $row->insertText('amount', Exchange::number_to_string($amount));
             $row->appendRepeat();
         }
-        $template->insertText('equity', \ccxt\Exchange::number_to_string($this->exchange->getTotalEquity()));
-        vd($marketList);
+        $template->insertText('equity', Exchange::number_to_string($this->exchange->getTotalEquity()) . ' ' . $this->exchange->getCurrency());
 
-        
         return $template;
     }
 
@@ -109,7 +106,7 @@ class Summary extends \Bs\Controller\AdminIface
 </div>
 HTML;
 
-        return \Dom\Loader::load($xhtml);
+        return Loader::load($xhtml);
     }
 
 }
