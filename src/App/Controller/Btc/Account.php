@@ -115,7 +115,10 @@ class Account extends \Bs\Controller\AdminIface
 
         $template->prependHtml('panel', $html);
         $template->setAttr('panel', 'data-panel-icon', $this->exchange->getIcon());
-        $template->setAttr('panel', 'data-panel-title', $this->exchange->getDriver() . ' ' . $this->days . ' Days - [ID ' . $this->exchange->getId() . ']');
+        $template->setAttr('panel', 'data-panel-title',
+            $this->exchange->getDriver() . ' [ID ' . $this->exchange->getId() . '] - ' .
+            $this->days . ' Days - ' . '[' . $this->exchange->getCurrency() . ']'
+        );
 
 
         $template->appendCssUrl('//cdnjs.cloudflare.com/ajax/libs/dygraph/2.1.0/dygraph.min.css');
@@ -143,7 +146,7 @@ $(document).ready(function () {
       g = new Dygraph(div.get(0), data,
         {
           labels: ["Date", "Amount $"],
-          title: div.data('name') + ' [' + div.data('market') + ']',
+          title: div.data('name') + ' [' + div.data('market') + '] - Vol: ' + div.data('vol'),
           //showRangeSelector: true,
           //legend: 'always',
           // customBars: true,
@@ -162,12 +165,19 @@ $(document).ready(function () {
 JS;
         $template->appendJs($js);
 
+        $balance = $this->exchange->getApi()->fetchBalance();
+        $volumeList = $balance['total'];
+
         $marketList = \App\Db\ExchangeMap::create()->findEquityMarkets($this->exchange->getId(), $this->dateFrom);
         foreach ($marketList as $market) {
             $row = $template->getRepeat('graph');
             $row->setAttr('graph', 'data-market', $market);
             $row->setAttr('graph', 'data-name', $this->exchange->getMarketName($market));
             $row->setAttr('graph', 'data-days', $this->days);
+            $vol = 0;
+            if (!empty($volumeList[$market]))
+                $vol = $volumeList[$market];
+            $row->setAttr('graph', 'data-vol', \ccxt\Exchange::number_to_string($vol));
             $row->appendRepeat();
         }
         
