@@ -128,7 +128,7 @@ class Account extends \Bs\Controller\AdminIface
 $(document).ready(function () {
 
   function getData(market, onSuccess) {
-    $.get(document.location, {'get': 't', 'm': market}, function (data) {
+    $.get(document.location, {'get': 't', 'm': market, 'nolog': '1'}, function (data) {
       var d = [];
       $.each(data, function (i, v) {
         v[0] = new Date(v[0]);

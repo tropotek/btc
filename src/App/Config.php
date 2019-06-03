@@ -33,6 +33,18 @@ class Config extends \Bs\Config
 
 
 
+    /**
+     * @return \Bs\Listener\AuthHandler
+     */
+//    public function getAuthHandler()
+//    {
+//        if (!$this->get('auth.handler')) {
+//            $this->set('auth.handler', new \App\Listener\AuthHandler());
+//        }
+//        return $this->get('auth.handler');
+//    }
+
+
 
     /**
      * @param \Tk\Table $table
