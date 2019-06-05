@@ -31,6 +31,7 @@ class NavRendererHandler implements Subscriber
         $this->initSideMenu($sideMenu);
 
     }
+    
 
     /**
      * @param Menu $menu
