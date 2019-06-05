@@ -16,6 +16,7 @@ class NavRendererHandler implements Subscriber
 
     /**
      * @param \Symfony\Component\HttpKernel\Event\RequestEvent $event
+     * @throws \Exception
      */
     public function onRequest($event)
     {
@@ -31,7 +32,7 @@ class NavRendererHandler implements Subscriber
         $this->initSideMenu($sideMenu);
 
     }
-    
+
 
     /**
      * @param Menu $menu
