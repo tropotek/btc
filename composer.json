@@ -5,7 +5,6 @@
     "keywords":  ["tropotek"],
     "time": "2019-04-09",
     "license": "MIT",
-    "version": "master",
     "minimum-stability": "dev",
     "authors":  [
          {
