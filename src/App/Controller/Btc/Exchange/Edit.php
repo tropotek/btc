@@ -47,7 +47,7 @@ class Edit extends \Bs\Controller\AdminEditIface
     public function init($request)
     {
         $this->exchange = new \App\Db\Exchange();
-        $this->exchange->userId = $this->getUser()->getId();
+        $this->exchange->userId = $this->getAuthUser()->getId();
         if ($request->get('exchangeId')) {
             $this->exchange = \App\Db\ExchangeMap::create()->find($request->get('exchangeId'));
         }

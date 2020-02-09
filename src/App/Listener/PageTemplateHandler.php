@@ -28,7 +28,7 @@ class PageTemplateHandler extends \Bs\Listener\PageTemplateHandler
             if (!$page) return;
             $template = $page->getTemplate();
             /** @var \Bs\Db\User $user */
-            $user = $controller->getUser();
+            $user = $controller->getAuthUser();
 
             if ($user) {
                 if (\Bs\Uri::create()->getRoleType(\Tk\ObjectUtil::getClassConstants($this->getConfig()->createRole(), 'TYPE')) != '') {

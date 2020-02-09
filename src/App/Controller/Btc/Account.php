@@ -37,7 +37,7 @@ class Account extends \Bs\Controller\AdminIface
      */
     public function doDefault(\Tk\Request $request, $exchange)
     {
-        $this->exchange = \App\Db\ExchangeMap::create()->findFiltered(array('driver' => $exchange, 'userId' => $this->getConfig()->getUser()->getId()))->current();
+        $this->exchange = \App\Db\ExchangeMap::create()->findFiltered(array('driver' => $exchange, 'userId' => $this->getConfig()->getAuthUser()->getId()))->current();
         if (!$this->exchange) {
             \Tk\Alert::addError('Exchange not found!');
             \Tk\Uri::create()->redirect();

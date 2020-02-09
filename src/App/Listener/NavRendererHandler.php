@@ -39,7 +39,7 @@ class NavRendererHandler implements Subscriber
      */
     protected function initDropdownMenu($menu)
     {
-        $user = $this->getConfig()->getUser();
+        $user = $this->getConfig()->getAuthUser();
         if (!$user) return;
 
         $menu->append(Item::create('Profile', \Bs\Uri::createHomeUrl('/profile.html'), 'fa fa-user'));
@@ -63,7 +63,7 @@ class NavRendererHandler implements Subscriber
      */
     protected function initSideMenu($menu)
     {
-        $user = $this->getConfig()->getUser();
+        $user = $this->getConfig()->getAuthUser();
         if (!$user) return;
 
         $menu->append(Item::create('Dashboard', \Bs\Uri::createHomeUrl('/index.html'), 'fa fa-dashboard'));
@@ -72,7 +72,7 @@ class NavRendererHandler implements Subscriber
         }
 
         $menu->append(Item::create('My Exchanges', \Bs\Uri::createHomeUrl('/exchangeManager.html'), 'fa fa-cog'));
-        $exchangeList = \App\Db\ExchangeMap::create()->findFiltered(array('userId' => $this->getConfig()->getUser()->getId()), \Tk\Db\Tool::create('driver'));
+        $exchangeList = \App\Db\ExchangeMap::create()->findFiltered(array('userId' => $this->getConfig()->getAuthUser()->getId()), \Tk\Db\Tool::create('driver'));
         $sub = $menu->append(Item::create('Exchanges', '#', 'fa fa-money'));
         if ($exchangeList->count()) {
             foreach ($exchangeList as $exchange) {

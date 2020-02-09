@@ -41,7 +41,7 @@ class Summary extends AdminIface
      */
     public function doDefault(Request $request, $exchange)
     {
-        $this->exchange = ExchangeMap::create()->findFiltered(array('driver' => $exchange, 'userId' => $this->getConfig()->getUser()->getId()))->current();
+        $this->exchange = ExchangeMap::create()->findFiltered(array('driver' => $exchange, 'userId' => $this->getConfig()->getAuthUser()->getId()))->current();
         if (!$this->exchange) {
             Alert::addError('Exchange not found!');
             Uri::create()->redirect();

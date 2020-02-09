@@ -71,13 +71,13 @@ class AuthHandler extends \Bs\Listener\AuthHandler
         $urlRole = \Bs\Uri::create()->getRoleType($config->getAvailableUserRoleTypes());
         //if ($urlRole && !$urlRole != 'public') {          // What happened here ?????
         if ($urlRole && $urlRole != 'public') {
-            if (!$config->getUser()) {  // if no user and the url has permissions set
+            if (!$config->getAuthUser()) {  // if no user and the url has permissions set
                 $this->getLoginUrl()->redirect();
             }
-            $role = $config->getUser()->getRoleType();
+            $role = $config->getAuthUser()->getRoleType();
             if ($role != $urlRole) {   // Finally check if the use has access to the url
                 \Tk\Alert::addWarning('1000: You do not have access to the requested page.');
-                $config->getUserHomeUrl($config->getUser())->redirect();
+                $config->getUserHomeUrl($config->getAuthUser())->redirect();
             }
         }
     }
