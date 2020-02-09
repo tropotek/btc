@@ -176,7 +176,8 @@ JS;
             $vol = 0;
             if (!empty($volumeList[$market]))
                 $vol = $volumeList[$market];
-            $row->setAttr('graph', 'data-vol', \ccxt\Exchange::number_to_string($vol));
+            //$row->setAttr('graph', 'data-vol', \ccxt\Exchange::number_to_string($vol));
+            $row->setAttr('graph', 'data-vol', $vol.'');
             $row->appendRepeat();
         }
         
