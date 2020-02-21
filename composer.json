@@ -1,7 +1,7 @@
 {
-    "name": "ttek/tkbase",
+    "name": "ttek/btc",
     "type": "project",
-    "description": "A Tk base MVC framework project",
+    "description": "A site to track basic bitcoin trnds",
     "keywords":  ["tropotek"],
     "time": "2019-04-09",
     "license": "MIT",

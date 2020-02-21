@@ -44,8 +44,8 @@ class PageTemplateHandler extends \Bs\Listener\PageTemplateHandler
                 // Set permission choices
                 $perms = $user->getRole()->getPermissions();
                 foreach ($perms as $perm) {
-                    $template->show($perm);
-                    $controller->getTemplate()->show($perm);
+                    $template->setVisible($perm);
+                    $controller->getTemplate()->setVisible($perm);
                 }
 
                 //show user icon 'user-image'
