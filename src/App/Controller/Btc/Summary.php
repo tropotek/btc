@@ -66,10 +66,10 @@ class Summary extends AdminIface
             $row = $template->getRepeat('row');
             $row->insertText('market', $market);
             $row->insertText('name', $this->exchange->getMarketName($market));
-            $row->insertText('amount', ''.$amount);
+            $row->insertText('amount', Exchange::truncate_to_string($amount, 4));
             $row->appendRepeat();
         }
-        $template->insertText('equity', $this->exchange->getTotalEquity() . ' ' . $this->exchange->getCurrency());
+        $template->insertText('equity', Exchange::truncate_to_string($this->exchange->getTotalEquity(), 4) . ' ' . $this->exchange->getCurrency());
 
         return $template;
     }
