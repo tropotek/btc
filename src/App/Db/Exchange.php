@@ -29,7 +29,7 @@ class Exchange extends \Tk\Db\Map\Model implements \Tk\ValidInterface
     /**
      * @var string
      */
-    public $driver = '';
+    public $driver = '\\App\\Driver\\BtcMarkets';
 
     /**
      * @var string
@@ -112,7 +112,10 @@ class Exchange extends \Tk\Db\Map\Model implements \Tk\ValidInterface
     public function getApi()
     {
         if (!$this->_api) {
-            $driver = '\\ccxt\\' . $this->driver;
+            $driver = $this->driver;
+            if (!class_exists($driver))
+                $driver = '\\ccxt\\' . $this->driver;
+
             $this->_api = new $driver(array(
                 'apiKey' => $this->apiKey,
                 'secret' => $this->secret
@@ -133,24 +136,27 @@ class Exchange extends \Tk\Db\Map\Model implements \Tk\ValidInterface
             $currency = $this->getCurrency();
 
         $api = $this->getApi();
-        $api->loadMarkets();
+        $api->loadMarkets(true);
         $balance = $api->fetchBalance();
         $marketTotals = $balance['total'];
         $totals = array();
-        vd($marketTotals);
 
         foreach ($marketTotals as $coin => $amount) {
             $marketId = strtoupper($coin) . '/' . strtoupper($currency);
+
+            vd($marketId, array_keys($api->markets) );
+
             if (array_key_exists($marketId, $api->markets)) {
                 $t = $api->fetchTicker($marketId);
                 $totals[$coin] = 0;
-                //vd($coin, $t, $amount);
-                if (self::truncateToString($amount, 4) > 0) {
-                    $totals[$coin] = $t['bid'] * self::truncateToString($amount,6);       // I think this reflects a more accurate total
+                //vd($coin, $t, $amount, \ccxt\Exchange::truncate($amount, 8), self::truncateToString($amount, 8));
+                if (self::truncateToString($amount, 8) > 0) {
+                    $totals[$coin] = $t['bid'] * self::truncateToString($amount,8);       // I think this reflects a more accurate total
                     //$totals[$coin] = $t['ask'] * $amount;
                 }
             }
         }
+        vd($marketTotals, $totals);
         return $totals;
     }
 
