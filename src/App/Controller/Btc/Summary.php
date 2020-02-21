@@ -58,7 +58,6 @@ class Summary extends AdminIface
 
         $this->exchange->getApi()->loadMarkets();
         $balance = $this->exchange->getApi()->fetchBalance();
-        vd($balance);
         $marketList = $balance['total'];
 
         foreach ($marketList as $market => $amount) {
@@ -66,10 +65,10 @@ class Summary extends AdminIface
             $row = $template->getRepeat('row');
             $row->insertText('market', $market);
             $row->insertText('name', $this->exchange->getMarketName($market));
-            $row->insertText('amount', Exchange::truncate_to_string($amount, 4));
+            $row->insertText('amount', \App\Db\Exchange::toFloat($amount, 8));
             $row->appendRepeat();
         }
-        $template->insertText('equity', Exchange::truncate_to_string($this->exchange->getTotalEquity(), 4) . ' ' . $this->exchange->getCurrency());
+        $template->insertText('equity', \App\Db\Exchange::toFloat($this->exchange->getTotalEquity()) . ' ' . $this->exchange->getCurrency());
 
         return $template;
     }

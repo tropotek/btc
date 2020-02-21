@@ -137,14 +137,16 @@ class Exchange extends \Tk\Db\Map\Model implements \Tk\ValidInterface
         $balance = $api->fetchBalance();
         $marketTotals = $balance['total'];
         $totals = array();
+        vd($marketTotals);
 
         foreach ($marketTotals as $coin => $amount) {
             $marketId = strtoupper($coin) . '/' . strtoupper($currency);
             if (array_key_exists($marketId, $api->markets)) {
                 $t = $api->fetchTicker($marketId);
                 $totals[$coin] = 0;
-                if ($amount > 0) {
-                    $totals[$coin] = $t['bid'] * $amount;       // I think this reflects a more accurate total
+                //vd($coin, $t, $amount);
+                if (self::truncateToString($amount, 4) > 0) {
+                    $totals[$coin] = $t['bid'] * self::truncateToString($amount,6);       // I think this reflects a more accurate total
                     //$totals[$coin] = $t['ask'] * $amount;
                 }
             }
@@ -354,7 +356,10 @@ class Exchange extends \Tk\Db\Map\Model implements \Tk\ValidInterface
         'BCHSV' => 'BCHSV',
         'BAT' => 'Basic Attention',
         'GNT' => 'Golem',
-        'XLM' => 'Stellar Lumens'
+        'XLM' => 'Stellar Lumens',
+        'ENJ' => 'Enjin Coin',
+        'LINK' => 'Chainlink',
+        'BSV' => 'Bitcoin SV'
     ];
 
     /**
@@ -369,6 +374,17 @@ class Exchange extends \Tk\Db\Map\Model implements \Tk\ValidInterface
             return self::$marketNames[$market];
         return $market;
     }
+
+    public static function truncateToString($number, $precision = 0)
+    {
+        return \ccxt\Exchange::truncate_to_string($number, $precision);
+    }
+
+    public static function toFloat($number, $precision = 4)
+    {
+        return sprintf('%.'.$precision.'f', self::truncateToString($number));
+    }
+
 
 
     /**
