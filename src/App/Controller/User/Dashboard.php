@@ -16,7 +16,6 @@ class Dashboard extends \Bs\Controller\AdminIface
      */
     public function __construct()
     {
-        parent::__construct();
         $this->setPageTitle('My Account');
         $this->getActionPanel()->setEnabled(false);
         $this->getCrumbs()->reset();

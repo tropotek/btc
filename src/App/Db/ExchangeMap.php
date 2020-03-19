@@ -1,6 +1,7 @@
 <?php
 namespace App\Db;
 
+use Tk\Db\Filter;
 use Tk\Db\Tool;
 use Tk\Db\Map\ArrayObject;
 use Tk\DataMap\Db;
@@ -66,29 +67,25 @@ class ExchangeMap extends Mapper
         return $this->formMap;
     }
 
+
     /**
-     * @param array $filter
+     * @param array|Filter $filter
      * @param Tool $tool
      * @return ArrayObject|Exchange[]
      * @throws \Exception
      */
-    public function findFiltered($filter = array(), $tool = null)
+    public function findFiltered($filter, $tool = null)
     {
-        $this->makeQuery($filter, $tool, $where, $from);
-        $res = $this->selectFrom($from, $where, $tool);
-        return $res;
+        return $this->selectFromFilter($this->makeQuery(\Tk\Db\Filter::create($filter)), $tool);
     }
 
     /**
-     * @param array $filter
-     * @param Tool $tool
-     * @param string $where
-     * @param string $from
-     * @return ArrayObject|Exchange[]
+     * @param Filter $filter
+     * @return Filter
      */
-    public function makeQuery($filter = array(), $tool = null, &$where = '', &$from = '')
+    public function makeQuery(Filter $filter)
     {
-        $from .= sprintf('%s a ', $this->quoteParameter($this->getTable()));
+        $filter->appendFrom('%s a', $this->quoteParameter($this->getTable()));
 
         if (!empty($filter['keywords'])) {
             $kw = '%' . $this->escapeString($filter['keywords']) . '%';
@@ -98,46 +95,42 @@ class ExchangeMap extends Mapper
                 $id = (int)$filter['keywords'];
                 $w .= sprintf('a.id = %d OR ', $id);
             }
-            if ($w) $where .= '(' . substr($w, 0, -3) . ') AND ';
-
+            if ($w) $filter->appendWhere('(%s) AND ', substr($w, 0, -3));
         }
 
         if (!empty($filter['id'])) {
-            $where .= sprintf('a.id = %s AND ', (int)$filter['id']);
+            $w = $this->makeMultiQuery($filter['id'], 'a.id');
+            if ($w) $filter->appendWhere('(%s) AND ', $w);
         }
+
         if (!empty($filter['userId'])) {
-            $where .= sprintf('a.user_id = %s AND ', (int)$filter['userId']);
-        }
-        if (!empty($filter['username'])) {
-            $where .= sprintf('a.username = %s AND ', $this->quote($filter['username']));
+            $filter->appendWhere('a.user_id = %s AND ', (int)$filter['userId']);
         }
         if (!empty($filter['driver'])) {
-            $where .= sprintf('a.driver = %s AND ', $this->quote($filter['driver']));
+            $filter->appendWhere('a.driver = %s AND ', $this->quote($filter['driver']));
         }
         if (!empty($filter['curency'])) {
-            $where .= sprintf('a.currency = %s AND ', $this->quote($filter['curency']));
+            $filter->appendWhere('a.currency = %s AND ', $this->quote($filter['curency']));
         }
         if (!empty($filter['apiKey'])) {
-            $where .= sprintf('a.api_key = %s AND ', $this->quote($filter['apiKey']));
-        }
-        if (!empty($filter['secret'])) {
-            $where .= sprintf('a.secret = %s AND ', $this->quote($filter['secret']));
+            $filter->appendWhere('a.api_key = %s AND ', $this->quote($filter['apiKey']));
         }
         if (isset($filter['active']) && $filter['active'] !== null && $filter['active'] !== '') {
-            $where .= sprintf('a.active = %s AND ', $this->quote($filter['active']));
+            $filter->appendWhere('a.active = %s AND ', $this->quote($filter['active']));
         }
+
 
         if (!empty($filter['exclude'])) {
             $w = $this->makeMultiQuery($filter['exclude'], 'a.id', 'AND', '!=');
-            if ($w) $where .= '('. $w . ') AND ';
-
+            if ($w) $filter->appendWhere('(%s) AND ', $w);
         }
 
-        if ($where) {
-            $where = substr($where, 0, -4);
-        }
-        return $where;
+        return $filter;
     }
+
+
+
+
 
 
     /**

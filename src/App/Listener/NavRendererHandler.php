@@ -43,7 +43,7 @@ class NavRendererHandler implements Subscriber
         if (!$user) return;
 
         $menu->append(Item::create('Profile', \Bs\Uri::createHomeUrl('/profile.html'), 'fa fa-user'));
-        if ($user->hasPermission(\Bs\Db\Permission::TYPE_ADMIN)) {
+        if ($user->hasType(\Bs\Db\User::TYPE_ADMIN)) {
             $menu->prepend(Item::create('Site Preview', \Bs\Uri::create('/index.html'), 'fa fa-home'))->getLink()
                 ->setAttr('target', '_blank');
             $menu->append(Item::create('Settings', \Bs\Uri::createHomeUrl('/settings.html'), 'fa fa-cogs'));
@@ -67,7 +67,7 @@ class NavRendererHandler implements Subscriber
         if (!$user) return;
 
         $menu->append(Item::create('Dashboard', \Bs\Uri::createHomeUrl('/index.html'), 'fa fa-dashboard'));
-        if ($user->hasPermission(\Bs\Db\Permission::TYPE_ADMIN)) {
+        if ($user->hasType(\Bs\Db\User::TYPE_ADMIN)) {
             //$menu->append(Item::create('Settings', \Bs\Uri::createHomeUrl('/settings.html'), 'fa fa-cogs'));
         }
 

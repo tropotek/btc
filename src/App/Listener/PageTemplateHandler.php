@@ -31,22 +31,22 @@ class PageTemplateHandler extends \Bs\Listener\PageTemplateHandler
             $user = $controller->getAuthUser();
 
             if ($user) {
-                if (\Bs\Uri::create()->getRoleType(\Tk\ObjectUtil::getClassConstants($this->getConfig()->createRole(), 'TYPE')) != '') {
-                    // About dialog\Uni\Uri::create()
-                    $dialog = new \Bs\Ui\AboutDialog();
-                    $template->appendTemplate($template->getBodyElement(), $dialog->show());
+                // About dialog\Uni\Uri::create()
+                $dialog = new \Bs\Ui\AboutDialog();
+                $template->appendTemplate($template->getBodyElement(), $dialog->show());
 
-                    // Logout dialog
-                    $dialog = new \Bs\Ui\LogoutDialog();
-                    $template->appendTemplate($template->getBodyElement(), $dialog->show());
-                }
+                // Logout dialog
+                $dialog = new \Bs\Ui\LogoutDialog();
+                $template->appendTemplate($template->getBodyElement(), $dialog->show());
 
                 // Set permission choices
-                $perms = $user->getRole()->getPermissions();
+                $perms = $user->getPermissions();
                 foreach ($perms as $perm) {
                     $template->setVisible($perm);
                     $controller->getTemplate()->setVisible($perm);
                 }
+                $template->setVisible($user->getType());
+                $controller->getTemplate()->setVisible($user->getType());
 
                 //show user icon 'user-image'
                 $img = $user->getImageUrl();
@@ -60,15 +60,6 @@ class PageTemplateHandler extends \Bs\Listener\PageTemplateHandler
             // Add anything to the page template here ...
 
         }
-    }
-
-
-    /**
-     * @return \App\Config|\Tk\Config
-     */
-    public function getConfig()
-    {
-        return \App\Config::getInstance();
     }
 
 }

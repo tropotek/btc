@@ -47,7 +47,7 @@ class Edit extends \Bs\Controller\AdminEditIface
     public function init($request)
     {
         $this->exchange = new \App\Db\Exchange();
-        $this->exchange->userId = $this->getAuthUser()->getId();
+        $this->exchange->setUserId($this->getAuthUser()->getId());
         if ($request->get('exchangeId')) {
             $this->exchange = \App\Db\ExchangeMap::create()->find($request->get('exchangeId'));
         }
@@ -66,8 +66,8 @@ class Edit extends \Bs\Controller\AdminEditIface
         // Render the form
         $template->appendTemplate('form', $this->form->show());
 
-        if ($this->exchange->id)
-            $template->setAttr('form', 'data-panel-title', $this->exchange->driver . ' - [ID ' . $this->exchange->getId() . ']');
+        if ($this->exchange->getId())
+            $template->setAttr('form', 'data-panel-title', $this->exchange->getDriver() . ' - [ID ' . $this->exchange->getId() . ']');
         
         return $template;
     }

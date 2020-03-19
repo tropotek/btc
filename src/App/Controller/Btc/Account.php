@@ -92,7 +92,7 @@ class Account extends \Bs\Controller\AdminIface
     {
 
         $this->getActionPanel()->append(\Tk\Ui\Link::createBtn('Account Summary',
-            \Bs\Uri::createHomeUrl('/'.$this->exchange->driver.'/summary.html'), 'fa fa-list-alt'));
+            \Bs\Uri::createHomeUrl('/'.$this->exchange->getDriver().'/summary.html'), 'fa fa-list-alt'));
 
         // TODO: Ajax this....
         $this->getActionPanel()->append(\Tk\Ui\Link::createBtn('1 Day', \Tk\Uri::create()->set('d', '1')));
