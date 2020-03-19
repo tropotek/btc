@@ -34,7 +34,7 @@ class Exchange extends \Bs\FormIface
         $layout->removeRow('icon', 'col');
 
 
-        $list = \Tk\Form\Field\Select::arrayToSelectList(\ccxt\Exchange::$exchanges);
+        $list = \App\Db\Exchange::getDriverList();
         $this->appendField(new Field\Select('driver', $list))->setLabel('Exchange')->prependOption('-- Select --', '');
         $this->appendField(new Field\Input('username'));
         $this->appendField(new Field\Input('apiKey'));

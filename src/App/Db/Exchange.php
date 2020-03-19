@@ -93,8 +93,23 @@ class Exchange extends \Tk\Db\Map\Model implements \Tk\ValidInterface
     public function __construct()
     {
         $this->_TimestampTrait();
-
     }
+
+    /**
+     * Create a valid list of exchange API's
+     *
+     * @return array
+     */
+    public static function getDriverList()
+    {
+        $list = \Tk\Form\Field\Select::arrayToSelectList(\ccxt\Exchange::$exchanges);
+        array_shift($list);
+        array_shift($list);
+        $list['Btcmarkets V3'] = '\\App\\Driver\\BtcMarkets3';
+        ksort($list);
+        return $list;
+    }
+
 
     /**
      * @return string
