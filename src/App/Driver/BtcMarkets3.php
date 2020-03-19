@@ -14,6 +14,12 @@ use Exception as Exception; // a common import
 class BtcMarkets3 extends Exchange
 {
 
+    public function __construct($options = array())
+    {
+        parent::__construct($options);
+        \Tk\Log::warning('This is currently under development and does not work yet...[TODO]');
+    }
+
     public function describe()
     {
         return array_replace_recursive(parent::describe(), array(
