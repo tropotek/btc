@@ -1,4 +1,8 @@
-
+-- --------------------------------------------
+-- @version install
+--
+-- Author: Michael Mifsud <info@tropotek.com>
+-- --------------------------------------------
 
 TRUNCATE `user`;
 INSERT INTO `user` (`role_id`, `name`, `email`, `username`, `password`, `hash`, `modified`, `created`)
