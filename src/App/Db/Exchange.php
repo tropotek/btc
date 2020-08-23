@@ -1,6 +1,7 @@
 <?php
 namespace App\Db;
 
+use ccxt\ExchangeError;
 use Tk\Db\Exception;
 
 /**
@@ -105,7 +106,7 @@ class Exchange extends \Tk\Db\Map\Model implements \Tk\ValidInterface
         $list = \Tk\Form\Field\Select::arrayToSelectList(\ccxt\Exchange::$exchanges);
         array_shift($list);
         array_shift($list);
-        $list['Btcmarkets V3'] = '\\App\\Driver\\BtcMarkets3';
+        //$list['Btcmarkets V3'] = '\\App\\Driver\\BtcMarkets3';
         ksort($list);
         return $list;
     }
@@ -150,28 +151,37 @@ class Exchange extends \Tk\Db\Map\Model implements \Tk\ValidInterface
         if (!$currency)
             $currency = $this->getCurrency();
 
+        // TODO: https://github.com/ccxt/ccxt/wiki/Manual
+
+
         $api = $this->getApi();
-        $api->loadMarkets(true);
+        $m = $api->loadMarkets();
+        vdd(array_keys($m));
         $balance = $api->fetchBalance();
         $marketTotals = $balance['total'];
         $totals = array();
 
         foreach ($marketTotals as $coin => $amount) {
+            if (strtoupper($coin) == strtoupper($currency)) continue;
             $marketId = strtoupper($coin) . '/' . strtoupper($currency);
-
-            vd($marketId, array_keys($api->markets) );
-
             if (array_key_exists($marketId, $api->markets)) {
-                $t = $api->fetchTicker($marketId);
-                $totals[$coin] = 0;
-                //vd($coin, $t, $amount, \ccxt\Exchange::truncate($amount, 8), self::truncateToString($amount, 8));
-                if (self::truncateToString($amount, 8) > 0) {
-                    $totals[$coin] = $t['bid'] * self::truncateToString($amount,8);       // I think this reflects a more accurate total
-                    //$totals[$coin] = $t['ask'] * $amount;
+                //\Tk\Log::info($marketId);
+                try {
+                    $t = $api->fetchTicker($marketId);
+                    //vd($t);
+                    $totals[$coin] = 0;
+                    //vd($coin, $t, $amount, \ccxt\Exchange::truncate($amount, 8), self::truncateToString($amount, 8));
+                    if (self::truncateToString($amount, 8) > 0) {
+                        $totals[$coin] = $t['bid'] * self::truncateToString($amount,8);       // I think this reflects a more accurate total
+                        //$totals[$coin] = $t['ask'] * $amount;
+                    }
+                } catch (ExchangeError $e) {
+                    \Tk\Log::error($marketId . ' ' . $e->getMessage());
+                } catch (\Exception $e) {
+                    \Tk\Log::error($e->__toString());
                 }
             }
         }
-        vd($marketTotals, $totals);
         return $totals;
     }
 
