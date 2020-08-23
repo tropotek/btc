@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "166103ffad3385e18fb7ee0cfb4c8f77",
+    "content-hash": "8b0c1c65ff2b0c7246db5d3d7c143854",
     "packages": [
         {
             "name": "ccxt/ccxt",
