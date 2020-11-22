@@ -5,7 +5,7 @@ try {
     $data = \Tk\Db\Data::create();
 
     $data->set('site.title', 'Bitcoin Account Client');
-    $data->set('site.short.title', 'BTCC');
+    $data->set('site.short.title', 'BTC');
     $data->set('site.email', 'admin@example.com');
     //$data->set('site.client.registration', 'site.client.registration');
     //$data->set('site.client.activation', 'site.client.activation');
