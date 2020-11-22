@@ -10,7 +10,6 @@ namespace App;
 class Dispatch extends \Bs\Dispatch
 {
 
-
     /**
      * @throws \Exception
      */

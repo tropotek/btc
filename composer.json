@@ -34,7 +34,7 @@
     "require":  {
         "php": "^7.3.0",
         "ttek/tk-base": "~3.2.0",
-        "ttek/theme-cube": "~1.0.0",
+        "ttek/theme-cube": "~1.2.0",
 
         "ttek-plg/mailog": "~1.0.0",
         "ccxt/ccxt": "~1.33.42"

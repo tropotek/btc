@@ -9,8 +9,6 @@ namespace App;
 class Config extends \Bs\Config
 {
 
-
-
     /**
      * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $dispatcher
      * @throws \Exception
@@ -31,21 +29,6 @@ class Config extends \Bs\Config
         return $this->get('page.template.handler');
     }
 
-
-
-    /**
-     * @return \Bs\Listener\AuthHandler
-     */
-//    public function getAuthHandler()
-//    {
-//        if (!$this->get('auth.handler')) {
-//            $this->set('auth.handler', new \App\Listener\AuthHandler());
-//        }
-//        return $this->get('auth.handler');
-//    }
-
-
-
     /**
      * @param \Tk\Table $table
      * @return \Tk\Table\Renderer\Dom\Table
@@ -56,5 +39,8 @@ class Config extends \Bs\Config
         $table->removeCss('table-bordered table-striped');
         return $obj;
     }
+
+
+
 
 }
