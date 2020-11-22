@@ -2,6 +2,8 @@
 namespace App\Console;
 
 use App\Db\Exchange;
+use App\Db\Tick;
+use App\Db\TickMap;
 use ccxt\btcmarkets;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -71,24 +73,31 @@ class Test extends \Bs\Console\Iface
         //vd($exchange->fetchTickers());
 
         $exchange->loadMarkets();
-        vd(array_keys($exchange->markets));
+        //vd(array_keys($exchange->markets));
+
+        $data = $exchange->fetchTicker('BTC/AUD');
+        $tick = Tick::create($this->exchange, $data);
+        vd($data, $tick);
+
 
 //        foreach(array_keys($exchange->markets) as $marketId) {
 //            vd($exchange->fetchTicker($marketId));
 //        }
-        $arr2 = $exchange->fetch_trades('BTC/AUD');
-        vd($arr2);
 
-        $a = current($arr2);
-        vd($a);
-        vd(\Tk\Date::create($a['datetime']));
-        $a = $arr2[1];
-        vd(\Tk\Date::create($a['datetime']));
-        $a = end($arr2);
-        vd(\Tk\Date::create($a['datetime']));
+//        //$arr2 = $exchange->fetchTrades('BTC/AUD', $exchange->milliseconds() - (86400000*5));
+//        $arr = $exchange->fetchTrades('BTC/AUD');
+//        vd($arr);
+//
+//        $a = current($arr);
+//        vd($a);
+//        vd(\Tk\Date::create($a['datetime']));
+//        $a = $arr[1];
+//        vd(\Tk\Date::create($a['datetime']));
+//        $a = end($arr);
+//        vd(\Tk\Date::create($a['datetime']));
 
 
-//        $arr2 = $exchange->fetch_ohlcv('BTC/AUD', '1M');
+//        $arr2 = $exchange->fetchOhlcv('BTC/AUD', '1M');
 //
 //        $a = current($arr2);
 //        vd(\Tk\Date::create('@'.($a[0]/1000)));
