@@ -31,7 +31,10 @@ class Manager extends \Bs\Controller\AdminManagerIface
     public function doDefault(Request $request, $targetRole = 'user')
     {
         $this->table = \App\Table\Exchange::create()->init();
-        $this->table->setList($this->table->findList(array()));
+        $filter = [
+            'userId' => $this->getConfig()->getAuthUser()->getId()
+        ];
+        $this->table->setList($this->table->findList($filter));
 
     }
 
@@ -40,7 +43,7 @@ class Manager extends \Bs\Controller\AdminManagerIface
      */
     public function show()
     {
-        $this->getActionPanel()->append(\Tk\Ui\Link::createBtn('Add Exchange', \Bs\Uri::createHomeUrl('/exchangeEdit.html'), 'fa fa-building'));
+        $this->getActionPanel()->append(\Tk\Ui\Link::createBtn('Add Exchange', \Bs\Uri::createHomeUrl('/exchangeEdit.html'), 'fa fa-building-o'));
         $template = parent::show();
 
         $template->appendTemplate('table', $this->table->show());
@@ -57,7 +60,7 @@ class Manager extends \Bs\Controller\AdminManagerIface
     {
         $xhtml = <<<HTML
 <div>
-  <div class="tk-panel" data-panel-icon="fa fa-building" var="table"></div>
+  <div class="tk-panel" data-panel-icon="fa fa-building-o" var="table"></div>
 </div>
 HTML;
 

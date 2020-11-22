@@ -83,7 +83,7 @@ class Edit extends \Bs\Controller\AdminEditIface
         $xhtml = <<<HTML
 <div>
 
-  <div class="tk-panel" data-panel-icon="fa fa-building" var="form"></div>
+  <div class="tk-panel" data-panel-icon="fa fa-building-o" var="form"></div>
     
 </div>
 HTML;

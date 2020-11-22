@@ -142,9 +142,24 @@ class Exchange extends \Tk\Db\Map\Model implements \Tk\ValidInterface
     }
 
     /**
+     * @return array
+     */
+    public function getMarkets()
+    {
+        $balanceList = $this->getApi()->fetchBalance();
+        unset($balanceList['info']);
+        unset($balanceList['free']);
+        unset($balanceList['used']);
+        unset($balanceList['total']);
+        unset($balanceList['AUD']);
+        return array_keys($balanceList);
+    }
+
+    /**
      * Live Call
      * @param null|string $currency
      * @return array
+     * @deprecated
      */
     public function getAccountSummary($currency = null)
     {
@@ -156,11 +171,11 @@ class Exchange extends \Tk\Db\Map\Model implements \Tk\ValidInterface
 
         $api = $this->getApi();
         $m = $api->loadMarkets();
-        vdd(array_keys($m));
+        //vd($m);
         $balance = $api->fetchBalance();
+        //vd($balance);
         $marketTotals = $balance['total'];
         $totals = array();
-
         foreach ($marketTotals as $coin => $amount) {
             if (strtoupper($coin) == strtoupper($currency)) continue;
             $marketId = strtoupper($coin) . '/' . strtoupper($currency);
@@ -172,8 +187,8 @@ class Exchange extends \Tk\Db\Map\Model implements \Tk\ValidInterface
                     $totals[$coin] = 0;
                     //vd($coin, $t, $amount, \ccxt\Exchange::truncate($amount, 8), self::truncateToString($amount, 8));
                     if (self::truncateToString($amount, 8) > 0) {
-                        $totals[$coin] = $t['bid'] * self::truncateToString($amount,8);       // I think this reflects a more accurate total
-                        //$totals[$coin] = $t['ask'] * $amount;
+                        //$totals[$coin] = $t['bid'] * self::truncateToString($amount,8);
+                        $totals[$coin] = $t['ask'] * self::truncateToString($amount,8);       // I think this reflects a more accurate total
                     }
                 } catch (ExchangeError $e) {
                     \Tk\Log::error($marketId . ' ' . $e->getMessage());
@@ -189,6 +204,7 @@ class Exchange extends \Tk\Db\Map\Model implements \Tk\ValidInterface
      * Live Call
      * @param null $currency
      * @return float|int
+     * @deprecated
      */
     public function getLiveTotalEquity($currency = null)
     {
@@ -199,6 +215,7 @@ class Exchange extends \Tk\Db\Map\Model implements \Tk\ValidInterface
     /**
      * @param null|string $currency
      * @return float|string
+     * @deprecated
      */
     public function getTotalEquity($currency = null)
     {
@@ -228,6 +245,9 @@ class Exchange extends \Tk\Db\Map\Model implements \Tk\ValidInterface
             return $totals[$this->currency];
         return 0.0;
     }
+
+
+
 
     /**
      * @return string
@@ -306,7 +326,7 @@ class Exchange extends \Tk\Db\Map\Model implements \Tk\ValidInterface
      */
     public function getCurrency()
     {
-        return $this->currency;
+        return strtoupper($this->currency);
     }
 
     /**
@@ -315,7 +335,7 @@ class Exchange extends \Tk\Db\Map\Model implements \Tk\ValidInterface
      */
     public function setCurrency(string $currency)
     {
-        $this->currency = $currency;
+        $this->currency = strtoupper($currency);
         return $this;
     }
 
@@ -383,14 +403,16 @@ class Exchange extends \Tk\Db\Map\Model implements \Tk\ValidInterface
         'XRP' => 'Ripple',
         'OMG' => 'OmiseGO',
         'POWR' => 'Power Ledger',
-        'BCHABC' => 'BCHABC',
-        'BCHSV' => 'BCHSV',
+        'BCH' => 'Bitcoin Cash',
         'BAT' => 'Basic Attention',
         'GNT' => 'Golem',
         'XLM' => 'Stellar Lumens',
         'ENJ' => 'Enjin Coin',
         'LINK' => 'Chainlink',
-        'BSV' => 'Bitcoin SV'
+        'BSV' => 'Bitcoin SV',
+        'COMP' => 'Compound',
+        'ALGO' => 'Algorand',
+        'MCAU' => 'Meld Gold'
     ];
 
     /**
