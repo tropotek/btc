@@ -14,8 +14,6 @@ $config = \App\Config::getInstance();
  * Default app config values
  **************************************/
 
-
-
 /*
  * Template folders for pages
  */
