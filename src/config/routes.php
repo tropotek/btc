@@ -38,7 +38,7 @@ $routes->add('admin-settings', new Route('/admin/settings.html', 'App\Controller
 // User Pages
 $routes->add('member-dashboard', new Route('/member/index.html', 'App\Controller\Member\Dashboard::doDefault'));
 $routes->add('member-dashboard-base', new Route('/member/', 'App\Controller\Member\Dashboard::doDefault'));
-$routes->add('member-profile', new Route('/member/profile.html', 'App\Controller\Admin\Member\Profile::doDefault'));
+$routes->add('member-profile', new Route('/member/profile.html', 'App\Controller\Admin\User\Profile::doDefault'));
 
 
 
