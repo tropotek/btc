@@ -72,9 +72,6 @@ class NavRendererHandler implements Subscriber
             $menu->append(Item::create('Settings', \Bs\Uri::createHomeUrl('/settings.html'), 'fa fa-cogs'));
         }
 
-
-
-        /*
         // Old equity table data
         $exchangeList = \App\Db\ExchangeMap::create()->findFiltered(array('userId' => $this->getConfig()->getAuthUser()->getId()), \Tk\Db\Tool::create('driver'));
         if ($exchangeList->count()) {
@@ -83,12 +80,8 @@ class NavRendererHandler implements Subscriber
                 $sub->append(Item::create($exchange->getName(), \Bs\Uri::createHomeUrl('/' . $exchange->driver . '/account.html'), $exchange->icon));
             }
         }
-        */
 
     }
-
-
-
 
     /**
      * @param \Tk\Event\Event $event

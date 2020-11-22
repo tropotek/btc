@@ -16,6 +16,11 @@ class Tick extends \Tk\Db\Map\Model implements \Tk\ValidInterface
     /**
      * @var int
      */
+    public $id = 0;
+
+    /**
+     * @var int
+     */
     public $exchangeId = 0;
 
     /**
@@ -71,7 +76,7 @@ class Tick extends \Tk\Db\Map\Model implements \Tk\ValidInterface
     /**
      * @var float
      */
-    public $percent = 0;
+    public $percentage = 0;
 
 
     /**
@@ -92,7 +97,7 @@ class Tick extends \Tk\Db\Map\Model implements \Tk\ValidInterface
     {
         $tick = new self();
         $tick->setExchangeId($exchange->getId());
-        TickMap::create()->mapForm($data, $tick);
+        TickMap::create()->map($data, $tick);
         return $tick;
     }
 
@@ -278,21 +283,21 @@ class Tick extends \Tk\Db\Map\Model implements \Tk\ValidInterface
     }
 
     /**
-     * @param float $percent
+     * @param float $percentage
      * @return Tick
      */
-    public function setPercent($percent) : Tick
+    public function setPercentage($percentage) : Tick
     {
-        $this->percent = $percent;
+        $this->percentage = $percentage;
         return $this;
     }
 
     /**
      * @return float
      */
-    public function getPercent() : float
+    public function getPercentage() : float
     {
-        return $this->percent;
+        return $this->percentage;
     }
 
     /**

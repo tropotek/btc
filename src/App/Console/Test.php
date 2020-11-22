@@ -50,13 +50,8 @@ class Test extends \Bs\Console\Iface
         /** @var Exchange $exchangeObj */
         $this->exchange = $exchangeList = \App\Db\ExchangeMap::create()->find(1);
 
-
         $this->getTicker();
-
         //$this->getAllTrades();
-
-
-
 
     }
 
@@ -68,57 +63,23 @@ class Test extends \Bs\Console\Iface
     {
         /** @var btcmarkets $exchange */
         $exchange = $this->exchange->getApi();
-
-        //vd($exchange->fetchMarkets());
-        //vd($exchange->fetchTickers());
-
         $exchange->loadMarkets();
-        //vd(array_keys($exchange->markets));
+        foreach(array_keys($exchange->markets) as $marketId) {
+            $data = $exchange->fetchTicker($marketId);
+            $tick = Tick::create($this->exchange, $data);
+            //vd($tick);
+            $tick->save();
+        }
 
-        $data = $exchange->fetchTicker('BTC/AUD');
-        $tick = Tick::create($this->exchange, $data);
-        vd($data, $tick);
-
-
-//        foreach(array_keys($exchange->markets) as $marketId) {
-//            vd($exchange->fetchTicker($marketId));
-//        }
-
-//        //$arr2 = $exchange->fetchTrades('BTC/AUD', $exchange->milliseconds() - (86400000*5));
-//        $arr = $exchange->fetchTrades('BTC/AUD');
-//        vd($arr);
-//
-//        $a = current($arr);
-//        vd($a);
-//        vd(\Tk\Date::create($a['datetime']));
-//        $a = $arr[1];
-//        vd(\Tk\Date::create($a['datetime']));
-//        $a = end($arr);
-//        vd(\Tk\Date::create($a['datetime']));
-
-
-//        $arr2 = $exchange->fetchOhlcv('BTC/AUD', '1M');
-//
-//        $a = current($arr2);
-//        vd(\Tk\Date::create('@'.($a[0]/1000)));
-//        $a = $arr2[1];
-//        vd(\Tk\Date::create('@'.($a[0]/1000)));
-//
-//        $b = end($arr2);
-//        vd(\Tk\Date::create('@'.($b[0]/1000)));
-
-
-
-//        if ($exchange->has['fetchOHLCV']) {
-//            foreach ($exchange->markets as $symbol => $market) {
-//                usleep ($exchange->rateLimit * 1000); // usleep wants microseconds
-//                vd ($exchange->fetch_ohlcv($symbol, '1d')); // one month
-//            }
-//        }
-        //vd($exchange->has['fetchOHLCV']);
-        //vd($exchange->fetchTickers($marketArray));
 
     }
+
+
+
+
+
+
+
 
 
     /**

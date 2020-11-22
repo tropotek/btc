@@ -23,6 +23,7 @@ class TickMap extends Mapper
      */
     public function __construct($db = null)
     {
+        $this->enableDynamicParameters = false;
         $this->dispatcher = $this->getConfig()->getEventDispatcher();
         parent::__construct($db);
     }
@@ -34,10 +35,11 @@ class TickMap extends Mapper
     {
         if (!$this->dbMap) { 
             $this->dbMap = new \Tk\DataMap\DataMap();
-            $this->dbMap->setEnableDynamicParameters(false);
-            $this->dbMap->addPropertyMap(new Db\Integer('exchangeId', 'exchange_id'), 'key');
-            $this->dbMap->addPropertyMap(new Db\Text('symbol'), 'key');
-            $this->dbMap->addPropertyMap(new Db\Integer('timestamp'), 'key');
+            //$this->dbMap->setEnableDynamicParameters(false);
+            $this->dbMap->addPropertyMap(new Db\Integer('id'), 'key');
+            $this->dbMap->addPropertyMap(new Db\Integer('exchangeId', 'exchange_id'));
+            $this->dbMap->addPropertyMap(new Db\Text('symbol'));
+            $this->dbMap->addPropertyMap(new Db\Text('timestamp'));
             $this->dbMap->addPropertyMap(new Db\Date('datetime'));
             $this->dbMap->addPropertyMap(new Db\Decimal('high'));
             $this->dbMap->addPropertyMap(new Db\Decimal('low'));
@@ -46,7 +48,7 @@ class TickMap extends Mapper
             $this->dbMap->addPropertyMap(new Db\Decimal('last'));
             $this->dbMap->addPropertyMap(new Db\Decimal('close'));
             $this->dbMap->addPropertyMap(new Db\Decimal('change'));
-            $this->dbMap->addPropertyMap(new Db\Decimal('percent'));
+            $this->dbMap->addPropertyMap(new Db\Decimal('percentage'));
         }
         return $this->dbMap;
     }
@@ -58,10 +60,11 @@ class TickMap extends Mapper
     {
         if (!$this->formMap) {
             $this->formMap = new \Tk\DataMap\DataMap();
-            $this->dbMap->setEnableDynamicParameters(false);
-            $this->formMap->addPropertyMap(new Form\Integer('exchangeId'), 'key');
-            $this->formMap->addPropertyMap(new Form\Text('symbol'), 'key');
-            $this->formMap->addPropertyMap(new Form\Integer('timestamp'), 'key');
+            //$this->formMap->setEnableDynamicParameters(false);
+            //$this->formMap->addPropertyMap(new Form\Integer('id'), 'key');
+            $this->formMap->addPropertyMap(new Form\Integer('exchangeId'));
+            $this->formMap->addPropertyMap(new Form\Text('symbol'));
+            $this->formMap->addPropertyMap(new Form\Text('timestamp'));
             $this->formMap->addPropertyMap(new Form\Date('datetime'));
             $this->formMap->addPropertyMap(new Form\Decimal('high'));
             $this->formMap->addPropertyMap(new Form\Decimal('low'));
@@ -70,7 +73,7 @@ class TickMap extends Mapper
             $this->formMap->addPropertyMap(new Form\Decimal('last'));
             $this->formMap->addPropertyMap(new Form\Decimal('close'));
             $this->formMap->addPropertyMap(new Form\Decimal('change'));
-            $this->formMap->addPropertyMap(new Form\Decimal('percent'));
+            $this->formMap->addPropertyMap(new Form\Decimal('percentage'));
         }
         return $this->formMap;
     }

@@ -1,6 +1,8 @@
 <?php
 namespace App\Console;
 
+use App\Db\Tick;
+use ccxt\btcmarkets;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
@@ -45,9 +47,32 @@ class Cron extends \Bs\Console\Iface
             'active' => true
         ));
         foreach ($exchangeList as $exchange) {
+            $this->saveTickers($exchange);
+
+            // deprecated
             $this->processExchange($exchange);
         }
     }
+
+
+    /**
+     * @param \App\Db\Exchange $exchange
+     * @throws \ccxt\NotSupported
+     */
+    protected function saveTickers(\App\Db\Exchange $exchange)
+    {
+        /** @var btcmarkets $api */
+        $api = $exchange->getApi();
+        $api->loadMarkets();
+        foreach(array_keys($api->markets) as $marketId) {
+            $data = $api->fetchTicker($marketId);
+            $tick = Tick::create($exchange, $data);
+            $tick->save();
+        }
+    }
+
+
+
 
     /**
      * @param \App\Db\Exchange $exchange
