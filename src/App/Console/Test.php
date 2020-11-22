@@ -76,19 +76,27 @@ class Test extends \Bs\Console\Iface
 //        foreach(array_keys($exchange->markets) as $marketId) {
 //            vd($exchange->fetchTicker($marketId));
 //        }
-        $arr1 = $exchange->fetch_trades('BTC/AUD');
+        $arr2 = $exchange->fetch_trades('BTC/AUD');
+        vd($arr2);
 
-        vd(current($arr1));
-        vd(end($arr1));
-
-
-        $arr2 = $exchange->fetch_ohlcv('BTC/AUD', '1s');
         $a = current($arr2);
-        vd($a, \Tk\Date::create('@'.($a[0]/1000)))
+        vd($a);
+        vd(\Tk\Date::create($a['datetime']));
         $a = $arr2[1];
-        vd($a, \Tk\Date::create('@'.($a[0]/1000)));
-        $b = end($arr2);
-        vd($b, \Tk\Date::create('@'.($b[0]/1000)));
+        vd(\Tk\Date::create($a['datetime']));
+        $a = end($arr2);
+        vd(\Tk\Date::create($a['datetime']));
+
+
+//        $arr2 = $exchange->fetch_ohlcv('BTC/AUD', '1M');
+//
+//        $a = current($arr2);
+//        vd(\Tk\Date::create('@'.($a[0]/1000)));
+//        $a = $arr2[1];
+//        vd(\Tk\Date::create('@'.($a[0]/1000)));
+//
+//        $b = end($arr2);
+//        vd(\Tk\Date::create('@'.($b[0]/1000)));
 
 
 
