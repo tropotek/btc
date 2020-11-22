@@ -127,7 +127,7 @@ CSS;
 <div class="">
 
   <div class="tk-panel" data-panel-icon="fa fa-rebel" var="panel" repeat="panel">
-     <div class="tk-panel-title-right">Total: <span var="total">$0.00</span></div>
+     <div class="tk-panel-title-right">Total: <b var="total">$0.00</b></div>
     <table class="table table-striped table-hover">
       <thead>
         <tr>
