@@ -18,6 +18,8 @@ VALUES ('member', 'godar', '', 'Godar', 'Smith', 'info@tropotek.com.au', '040199
 
 UPDATE exchange t SET t.user_id = 2 WHERE t.id = 1;
 
+
+
 -- --------------------------------
 --
 -- --------------------------------

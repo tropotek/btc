@@ -23,7 +23,6 @@ class TickMap extends Mapper
      */
     public function __construct($db = null)
     {
-        $this->enableDynamicParameters = false;
         $this->dispatcher = $this->getConfig()->getEventDispatcher();
         parent::__construct($db);
     }

@@ -47,7 +47,6 @@ CSS;
         $exchangeList = \App\Db\ExchangeMap::create()->findFiltered(array('userId' => $this->getConfig()->getAuthUser()->getId()), \Tk\Db\Tool::create('driver'));
         foreach ($exchangeList as $exchange) {
             $repeat = $template->getRepeat('panel');
-            $repeat->setAttr('panel', 'data-panel-title', $exchange->getName());
             $repeat->insertText('currSymbol', $exchange->getCurrency());
 
             $api = $exchange->getApi();
@@ -57,6 +56,7 @@ CSS;
             unset($balanceList['used']);
             unset($balanceList['total']);
             //vd($balanceList);
+            $total = 0;
 
             foreach ($balanceList as $code => $bal) {
                 $marketId = strtoupper($code) . '/' . $exchange->getCurrency();
@@ -71,10 +71,12 @@ CSS;
                         $t = $api->fetchTicker($marketId);
                         //$totals[$coin] = $t['bid'] * self::truncateToString($bal['total'],8);
                         $value = $t['ask'] * Exchange::truncateToString($bal['total'], 8);       // I think this reflects a more accurate total
+                        $total += $value;
+
                         $value = sprintf('$%01.2f', $value);
 
-                        $bid = sprintf('$%01.4f', $t['bid']);
-                        $ask = sprintf('$%01.4f', $t['ask']);
+                        $bid = sprintf('%01.4f', $t['bid']);
+                        $ask = sprintf('%01.4f', $t['ask']);
                         $change = sprintf('%01.2f', $t['percentage']);
                     } catch (\Exception $e) {
                         \Tk\Log::error($marketId . ' ' . $e->getMessage());
@@ -86,6 +88,7 @@ CSS;
                 $row->insertText('code', $code);
 
                 if ($code == $exchange->getCurrency()) {
+                    $total += $volume;
                     $value = '';
                     $bid = '';
                     $ask = '';
@@ -105,7 +108,11 @@ CSS;
 
                 $row->appendRepeat();
             }
+            $repeat->setAttr('panel', 'data-panel-title', $exchange->getName());
+            $repeat->insertText('total', '$'.round($total, 2));
+
             $repeat->appendRepeat();
+
         }
         return $template;
     }
@@ -120,7 +127,7 @@ CSS;
 <div class="">
 
   <div class="tk-panel" data-panel-icon="fa fa-rebel" var="panel" repeat="panel">
-     
+     <div class="tk-panel-title-right">Total: <span var="total">$0.00</span></div>
     <table class="table table-striped table-hover">
       <thead>
         <tr>

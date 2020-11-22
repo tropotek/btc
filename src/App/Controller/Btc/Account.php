@@ -1,6 +1,7 @@
 <?php
 namespace App\Controller\Btc;
 
+use Tk\Db\Tool;
 use Tk\Request;
 use Dom\Template;
 
@@ -166,7 +167,8 @@ JS;
         $balance = $this->exchange->getApi()->fetchBalance();
         $volumeList = $balance['total'];
 
-        $marketList = \App\Db\ExchangeMap::create()->findEquityMarkets($this->exchange->getId(), $this->dateFrom);
+        $marketList = \App\Db\ExchangeMap::create()
+            ->findEquityMarkets($this->exchange->getId(), $this->dateFrom, Tool::create('FIELD(market, \'BTC\', \'ALL\') DESC, market'));
         foreach ($marketList as $market) {
             $row = $template->getRepeat('graph');
             $row->setAttr('graph', 'data-market', $market);
