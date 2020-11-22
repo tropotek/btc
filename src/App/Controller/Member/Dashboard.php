@@ -131,15 +131,15 @@ CSS;
     <table class="table table-striped table-hover">
       <thead>
         <tr>
-          <td >Currency</td>
-          <td>Code</td>
-          <td>Volume</td>
-          <td var="currSymbol">AUD</td>
-          <td>Sell</td>
-          <td>Buy</td>
-          <td>% Change</td>
-          <td>Alert</td>
-          <td style="width: 50%">24h Chart</td>
+          <th>Currency</th>
+          <th>Code</th>
+          <th>Volume</th>
+          <th var="currSymbol">AUD</th>
+          <th>Sell</th>
+          <th>Buy</th>
+          <th>% Change</th>
+          <th style="width: 40%">Alert</th>
+<!--          <th style="width: 50%">24h Chart</th>-->
         </tr>
       </thead>
       <tbody>
@@ -157,7 +157,7 @@ CSS;
             <a href="#" class="" title="Alert To Sell" choice="alert-sell"><i class="fa fa-exclamation-triangle text-danger"></i></a>
           </td>
           
-          <td var="graph">&nbsp;</td>
+<!--          <td var="graph">&nbsp;</td>-->
         </tr>
       </tbody>     
     </table>
