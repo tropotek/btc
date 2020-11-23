@@ -107,12 +107,17 @@ class Account extends \Bs\Controller\AdminIface
 
         $template = parent::show();
 
+        $equity = round($this->exchange->getTotalEquity(), 2);
+        $available = round($this->exchange->getAvailableCurrency(), 2);
+        $total = round($equity+$available, 2);
+
         $html = sprintf('
 <div class="row" style="background-color: #EFEFEF;padding-top: 10px;">
-  <div class="col-md-6"><p>Total Equity: $%.4f</p></div>
-  <div class="col-md-6"><p>Available: $%.4f</p></div>
+  <div class="col-md-4 text-center"><p>Equity<br/><b>$%.4f</b></p></div>
+  <div class="col-md-4 text-center"><p>Total<br/><b>$%.4f</b></p></div>
+  <div class="col-md-4 text-center"><p>Available<br/><b>$%.4f</b></p></div>
 </div>
-', round($this->exchange->getTotalEquity(), 4), round($this->exchange->getAvailableCurrency(), 4));
+', $equity, $total, $available);
 
         $template->prependHtml('panel', $html);
         $template->setAttr('panel', 'data-panel-icon', $this->exchange->getIcon());
@@ -148,9 +153,10 @@ $(document).ready(function () {
         {
           ylabel: div.data('currency'),
           labels: ["Date", div.data('currency')],
-          title: div.data('name') + ' [' + div.data('market') + '] - Vol: ' + div.data('vol'),
+          title: div.data('name') + ' [' + div.data('market') + '] - Vol: ' + div.data('vol')
         });
       div.find('.dygraph-legend').css('top', '-15px');
+      div.find('.dygraph-label.dygraph-title').css('font-size', '15px');
       window.intervalId = setInterval(function () {
         getData(div.data('market') ,function (data) {
           g.updateOptions({'file': data});
@@ -201,7 +207,7 @@ JS;
     
     
     <div class="row">
-      <div class="graph col-md-6" style="width: 100%; height: 300px;" var="graph" repeat="graph"></div>
+      <div class="graph col-md-6" style="width: 100%; height: 300px; margin-top: 25px;" var="graph" repeat="graph"></div>
     </div>
     
     

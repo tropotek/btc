@@ -2,6 +2,8 @@
 namespace App\Controller\Member;
 
 use App\Db\Exchange;
+use App\Db\TickMap;
+use Tk\Db\Tool;
 use Tk\Request;
 
 /**
@@ -92,6 +94,7 @@ CSS;
                     $value = '';
                     $bid = '';
                     $ask = '';
+                    $row->insertHtml('graphRow', '&nbsp;');
                     $row->insertText('volume', '$' . round($volume, 2));
                 } else {
                     $row->insertText('volume', $volume);
@@ -104,6 +107,12 @@ CSS;
                     } else if ($change > 0) {
                         $row->addCss('change', 'tr-up');
                     }
+                    $row->setAttr('graph', 'data-code', strtoupper($code));
+
+                    $ticker = TickMap::create()->findFiltered(['exchangeId' => $exchange->getId(), 'symbol' => $marketId], Tool::create('datetime DESC', 50));
+                    $a = $ticker->toArray('ask');
+                    $a = array_reverse($a);
+                    $row->setAttr('graph', 'values', implode(',', $a));
                 }
 
                 $row->appendRepeat();
@@ -114,6 +123,19 @@ CSS;
             $repeat->appendRepeat();
 
         }
+
+        $js = <<<JS
+$(document).ready(function() {
+  
+  $('.tk-graph').each(function () {
+    $(this).sparkline('html', {height: '2.5em'});
+    
+  });
+  
+})
+JS;
+        $template->appendJs($js);
+
         return $template;
     }
 
@@ -138,8 +160,8 @@ CSS;
           <th>Sell</th>
           <th>Buy</th>
           <th>% Change</th>
-          <th style="width: 40%">Alert</th>
-<!--          <th style="width: 50%">24h Chart</th>-->
+          <th>Alert</th>
+          <th style="width: 40%">24h Chart</th>
         </tr>
       </thead>
       <tbody>
@@ -151,13 +173,11 @@ CSS;
           <td var="bid">&nbsp;</td>
           <td var="ask">&nbsp;</td>
           <td var="change">&nbsp;</td>
-          
           <td var="alert">
             <a href="#" class="" title="Alert To Buy" choice="alert-buy"><i class="fa fa-exclamation-triangle text-success"></i></a> 
             <a href="#" class="" title="Alert To Sell" choice="alert-sell"><i class="fa fa-exclamation-triangle text-danger"></i></a>
           </td>
-          
-<!--          <td var="graph">&nbsp;</td>-->
+          <td var="graphRow"><span class="tk-graph" var="graph">Loading..</span></td>
         </tr>
       </tbody>     
     </table>

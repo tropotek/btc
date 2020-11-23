@@ -25,6 +25,7 @@ class TickMap extends Mapper
     {
         $this->dispatcher = $this->getConfig()->getEventDispatcher();
         parent::__construct($db);
+        $this->setMarkDeleted();
     }
 
     /**

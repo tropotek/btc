@@ -2,7 +2,6 @@
 namespace App\Db;
 
 use App\Db\Traits\ExchangeTrait;
-use Bs\Db\Traits\TimestampTrait;
 
 /**
  * @author Mick Mifsud
