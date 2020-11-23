@@ -2,6 +2,7 @@
 namespace App\Db;
 
 use App\Db\Traits\ExchangeTrait;
+use Bs\Db\Traits\TimestampTrait;
 
 /**
  * @author Mick Mifsud
@@ -84,8 +85,6 @@ class Tick extends \Tk\Db\Map\Model implements \Tk\ValidInterface
      */
     public function __construct()
     {
-        $this->timestamp = new \DateTime();
-        $this->datetime = new \DateTime();
     }
 
     /**
