@@ -113,9 +113,9 @@ class Account extends \Bs\Controller\AdminIface
 
         $html = sprintf('
 <div class="row" style="background-color: #EFEFEF;padding-top: 10px;">
-  <div class="col-md-4 text-center"><p>Equity<br/><b>$%.4f</b></p></div>
-  <div class="col-md-4 text-center"><p>Total<br/><b>$%.4f</b></p></div>
-  <div class="col-md-4 text-center"><p>Available<br/><b>$%.4f</b></p></div>
+  <div class="col-md-4 text-center"><p>Equity<br/><b>$%.2f</b></p></div>
+  <div class="col-md-4 text-center"><p>Total<br/><b>$%.2f</b></p></div>
+  <div class="col-md-4 text-center"><p>Available<br/><b>$%.2f</b></p></div>
 </div>
 ', $equity, $total, $available);
 
