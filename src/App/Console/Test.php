@@ -67,8 +67,8 @@ class Test extends \Bs\Console\Iface
         foreach(array_keys($exchange->markets) as $marketId) {
             $data = $exchange->fetchTicker($marketId);
             $tick = Tick::create($this->exchange, $data);
-            //vd($tick);
-            $tick->save();
+            vd($tick);
+            //$tick->save();
         }
 
 

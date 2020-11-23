@@ -1,5 +1,5 @@
 -- --------------------------------------------
--- @version install
+-- @version 3.2.0
 --
 -- Author: Michael Mifsud <info@tropotek.com>
 -- --------------------------------------------

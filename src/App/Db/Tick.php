@@ -98,6 +98,8 @@ class Tick extends \Tk\Db\Map\Model implements \Tk\ValidInterface
         $tick = new self();
         $tick->setExchangeId($exchange->getId());
         TickMap::create()->map($data, $tick);
+
+
         return $tick;
     }
 
