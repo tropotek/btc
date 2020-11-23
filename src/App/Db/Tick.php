@@ -66,7 +66,12 @@ class Tick extends \Tk\Db\Map\Model implements \Tk\ValidInterface
     /**
      * @var float
      */
-    public $close = 0;
+    public $baseVolume = 0;
+
+    /**
+     * @var float
+     */
+    public $quoteVolume = 0;
 
     /**
      * @var float
@@ -97,9 +102,7 @@ class Tick extends \Tk\Db\Map\Model implements \Tk\ValidInterface
     {
         $tick = new self();
         $tick->setExchangeId($exchange->getId());
-        TickMap::create()->map($data, $tick);
-
-
+        TickMap::create()->mapForm($data, $tick);
         return $tick;
     }
 
@@ -249,21 +252,39 @@ class Tick extends \Tk\Db\Map\Model implements \Tk\ValidInterface
     }
 
     /**
-     * @param float $close
+     * @return float
+     */
+    public function getBaseVolume(): float
+    {
+        return $this->baseVolume;
+    }
+
+    /**
+     * @param float $baseVolume
      * @return Tick
      */
-    public function setClose($close) : Tick
+    public function setBaseVolume(float $baseVolume): Tick
     {
-        $this->close = $close;
+        $this->baseVolume = $baseVolume;
         return $this;
     }
 
     /**
      * @return float
      */
-    public function getClose() : float
+    public function getQuoteVolume(): float
     {
-        return $this->close;
+        return $this->quoteVolume;
+    }
+
+    /**
+     * @param float $quoteVolume
+     * @return Tick
+     */
+    public function setQuoteVolume(float $quoteVolume): Tick
+    {
+        $this->quoteVolume = $quoteVolume;
+        return $this;
     }
 
     /**

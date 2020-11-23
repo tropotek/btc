@@ -45,7 +45,8 @@ class TickMap extends Mapper
             $this->dbMap->addPropertyMap(new Db\Decimal('bid'));
             $this->dbMap->addPropertyMap(new Db\Decimal('ask'));
             $this->dbMap->addPropertyMap(new Db\Decimal('last'));
-            $this->dbMap->addPropertyMap(new Db\Decimal('close'));
+            $this->dbMap->addPropertyMap(new Db\Decimal('baseVolume', 'base_volume'));
+            $this->dbMap->addPropertyMap(new Db\Decimal('quoteVolume', 'quote_volume'));
             $this->dbMap->addPropertyMap(new Db\Decimal('change'));
             $this->dbMap->addPropertyMap(new Db\Decimal('percentage'));
         }
@@ -70,7 +71,8 @@ class TickMap extends Mapper
             $this->formMap->addPropertyMap(new Form\Decimal('bid'));
             $this->formMap->addPropertyMap(new Form\Decimal('ask'));
             $this->formMap->addPropertyMap(new Form\Decimal('last'));
-            $this->formMap->addPropertyMap(new Form\Decimal('close'));
+            $this->formMap->addPropertyMap(new Form\Decimal('baseVolume'));
+            $this->formMap->addPropertyMap(new Form\Decimal('quoteVolume'));
             $this->formMap->addPropertyMap(new Form\Decimal('change'));
             $this->formMap->addPropertyMap(new Form\Decimal('percentage'));
         }
@@ -137,9 +139,6 @@ class TickMap extends Mapper
         }
         if (!empty($filter['last'])) {
             $filter->appendWhere('a.last = %s AND ', (float)$filter['last']);
-        }
-        if (!empty($filter['close'])) {
-            $filter->appendWhere('a.close = %s AND ', (float)$filter['close']);
         }
         if (!empty($filter['change'])) {
             $filter->appendWhere('a.change = %s AND ', (float)$filter['change']);
