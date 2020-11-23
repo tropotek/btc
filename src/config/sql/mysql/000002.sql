@@ -6,6 +6,7 @@
 
 
 alter table tick drop column `close`;
+alter table tick drop column `low`;
 alter table tick add base_volume float default 0 null after last;
 alter table tick add quote_volume float default 0 null after base_volume;
 

@@ -41,7 +41,6 @@ class TickMap extends Mapper
             $this->dbMap->addPropertyMap(new Db\Text('timestamp'));
             $this->dbMap->addPropertyMap(new Db\Date('datetime'));
             $this->dbMap->addPropertyMap(new Db\Decimal('high'));
-            $this->dbMap->addPropertyMap(new Db\Decimal('low'));
             $this->dbMap->addPropertyMap(new Db\Decimal('bid'));
             $this->dbMap->addPropertyMap(new Db\Decimal('ask'));
             $this->dbMap->addPropertyMap(new Db\Decimal('last'));
@@ -67,7 +66,6 @@ class TickMap extends Mapper
             $this->formMap->addPropertyMap(new Form\Text('timestamp'));
             $this->formMap->addPropertyMap(new Form\Date('datetime'));
             $this->formMap->addPropertyMap(new Form\Decimal('high'));
-            $this->formMap->addPropertyMap(new Form\Decimal('low'));
             $this->formMap->addPropertyMap(new Form\Decimal('bid'));
             $this->formMap->addPropertyMap(new Form\Decimal('ask'));
             $this->formMap->addPropertyMap(new Form\Decimal('last'));
@@ -127,9 +125,6 @@ class TickMap extends Mapper
         }
         if (!empty($filter['high'])) {
             $filter->appendWhere('a.high = %s AND ', (float)$filter['high']);
-        }
-        if (!empty($filter['low'])) {
-            $filter->appendWhere('a.low = %s AND ', (float)$filter['low']);
         }
         if (!empty($filter['bid'])) {
             $filter->appendWhere('a.bid = %s AND ', (float)$filter['bid']);

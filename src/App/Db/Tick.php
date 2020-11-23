@@ -46,11 +46,6 @@ class Tick extends \Tk\Db\Map\Model implements \Tk\ValidInterface
     /**
      * @var float
      */
-    public $low = 0;
-
-    /**
-     * @var float
-     */
     public $bid = 0;
 
     /**
@@ -177,24 +172,6 @@ class Tick extends \Tk\Db\Map\Model implements \Tk\ValidInterface
     public function getHigh() : float
     {
         return $this->high;
-    }
-
-    /**
-     * @param float $low
-     * @return Tick
-     */
-    public function setLow($low) : Tick
-    {
-        $this->low = $low;
-        return $this;
-    }
-
-    /**
-     * @return float
-     */
-    public function getLow() : float
-    {
-        return $this->low;
     }
 
     /**
