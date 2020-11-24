@@ -198,7 +198,6 @@ CSS;
                 if ($tick['percentage'] > 0) $color = 'tk-up';
                 $vol .= sprintf(' : <span class="value" title="Value %s">$%01.2f</span>', $this->exchange->getCurrency(), $tick['ask']);
                 $vol .= sprintf(' [<span class="change %s" title="24h Change %%">%s%%</span>]', $color, $tick['percentage']);
-
             } catch (\Exception $e) { }
 
             $row->setAttr('graph', 'data-vol', $vol);
