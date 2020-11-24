@@ -91,9 +91,9 @@ class Account extends \Bs\Controller\AdminIface
      */
     public function show()
     {
-
-        $this->getActionPanel()->append(\Tk\Ui\Link::createBtn('Account Summary',
-            \Bs\Uri::createHomeUrl('/'.$this->exchange->getDriver().'/summary.html'), 'fa fa-list-alt'));
+//
+//        $this->getActionPanel()->append(\Tk\Ui\Link::createBtn('Account Summary',
+//            \Bs\Uri::createHomeUrl('/index.html'), 'fa fa-list-alt'));
 
         // TODO: Ajax this....
         $this->getActionPanel()->append(\Tk\Ui\Link::createBtn('1 Day', \Tk\Uri::create()->set('d', '1')));
@@ -153,7 +153,7 @@ $(document).ready(function () {
         {
           ylabel: div.data('currency'),
           labels: ["Date", div.data('currency')],
-          title: div.data('name') + ' [' + div.data('market') + '] - Vol: ' + div.data('vol')
+          title: '[' + div.data('market') + '] ' + div.data('name') + div.data('vol')
         });
       div.find('.dygraph-legend').css('top', '-15px');
       div.find('.dygraph-label.dygraph-title').css('font-size', '15px');
@@ -170,8 +170,15 @@ $(document).ready(function () {
 JS;
         $template->appendJs($js);
 
-        $balance = $this->exchange->getApi()->fetchBalance();
-        $volumeList = $balance['total'];
+        $css = <<<CSS
+.dygraph-label .tk-dn {
+  color: red;
+}
+.dygraph-label .tk-up {
+  color: green;
+}
+CSS;
+        $template->appendCss($css);
 
         $marketList = \App\Db\ExchangeMap::create()
             ->findEquityMarkets($this->exchange->getId(), $this->dateFrom, Tool::create('FIELD(market, \'BTC\', \'ALL\') DESC, market'));
@@ -181,11 +188,20 @@ JS;
             $row->setAttr('graph', 'data-currency', $this->exchange->getCurrency());
             $row->setAttr('graph', 'data-name', $this->exchange->getMarketName($market));
             $row->setAttr('graph', 'data-days', $this->days);
-            $vol = 0;
-            if (!empty($volumeList[$market]))
-                $vol = $volumeList[$market];
-            //$row->setAttr('graph', 'data-vol', \ccxt\Exchange::number_to_string($vol));
-            $row->setAttr('graph', 'data-vol', $vol.'');
+            $vol = '';
+            try {
+                $marketId = $market . '/' . $this->exchange->getCurrency();
+                $this->exchange->getApi()->loadMarkets();
+                $tick = $this->exchange->getApi()->fetchTicker($marketId);
+                $color = '';
+                if ($tick['percentage'] < 0) $color = 'tk-dn';
+                if ($tick['percentage'] > 0) $color = 'tk-up';
+                $vol .= sprintf(' : <span class="value" title="Value %s">$%01.2f</span>', $this->exchange->getCurrency(), $tick['ask']);
+                $vol .= sprintf(' [<span class="change %s" title="24h Change %%">%s%%</span>]', $color, $tick['percentage']);
+
+            } catch (\Exception $e) { }
+
+            $row->setAttr('graph', 'data-vol', $vol);
             $row->appendRepeat();
         }
         
@@ -202,17 +218,11 @@ JS;
     {
         $xhtml = <<<HTML
 <div>
-
   <div class="tk-panel" data-panel-icon="fa fa-btc" var="panel">
-    
-    
     <div class="row">
       <div class="graph col-md-6" style="width: 100%; height: 300px; margin-top: 25px;" var="graph" repeat="graph"></div>
     </div>
-    
-    
   </div>
-    
 </div>
 HTML;
 
