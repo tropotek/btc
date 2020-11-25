@@ -1,6 +1,7 @@
 <?php
 namespace App\Db;
 
+use Tk\Date;
 use Tk\Db\Tool;
 use Tk\Db\Map\ArrayObject;
 use Tk\DataMap\Db;
@@ -79,7 +80,9 @@ class CandleMap extends Mapper
      */
     public function findFiltered($filter, $tool = null)
     {
-        return $this->selectFromFilter($this->makeQuery(\Tk\Db\Filter::create($filter)), $tool);
+        $f = $this->selectFromFilter($this->makeQuery(\Tk\Db\Filter::create($filter)), $tool);
+        //vd($this->getDb()->getLastQuery());
+        return $f;
     }
 
     /**
@@ -132,6 +135,24 @@ class CandleMap extends Mapper
         }
         if (!empty($filter['volume'])) {
             $filter->appendWhere('a.volume = %s AND ', (float)$filter['volume']);
+        }
+
+//        $dates = array('dateStart', 'dateEnd');
+//        foreach ($dates as $name) {
+//            if (!empty($filter[$name]) && !$filter[$name] instanceof \DateTime) {
+//                $filter[$name] = Date::createFormDate($filter[$name]);
+//            }
+//        }
+
+        if (!empty($filter['dateStart'])) {
+            if ($filter['dateStart'] instanceof \DateTime)
+                $filter['dateStart'] = Date::floor($filter['dateStart'])->getTimestamp();
+            $filter->appendWhere('a.timestamp >= %s AND ', $this->quote($filter['dateStart']));
+        }
+        if (!empty($filter['dateEnd'])) {
+            if ($filter['dateEnd'] instanceof \DateTime)
+                $filter['dateEnd'] = Date::floor($filter['dateEnd'])->getTimestamp();
+            $filter->appendWhere('a.timestamp <= %s AND ', $this->quote($filter['dateEnd']));
         }
 
         if (!empty($filter['exclude'])) {

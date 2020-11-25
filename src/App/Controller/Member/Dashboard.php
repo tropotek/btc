@@ -1,6 +1,9 @@
 <?php
 namespace App\Controller\Member;
 
+use App\Bot;
+use App\Db\Candle;
+use App\Db\CandleMap;
 use App\Db\Exchange;
 use App\Db\TickMap;
 use Tk\Db\Tool;
@@ -61,6 +64,7 @@ CSS;
             $total = 0;
 
             foreach ($balanceList as $code => $bal) {
+                $row = $repeat->getRepeat('row');
                 $marketId = strtoupper($code) . '/' . $exchange->getCurrency();
                 $volume = sprintf('%01.8f', $bal['total']);
                 $value = '';
@@ -80,12 +84,40 @@ CSS;
                         $bid = sprintf('%01.4f', $t['bid']);
                         $ask = sprintf('%01.4f', $t['ask']);
                         $change = sprintf('%01.2f', $t['percentage']);
+
+
+                        /** @var Candle $candle */
+                        $candle = CandleMap::create()->findFiltered([
+                            'exchangeId' => $exchange->getId(), 'symbol' => $marketId, 'period' => 'd',
+                            //'dateStart' => \Tk\Date::create("now", new \DateTimeZone("UTC"))->sub(new \DateInterval('PT1H')),
+                            //'dateEnd' => \Tk\Date::create("now", new \DateTimeZone("UTC"))
+                        ], Tool::create('timestamp DESC', 1))->current();
+                        if ($candle) {
+                            $bot = new Bot();
+                            $bot->execute($candle);
+                            //vd($candle->getSymbol(), $candle->getTimestamp(), $bot->getEvent()->getCollection());
+                            $data = $bot->getEvent()->getCollection();
+                            if ($data['rsi.14']) {
+                                if ($data['rsi.14'] >= 80 && $t['percentage'] > 10) {
+                                    if ($data['ma.20'] < $data['ma.100']) {
+                                        $row->setVisible('alert-sell');
+                                    }
+                                } else if ($data['rsi.14'] <= 30 && $t['percentage'] < -10) {
+                                    if ($data['ma.20'] > $data['ma.100']) {
+                                        $row->setVisible('alert-buy');
+                                    }
+                                }
+                            }
+                            $uri = \Tk\Uri::create('https://app.btcmarkets.net/buy-sell')->set('market', str_replace('/', '-', $marketId));
+                            $row->setAttr('alert-buy', 'href', $uri);
+                            $row->setAttr('alert-sell', 'href', $uri);
+                        }
+
                     } catch (\Exception $e) {
                         \Tk\Log::error($marketId . ' ' . $e->getMessage());
                     }
                 }
 
-                $row = $repeat->getRepeat('row');
                 $row->insertText('currencyName', $exchange->getMarketName($code));
                 $row->insertText('code', $code);
 
@@ -114,6 +146,7 @@ CSS;
                     $a = array_reverse($a);
                     $row->setAttr('graph', 'values', implode(',', $a));
                 }
+
 
                 $row->appendRepeat();
             }
@@ -174,8 +207,8 @@ JS;
           <td var="ask">&nbsp;</td>
           <td var="change">&nbsp;</td>
           <td var="alert">
-            <a href="#" class="" title="Alert To Buy" choice="alert-buy"><i class="fa fa-exclamation-triangle text-success"></i></a> 
-            <a href="#" class="" title="Alert To Sell" choice="alert-sell"><i class="fa fa-exclamation-triangle text-danger"></i></a>
+            <a href="#" target="_blank" class="" title="Alert To Buy" choice="alert-buy" var="alert-buy"><i class="fa fa-exclamation-triangle text-success"></i></a> 
+            <a href="#" target="_blank" class="" title="Alert To Sell" choice="alert-sell" var="alert-sell"><i class="fa fa-exclamation-triangle text-danger"></i></a>
           </td>
           <td var="graphRow"><span class="tk-graph" var="graph">Loading..</span></td>
         </tr>

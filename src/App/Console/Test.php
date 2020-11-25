@@ -1,6 +1,7 @@
 <?php
 namespace App\Console;
 
+use App\Bot;
 use App\Db\Candle;
 use App\Db\CandleMap;
 use App\Db\Exchange;
@@ -51,9 +52,32 @@ class Test extends \Bs\Console\Iface
         /** @var Exchange| $exchange */
         $exchange = \App\Db\ExchangeMap::create()->find(1);
 
+        $this->testBot($exchange);
         //$this->saveCandles($exchange);
 
     }
+
+
+
+
+    protected function testBot(\App\Db\Exchange $exchange)
+    {
+        $list = CandleMap::create()->findFiltered([
+            'exchangeId' => $exchange->getId(), 'symbol' => 'XRP/'.$exchange->getCurrency(), 'period' => 'm',
+            //'dateStart' => \Tk\Date::create("now", new \DateTimeZone("UTC"))->sub(new \DateInterval('PT1H')),
+            'dateEnd' => \Tk\Date::create("now", new \DateTimeZone("UTC"))
+        ]);
+
+        $bot = new Bot();
+        foreach ($list as $candle) {
+            $bot->execute($candle);
+            vd($candle->getSymbol(), $candle->getTimestamp(), $bot->getEvent()->getCollection());
+        }
+
+    }
+
+
+
 
 
 
