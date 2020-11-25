@@ -51,7 +51,7 @@ class Test extends \Bs\Console\Iface
         /** @var Exchange| $exchange */
         $exchange = \App\Db\ExchangeMap::create()->find(1);
 
-        $this->saveCandles($exchange);
+        //$this->saveCandles($exchange);
 
     }
 
