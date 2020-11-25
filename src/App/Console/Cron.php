@@ -32,7 +32,7 @@ class Cron extends \Bs\Console\Iface
     {
         $path = getcwd();
         $this->setName('cron')
-            ->setDescription('The site cron script. crontab line: */5 *  * * *   '.$path.'/bin/cmd cron > /dev/null 2>&1');
+            ->setDescription('The site cron script. crontab line: */1 *  * * *   '.$path.'/bin/cmd cron > /dev/null 2>&1');
     }
 
     /**
@@ -46,44 +46,45 @@ class Cron extends \Bs\Console\Iface
         $this->setInput($input);
         $this->setOutput($output);
 
-
-        $data = Data::create();
-        $now = \Tk\Date::create();
-        $lastHour = $data->get('cron.last.hour', null);
-        $lastDay = $data->get('cron.last.day', null);
-        $lastWeek = $data->get('cron.last.week', null);
-
-        // Instant Jobs
+        // Instant Jobs run every minute by the cron process
         $this->execNow();
 
-        // Hourly Jobs
-        if (!$lastHour || $now->sub(new \DateInterval('PT1H')) >= $lastHour) {
-            $data->set('cron.last.hour', $now)->save();
-            $this->writeComment('Cron Hourly Executed:');
-            \Tk\Log::alert('HOURLY CRON JOB EXECUTE()');
-            $this->execHour();
+        // Timed runtimes
+        $data = Data::create();
+        $now = \Tk\Date::create();
 
+        $times = [
+            'cron.last.5min' => 60 * 5,
+            'cron.last.10min' => 60 * 10,
+            'cron.last.30min' => 60 * 30,
+            'cron.last.hour' => 60 * 60,
+            'cron.last.day' => 60 * 60 * 24,
+            'cron.last.week' => 60 * 60 * 24 * 7
+        ];
+
+        foreach ($times as $k => $v) {
+            $last = $data->get($k, null);
+            if (!$last || $now->sub(new \DateInterval('PT1M')) >= $last) {
+                $data->set($k, $now)->save();
+                //$this->writeComment($k . ' Executed:');
+                \Tk\Log::warning($k . ' Executed:');
+                $a = explode('.', $k);
+                $func = 'exec'.ucfirst(end($a));
+                if (method_exists($this, $func)) {
+                    try {
+                        $this->$func();
+                    } catch (\Exception $e) {       // Stop exceptions from affecting other processes
+                        vd($e->__toString());
+                    }
+                }
+                $this->execHour();
+            }
         }
-
-        // Daily Jobs
-        if (!$lastDay || $now->sub(new \DateInterval('P1D')) >= $lastDay) {
-            $data->set('cron.last.day', $now)->save();
-            $this->writeComment('Cron Daily Executed:');
-            \Tk\Log::alert('DAILY CRON JOB EXECUTE()');
-            $this->execDay();
-
-        }
-
-        // Weekly Jobs
-        if (!$lastWeek || $now->sub(new \DateInterval('P1W')) >= $lastWeek) {
-            $data->set('cron.last.week', $now)->save();
-            $this->writeComment('Cron Weekly Executed:');
-            \Tk\Log::alert('WEEKLY CRON JOB EXECUTE()');
-            $this->execWeek();
-        }
-
 
     }
+
+
+
 
 
     protected function execNow()
@@ -91,39 +92,47 @@ class Cron extends \Bs\Console\Iface
         try {
             $exchangeList = \App\Db\ExchangeMap::create()->findFiltered(['active' => true]);
             foreach ($exchangeList as $exchange) {
+                $this->processExchange($exchange);
                 $this->saveTickers($exchange);
                 $this->saveCandles($exchange, ['m']);
-
-                $this->processExchange($exchange);
             }
         } catch (\Exception $e) {
             vd($e->__toString());
         }
     }
 
-    protected function execHour()
+
+    protected function exec5min()
     {
-        try {
-            $exchangeList = \App\Db\ExchangeMap::create()->findFiltered(['active' => true]);
-            foreach ($exchangeList as $exchange) {
-                $this->saveCandles($exchange, ['h']);
-            }
-        } catch (\Exception $e) {
-            vd($e->__toString());
+
+    }
+
+    protected function exec10min()
+    {
+
+    }
+
+    protected function exec30min()
+    {
+        $exchangeList = \App\Db\ExchangeMap::create()->findFiltered(['active' => true]);
+        foreach ($exchangeList as $exchange) {
+            $this->saveCandles($exchange, ['h']);
         }
 
+    }
+
+
+    protected function execHour()
+    {
     }
 
     protected function execDay()
     {
-        try {
-            $exchangeList = \App\Db\ExchangeMap::create()->findFiltered(['active' => true]);
-            foreach ($exchangeList as $exchange) {
-                $this->saveCandles($exchange, ['d']);
-            }
-        } catch (\Exception $e) {
-            vd($e->__toString());
+        $exchangeList = \App\Db\ExchangeMap::create()->findFiltered(['active' => true]);
+        foreach ($exchangeList as $exchange) {
+            $this->saveCandles($exchange, ['d']);
         }
+
     }
 
     protected function execWeek()
@@ -131,6 +140,10 @@ class Cron extends \Bs\Console\Iface
 
     }
 
+
+
+
+    
 
     /**
      *
