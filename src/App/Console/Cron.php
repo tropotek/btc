@@ -66,7 +66,7 @@ class Cron extends \Bs\Console\Iface
             $last = $data->get($k, null);
             if (!$last || $now->sub(new \DateInterval('PT1M')) >= $last) {
                 $data->set($k, $now)->save();
-                //$this->writeComment($k . ' Executed:');
+                $this->writeComment($k . ' Executed:');
                 \Tk\Log::warning($k . ' Executed:');
                 $a = explode('.', $k);
                 $func = 'exec'.ucfirst(end($a));
