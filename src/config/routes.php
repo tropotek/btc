@@ -39,6 +39,7 @@ $routes->add('admin-settings', new Route('/admin/settings.html', 'App\Controller
 $routes->add('member-dashboard', new Route('/member/index.html', 'App\Controller\Member\Dashboard::doDefault'));
 $routes->add('member-dashboard-base', new Route('/member/', 'App\Controller\Member\Dashboard::doDefault'));
 $routes->add('member-profile', new Route('/member/profile.html', 'App\Controller\Admin\User\Profile::doDefault'));
+$routes->add('member-tradingview', new Route('/member/tradingview.html', 'App\Controller\Member\TradingView::doDefault'));
 
 
 

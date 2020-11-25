@@ -71,6 +71,7 @@ class NavRendererHandler implements Subscriber
         if ($user->hasType(\Bs\Db\User::TYPE_ADMIN)) {
             $menu->append(Item::create('Settings', \Bs\Uri::createHomeUrl('/settings.html'), 'fa fa-cogs'));
         }
+        $menu->append(Item::create('TradingView', \Bs\Uri::createHomeUrl('/tradingview.html'), 'fa fa-line-chart'));
 
         // Old equity table data
         $exchangeList = \App\Db\ExchangeMap::create()->findFiltered(array('userId' => $this->getConfig()->getAuthUser()->getId()), \Tk\Db\Tool::create('driver'));

@@ -2,6 +2,7 @@
 namespace App\Db;
 
 use ccxt\ExchangeError;
+use Tk\Db\Data;
 use Tk\Db\Exception;
 
 /**
@@ -87,6 +88,11 @@ class Exchange extends \Tk\Db\Map\Model implements \Tk\ValidInterface
      */
     protected $_api;
 
+    /**
+     * @var Data
+     */
+    protected $_data = null;
+
 
     /**
      * Exchange
@@ -109,6 +115,18 @@ class Exchange extends \Tk\Db\Map\Model implements \Tk\ValidInterface
         //$list['Btcmarkets V3'] = '\\App\\Driver\\BtcMarkets3';
         ksort($list);
         return $list;
+    }
+
+    /**
+     * Get the institution data object
+     *
+     * @return Data
+     */
+    public function getData()
+    {
+        if (!$this->_data)
+            $this->_data = Data::create(get_class($this), $this->getVolatileId());
+        return $this->_data;
     }
 
 
