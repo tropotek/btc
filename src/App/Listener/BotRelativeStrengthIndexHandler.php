@@ -2,6 +2,7 @@
 namespace App\Listener;
 
 use App\Db\Candle;
+use App\Db\CandleInterface;
 use App\Db\CandleMap;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Tk\ConfigTrait;
@@ -26,7 +27,17 @@ class BotRelativeStrengthIndexHandler implements Subscriber
      */
     public function doExecute(\App\Event\BotEvent $event)
     {
-        list($rs, $rsi) = $this->getRsi($event->getCandle(), 14, 'close');
+        $length = 14;
+
+        $list = CandleMap::create()->findFiltered([
+            'exchangeId' => $event->getCandle()->getExchangeId(),
+            'symbol' => $event->getCandle()->getSymbol(),
+            'period' => $event->getCandle()->getPeriod(),
+            //'dateStart' => \Tk\Date::create()->sub(new \DateInterval('P2D')),
+            'dateEnd' => $event->getCandle()->getTimestamp()
+        ], Tool::create('timestamp DESC', $length))->toArray('close');
+
+        list($rs, $rsi) = $this->getRsi($list);
         $event->set('rs.14', $rs);
         $event->set('rsi.14', $rsi);
 
@@ -38,33 +49,23 @@ class BotRelativeStrengthIndexHandler implements Subscriber
 
 
     /**
-     * @param Candle $candle
-     * @param int $length
-     * @param string $source ['close', 'open', 'high', 'low']
+     * @param float[] $list
      * @link https://school.stockcharts.com/doku.php?id=technical_indicators:relative_strength_index_rsi
      * @link https://www.macroption.com/rsi-calculation/
      * @link https://github.com/hurdad/doo-forex/blob/master/protected/class/Technical%20Indicators/RSI.php
      */
-    protected function getRsi(Candle $candle, $length = 20, $source = 'close')
+    public static function getRsi($list)
     {
-        $rsi = 0;
-        $objList = CandleMap::create()->findFiltered([
-            'exchangeId' => $candle->getExchangeId(), 'symbol' => $candle->getSymbol(), 'period' => $candle->getPeriod(),
-            //'dateStart' => \Tk\Date::create()->sub(new \DateInterval('P2D')),
-            'dateEnd' => $candle->getTimestamp()
-        ], Tool::create('timestamp DESC', $length+1));
-        if ($objList->countAll() < $length+1) return $rsi;
-
-        /** @var Candle $prev */
-        $prev = null;
-        $changeArray = array();
+        $length = count($list);
+        $prev = 0;
         $rs = 0;
         $rsi = 100;
-        foreach ($objList as $i => $c) {
+        $changeArray = [];
+
+        foreach ($list as $i => $c) {
             // Need 2 points to get change
             if ($i >= 1) {
-                $change = $c->getClose() - $prev->getClose();
-                //$change = $c->getOpen() - $prev->getOpen();
+                $change = $c - $prev;
                 //add to front
                 array_unshift($changeArray, $change);
                 //pop back if too long

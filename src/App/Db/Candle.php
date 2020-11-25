@@ -9,7 +9,7 @@ use App\Db\Traits\ExchangeTrait;
  * @link http://tropotek.com.au/
  * @license Copyright 2020 Tropotek
  */
-class Candle extends \Tk\Db\Map\Model implements \Tk\ValidInterface
+class Candle extends \Tk\Db\Map\Model implements \Tk\ValidInterface, CandleInterface
 {
     use ExchangeTrait;
 

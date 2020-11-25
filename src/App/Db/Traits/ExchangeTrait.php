@@ -23,7 +23,7 @@ trait ExchangeTrait
     /**
      * @return int
      */
-    public function getExchangeId()
+    public function getExchangeId() : int
     {
         return $this->exchangeId;
     }
