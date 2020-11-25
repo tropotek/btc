@@ -92,8 +92,6 @@ class Cron extends \Bs\Console\Iface
         try {
             $exchangeList = \App\Db\ExchangeMap::create()->findFiltered(['active' => true]);
             foreach ($exchangeList as $exchange) {
-                $this->processExchange($exchange);
-                $this->saveTickers($exchange);
                 $this->saveCandles($exchange, ['m']);
             }
         } catch (\Exception $e) {
@@ -104,11 +102,27 @@ class Cron extends \Bs\Console\Iface
 
     protected function exec5min()
     {
+        try {
+            $exchangeList = \App\Db\ExchangeMap::create()->findFiltered(['active' => true]);
+            foreach ($exchangeList as $exchange) {
+                $this->saveTickers($exchange);
+            }
+        } catch (\Exception $e) {
+            vd($e->__toString());
+        }
 
     }
 
     protected function exec10min()
     {
+        try {
+            $exchangeList = \App\Db\ExchangeMap::create()->findFiltered(['active' => true]);
+            foreach ($exchangeList as $exchange) {
+                $this->processExchange($exchange);
+            }
+        } catch (\Exception $e) {
+            vd($e->__toString());
+        }
 
     }
 
@@ -143,7 +157,7 @@ class Cron extends \Bs\Console\Iface
 
 
 
-    
+
 
     /**
      *
