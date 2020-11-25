@@ -163,11 +163,11 @@ class Cron extends \Bs\Console\Iface
                     //       the candle is closed (until the next candle starts).
                     if ($i == count($ohlcv)-1) continue;    // do not save the last candle
                     $found = CandleMap::create()->findFiltered([
-                        'exchangeId' => $exchange->getId(), 'symbol' => $symbol, 'period' => $period, 'timestamp' => ($data[0]/1000)
+                        'exchangeId' => $exchange->getId(), 'symbol' => $symbol, 'period' => $period, 'timestamp' => (int)($data[0]/1000)
                     ])->current();
                     if (!$found) {
                         $candle = Candle::create($exchange, $symbol, $period, $data);
-                        \Tk\Log::notice(' - ' . $symbol . ', 1' . $period . ', ' . ($data[0]/1000));
+                        \Tk\Log::notice(' - ' . $symbol . ', 1' . $period . ', ' . (int)($data[0]/1000));
                         $candle->save();
                     }
                 }

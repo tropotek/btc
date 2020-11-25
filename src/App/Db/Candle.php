@@ -97,7 +97,7 @@ class Candle extends \Tk\Db\Map\Model implements \Tk\ValidInterface
         $candle->setExchangeId($exchange->getId());
         $candle->setSymbol($symbol);
         $candle->setPeriod($period);
-        $candle->setTimestamp($data[0]/1000);
+        $candle->setTimestamp((int)($data[0]/1000));
         $candle->setOpen($data[1]);
         $candle->setHigh($data[2]);
         $candle->setLow($data[3]);
@@ -149,7 +149,7 @@ class Candle extends \Tk\Db\Map\Model implements \Tk\ValidInterface
      */
     public function setTimestamp(int $timestamp) : Candle
     {
-        $this->timestamp = $timestamp;
+        $this->timestamp = (int)$timestamp;
         return $this;
     }
 
