@@ -46,13 +46,7 @@ class Cron extends \Bs\Console\Iface
         $this->setInput($input);
         $this->setOutput($output);
 
-        // Instant Jobs run every minute by the cron process
-        //$this->execNow();
-
         // Timed runtimes
-        $data = Data::create();
-        $now = \Tk\Date::create();
-
         $times = [
             'cron.last.now' => 1,
             'cron.last.5min' => 60 * 5,
@@ -63,6 +57,8 @@ class Cron extends \Bs\Console\Iface
             'cron.last.week' => 60 * 60 * 24 * 7
         ];
 
+        $data = Data::create();
+        $now = \Tk\Date::create();
         foreach ($times as $k => $v) {
             $last = $data->get($k, null);
             if ($last) {
