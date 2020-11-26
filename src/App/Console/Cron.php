@@ -102,8 +102,7 @@ class Cron extends \Bs\Console\Iface
         try {
             $exchangeList = \App\Db\ExchangeMap::create()->findFiltered(['active' => true]);
             foreach ($exchangeList as $exchange) {
-                // TODO: Dont think we ned this just use the candles???
-                $this->saveTickers($exchange);
+                $this->saveTicks($exchange);
             }
         } catch (\Exception $e) {
             vd($e->__toString());
@@ -133,7 +132,6 @@ class Cron extends \Bs\Console\Iface
 
     }
 
-
     protected function execHour()
     {
     }
@@ -144,7 +142,6 @@ class Cron extends \Bs\Console\Iface
         foreach ($exchangeList as $exchange) {
             $this->saveCandles($exchange, ['d']);
         }
-
     }
 
     protected function execWeek()
@@ -207,12 +204,13 @@ class Cron extends \Bs\Console\Iface
      * @param \App\Db\Exchange $exchange
      * @throws \ccxt\NotSupported
      */
-    protected function saveTickers(\App\Db\Exchange $exchange)
+    protected function saveTicks(\App\Db\Exchange $exchange)
     {
         /** @var btcmarkets $api */
         $api = $exchange->getApi();
         $api->loadMarkets();
         foreach(array_keys($api->markets) as $marketId) {
+            usleep ($api->rateLimit * 1000); // usleep wants microseconds
             $data = $api->fetchTicker($marketId);
             $tick = Tick::create($exchange, $data);
             $tick->save();

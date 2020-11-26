@@ -94,7 +94,7 @@ CSS;
                         if ($candle) {
                             $bot = new Bot();
                             $bot->execute($candle);
-                            vd($candle->getSymbol(), $candle->getTimestamp(), $bot->getEvent()->getCollection());
+                            //vd($candle->getSymbol(), $candle->getTimestamp(), $bot->getEvent()->getCollection());
                             $data = $bot->getEvent()->getCollection();
                             if ($data['rsi.14']) {
                                 if ($data['rsi.14'] >= 80 && $t['percentage'] > 10) {

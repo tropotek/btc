@@ -195,6 +195,7 @@ class Exchange extends \Tk\Db\Map\Model implements \Tk\ValidInterface
         $marketTotals = $balance['total'];
         $totals = array();
         foreach ($marketTotals as $coin => $amount) {
+            usleep ($api->rateLimit * 1000); // usleep wants microseconds
             if (strtoupper($coin) == strtoupper($currency)) continue;
             $marketId = strtoupper($coin) . '/' . strtoupper($currency);
             if (array_key_exists($marketId, $api->markets)) {
