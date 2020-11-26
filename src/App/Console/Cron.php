@@ -64,6 +64,7 @@ class Cron extends \Bs\Console\Iface
 
         foreach ($times as $k => $v) {
             $last = $data->get($k, null);
+            vd($last);
             if (!$last || $now->sub(new \DateInterval('PT1M')) >= $last) {
                 $data->set($k, $now)->save();
                 $this->writeComment($k . ' Executed:');
