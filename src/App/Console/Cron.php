@@ -67,8 +67,6 @@ class Cron extends \Bs\Console\Iface
             $last = $data->get($k, null);
             if ($last) {
                 $last = \Tk\Date::create($last, $now->getTimezone());
-//                $last = new \DateTime('@' . $last, $now->getTimezone());
-//                $last->setTimezone($now->getTimezone());
             }
             if (!$last || $now->sub(new \DateInterval('PT'.$v.'S')) >= $last) {
                 $data->set($k, $now->getTimestamp())->save();
@@ -78,7 +76,7 @@ class Cron extends \Bs\Console\Iface
                 $func = 'exec'.ucfirst(end($a));
                 if (method_exists($this, $func)) {
                     try {
-                        //$this->$func();
+                        $this->$func();
                     } catch (\Exception $e) {       // Stop exceptions from affecting other processes
                         vd($e->__toString());
                     }
