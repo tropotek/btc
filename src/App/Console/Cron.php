@@ -92,7 +92,7 @@ class Cron extends \Bs\Console\Iface
         try {
             $exchangeList = \App\Db\ExchangeMap::create()->findFiltered(['active' => true]);
             foreach ($exchangeList as $exchange) {
-                $this->saveCandles($exchange, ['m']);
+                //$this->saveCandles($exchange, ['m']);
             }
         } catch (\Exception $e) {
             vd($e->__toString());
@@ -174,7 +174,7 @@ class Cron extends \Bs\Console\Iface
      * @param \App\Db\Exchange $exchange
      * @throws \ccxt\NotSupported
      */
-    protected function saveCandles(\App\Db\Exchange $exchange, $periods = ['m'])
+    protected function saveCandles(\App\Db\Exchange $exchange, $periods = ['h'])
     {
         //$periods = ['s', 'm', 'h', 'd', 'w', 'M', 'y'];
         /** @var btcmarkets $api */

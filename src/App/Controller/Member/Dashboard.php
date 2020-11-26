@@ -85,7 +85,6 @@ CSS;
                         $ask = sprintf('%01.4f', $t['ask']);
                         $change = sprintf('%01.2f', $t['percentage']);
 
-
                         /** @var Candle $candle */
                         $candle = CandleMap::create()->findFiltered([
                             'exchangeId' => $exchange->getId(), 'symbol' => $marketId, 'period' => 'd',

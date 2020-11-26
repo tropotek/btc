@@ -12,6 +12,7 @@ class MarketMath
      * @link https://school.stockcharts.com/doku.php?id=technical_indicators:relative_strength_index_rsi
      * @link https://www.macroption.com/rsi-calculation/
      * @link https://github.com/hurdad/doo-forex/blob/master/protected/class/Technical%20Indicators/RSI.php
+     * @todo: Check and validate teh values of this function
      */
     public static function getRsi($list)
     {
