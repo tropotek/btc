@@ -47,13 +47,14 @@ class Cron extends \Bs\Console\Iface
         $this->setOutput($output);
 
         // Instant Jobs run every minute by the cron process
-        $this->execNow();
+        //$this->execNow();
 
         // Timed runtimes
         $data = Data::create();
         $now = \Tk\Date::create();
 
         $times = [
+            'cron.last.now' => 1,
             'cron.last.5min' => 60 * 5,
             'cron.last.10min' => 60 * 10,
             'cron.last.30min' => 60 * 30,
@@ -65,12 +66,11 @@ class Cron extends \Bs\Console\Iface
         foreach ($times as $k => $v) {
             $last = $data->get($k, null);
             if ($last) {
-                //$last = new \DateTime('@' . $last, $now->getTimezone());
-                $last = new \DateTime('@' . $last, $now->getTimezone());
-                $last->setTimezone($now->getTimezone());
+                $last = \Tk\Date::create($last, $now->getTimezone());
+//                $last = new \DateTime('@' . $last, $now->getTimezone());
+//                $last->setTimezone($now->getTimezone());
             }
-            if (!$last || $now->sub(new \DateInterval('PT1M')) >= $last) {
-                vd($now->sub(new \DateInterval('PT1M')), $last);
+            if (!$last || $now->sub(new \DateInterval('PT'.$v.'S')) >= $last) {
                 $data->set($k, $now->getTimestamp())->save();
                 $this->writeComment($k . ' Executed:');
                 \Tk\Log::warning($k . ' Executed:');
@@ -86,10 +86,7 @@ class Cron extends \Bs\Console\Iface
                 $this->execHour();
             }
         }
-
     }
-
-
 
 
 
