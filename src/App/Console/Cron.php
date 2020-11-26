@@ -64,9 +64,13 @@ class Cron extends \Bs\Console\Iface
 
         foreach ($times as $k => $v) {
             $last = $data->get($k, null);
-            if ($last)
-                $last = \Tk\Date::create($last);
+            if ($last) {
+                //$last = new \DateTime('@' . $last, $now->getTimezone());
+                $last = new \DateTime('@' . $last, $now->getTimezone());
+                $last->setTimezone($now->getTimezone());
+            }
             if (!$last || $now->sub(new \DateInterval('PT1M')) >= $last) {
+                vd($now->sub(new \DateInterval('PT1M')), $last);
                 $data->set($k, $now->getTimestamp())->save();
                 $this->writeComment($k . ' Executed:');
                 \Tk\Log::warning($k . ' Executed:');
@@ -74,7 +78,7 @@ class Cron extends \Bs\Console\Iface
                 $func = 'exec'.ucfirst(end($a));
                 if (method_exists($this, $func)) {
                     try {
-                        $this->$func();
+                        //$this->$func();
                     } catch (\Exception $e) {       // Stop exceptions from affecting other processes
                         vd($e->__toString());
                     }
@@ -107,6 +111,7 @@ class Cron extends \Bs\Console\Iface
         try {
             $exchangeList = \App\Db\ExchangeMap::create()->findFiltered(['active' => true]);
             foreach ($exchangeList as $exchange) {
+                // TODO: Dont think we ned this just use the candles???
                 $this->saveTickers($exchange);
             }
         } catch (\Exception $e) {
