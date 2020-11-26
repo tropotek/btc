@@ -64,9 +64,10 @@ class Cron extends \Bs\Console\Iface
 
         foreach ($times as $k => $v) {
             $last = $data->get($k, null);
-            vd($last);
+            if ($last)
+                $last = \Tk\Date::create($last);
             if (!$last || $now->sub(new \DateInterval('PT1M')) >= $last) {
-                $data->set($k, $now)->save();
+                $data->set($k, $now->getTimestamp())->save();
                 $this->writeComment($k . ' Executed:');
                 \Tk\Log::warning($k . ' Executed:');
                 $a = explode('.', $k);
