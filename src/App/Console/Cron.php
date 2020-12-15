@@ -45,6 +45,9 @@ class Cron extends \Bs\Console\Iface
     {
         $this->setInput($input);
         $this->setOutput($output);
+        if ($this->getConfig()->get('site.maintenance.enabled')) {
+            return;
+        }
 
         // Timed runtimes
         $times = [
