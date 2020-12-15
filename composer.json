@@ -2,10 +2,12 @@
     "name": "ttek/btc",
     "type": "project",
     "description": "A site to track basic bitcoin trnds",
-    "keywords":  ["tropotek"],
-    "time": "2019-04-09",
+    "keywords":  [
+        "tropotek"
+    ],
+    "time": "2020-12-15",
     "license": "MIT",
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "authors":  [
          {
             "name": "Michael Mifsud",
@@ -35,7 +37,6 @@
         "php": "^7.3.0",
         "ttek/tk-base": "~3.2.0",
         "ttek/theme-cube": "~1.2.0",
-
         "ttek-plg/mailog": "~1.0.0",
         "ccxt/ccxt": "~1.38.10"
     },
