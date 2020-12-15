@@ -78,9 +78,9 @@ class Account extends \Bs\Controller\AdminIface
         $totals = $this->getMarketData($request->get('m'));
         $data = [];
         foreach ($totals as $t) {
-            $data[] = [$t->created, $t->amount];
+            $amt = $t->amount;
+            $data[] = [$t->created, $amt];
         }
-
         \Tk\ResponseJson::createJson($data)->send();
         exit;
     }
@@ -135,6 +135,7 @@ $(document).ready(function () {
 
   function getData(market, onSuccess) {
     $.get(document.location, {'get': 't', 'm': market, 'nolog': '1'}, function (data) {
+    //$.get(document.location, {'get': 't', 'm': market}, function (data) {
       var d = [];
       $.each(data, function (i, v) {
         v[0] = new Date(v[0]);
@@ -181,7 +182,7 @@ CSS;
         $template->appendCss($css);
 
         $marketList = \App\Db\ExchangeMap::create()
-            ->findEquityMarkets($this->exchange->getId(), $this->dateFrom, Tool::create('FIELD(market, \'BTC\', \'ALL\') DESC, market'));
+            ->findEquityMarkets($this->exchange->getId(), $this->dateFrom, Tool::create('FIELD(market, \'BTC\', \'ALL\', \'TOTAL\') DESC, market'));
         foreach ($marketList as $market) {
             $row = $template->getRepeat('graph');
             $row->setAttr('graph', 'data-market', $market);

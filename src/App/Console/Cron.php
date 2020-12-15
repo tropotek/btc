@@ -103,6 +103,7 @@ class Cron extends \Bs\Console\Iface
             $exchangeList = \App\Db\ExchangeMap::create()->findFiltered(['active' => true]);
             foreach ($exchangeList as $exchange) {
                 $this->saveTicks($exchange);
+                $this->processExchange($exchange);
             }
         } catch (\Exception $e) {
             vd($e->__toString());
@@ -115,7 +116,7 @@ class Cron extends \Bs\Console\Iface
         try {
             $exchangeList = \App\Db\ExchangeMap::create()->findFiltered(['active' => true]);
             foreach ($exchangeList as $exchange) {
-                $this->processExchange($exchange);
+                //$this->processExchange($exchange);
             }
         } catch (\Exception $e) {
             vd($e->__toString());
@@ -229,6 +230,9 @@ class Cron extends \Bs\Console\Iface
         // Save total equity values
         $eq = $exchange->getLiveTotalEquity();
         \App\Db\ExchangeMap::create()->addEquityTotal($exchange->getId(), \App\Db\Exchange::MARKET_ALL, $exchange->getCurrency(), $eq);
+
+        $eq = $exchange->getLiveTotalEquity() + $exchange->getAvailableCurrency();
+        \App\Db\ExchangeMap::create()->addEquityTotal($exchange->getId(), \App\Db\Exchange::MARKET_TOTAL, $exchange->getCurrency(), $eq);
 
         // Save individual coin equities
         $summaryList = $exchange->getAccountSummary();

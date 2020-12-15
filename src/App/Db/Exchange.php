@@ -13,7 +13,8 @@ use Tk\Db\Exception;
  */
 class Exchange extends \Tk\Db\Map\Model implements \Tk\ValidInterface
 {
-    const MARKET_ALL = 'ALL';
+    const MARKET_ALL = 'ALL';       // All purchased coin values
+    const MARKET_TOTAL = 'TOTAL';   // Value of all coins and Dollars in exchange over time
 
     use \Bs\Db\Traits\UserTrait;
     use \Bs\Db\Traits\TimestampTrait;
