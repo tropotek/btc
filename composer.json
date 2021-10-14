@@ -37,7 +37,7 @@
         "ttek/theme-cube": "~1.2.0",
 
         "ttek-plg/mailog": "~1.0.0",
-        "ccxt/ccxt": "~1.38.10"
+        "ccxt/ccxt": "~1.38.0"
     },
     "require-dev":  {
     }
