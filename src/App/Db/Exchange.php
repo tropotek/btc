@@ -37,7 +37,7 @@ class Exchange extends \Tk\Db\Map\Model implements \Tk\ValidInterface
     /**
      * @var string
      */
-    public $driver = '\\App\\Driver\\BtcMarkets';
+    public $driver = '';
 
     /**
      * @var string
@@ -172,11 +172,13 @@ class Exchange extends \Tk\Db\Map\Model implements \Tk\ValidInterface
                 $driver = '\\ccxt\\' . $this->driver;
             }
 
-            $this->_api = new $driver(array(
-                'apiKey' => $this->apiKey,
-                'secret' => $this->secret
-                // TODO: add more options over time as needed
-            ));
+            if (class_exists($driver)) {
+                $this->_api = new $driver(array(
+                    'apiKey' => $this->apiKey,
+                    'secret' => $this->secret
+                    // TODO: add more options over time as needed
+                ));
+            }
         }
         return $this->_api;
     }

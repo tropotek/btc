@@ -37,7 +37,7 @@ class Dashboard extends \Bs\Controller\AdminIface
         $this->getTable()->removeAction('delete');
 
         $filter = array('userId' => $this->getAuthUser()->getId());
-        $this->getTable()->setList($this->getTable()->findList($filter));
+        $this->getTable()->setList($this->getTable()->findList($filter, $this->getTable()->getTool('', 50)));
 
     }
 

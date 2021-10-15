@@ -43,19 +43,20 @@ class Edit extends \Bs\Controller\AdminEditIface
         $this->init($request);
         $this->getForm()->execute();
 
-        $table = $this->currencyTable = $this->getConfig()->createTable('currency');
-        $this->getConfig()->createTableRenderer($table);
+        if ($this->exchange->getId()) {
 
-        $table->appendCell(Cell\Text::create('symbol'));
+            $table = $this->currencyTable = $this->getConfig()->createTable('currency');
+            $this->getConfig()->createTableRenderer($table);
 
-        $list = $this->exchange->getApi()->fetchMarkets();
-        foreach ($list as $k => $v) {
-            $list[$k] = ['symbol' => $v['base']];
+            $table->appendCell(Cell\Text::create('symbol'));
+            $list = $this->exchange->getApi()->fetchMarkets();
+            foreach ($list as $k => $v) {
+                $list[$k] = ['symbol' => $v['base']];
+            }
+            $table->setList($list);
+
+            $table->execute();
         }
-        $table->setList($list);
-
-
-        $table->execute();
 
     }
 
@@ -90,6 +91,8 @@ class Edit extends \Bs\Controller\AdminEditIface
 
         if ($this->currencyTable) {
             $template->appendTemplate('table', $this->currencyTable->getRenderer()->show());
+            $template->setAttr('left-panel', 'class', 'col-sm-8');
+            $template->setVisible('right-panel');
         }
         
         return $template;
@@ -105,10 +108,10 @@ class Edit extends \Bs\Controller\AdminEditIface
     {
         $xhtml = <<<HTML
 <div class="row">
-  <div class="col-sm-8">
+  <div class="col-sm-12" var="left-panel">
     <div class="tk-panel" data-panel-icon="fa fa-building-o" var="form"></div>
   </div>
-  <div class="col-sm-4">
+  <div class="col-sm-4" choice="right-panel">
     <div class="tk-panel" data-panel-icon="fa fa-building-o" data-panel-title="Available Currencies" var="table"></div>
   </div>
 </div>
