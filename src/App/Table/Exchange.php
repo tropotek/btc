@@ -62,8 +62,15 @@ class Exchange extends \Bs\TableIface
     public function findList($filter = array(), $tool = null)
     {
         if (!$tool) $tool = $this->getTool();
-        $filter = array_merge($this->getFilterValues(), $filter);
-        $list = \App\Db\ExchangeMap::create()->findFiltered($filter, $tool);
+        try {
+            $filter = array_merge($this->getFilterValues(), $filter);
+            $list = \App\Db\ExchangeMap::create()->findFiltered($filter, $tool);
+        } catch (\Tk\Db\Exception $e) {
+            if (strstr($e->getMessage(), 'order clause') !== false) {
+                $this->resetSessionTool();
+                $this->getBackUrl()->redirect();
+            } else throw $e;
+        }
         return $list;
     }
 

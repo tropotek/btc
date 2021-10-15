@@ -64,13 +64,13 @@ CREATE TABLE IF NOT EXISTS `asset` (
   KEY (`user_id`)
 ) ENGINE = InnoDB;
 
-INSERT INTO asset (id, market_id, user_id, category_id, units, notes, modified, created) VALUES (1, 3, 2, 0, '3019.739179', 'Exodus', '2021-10-15 19:00:29', '2021-10-15 18:59:40');
-INSERT INTO asset (id, market_id, user_id, category_id, units, notes, modified, created) VALUES (2, 1, 2, 0, '0.15321209', 'Exodus', '2021-10-15 19:01:12', '2021-10-15 19:01:12');
-INSERT INTO asset (id, market_id, user_id, category_id, units, notes, modified, created) VALUES (3, 2, 2, 0, '0.31440027', 'BTC Markets', '2021-10-15 19:02:36', '2021-10-15 19:02:36');
-INSERT INTO asset (id, market_id, user_id, category_id, units, notes, modified, created) VALUES (4, 3, 2, 0, '31.98942602', 'Coin Spot', '2021-10-15 19:03:12', '2021-10-15 19:03:12');
-INSERT INTO asset (id, market_id, user_id, category_id, units, notes, modified, created) VALUES (5, 5, 2, 0, '3.08451573', 'Coin Spot', '2021-10-15 19:03:47', '2021-10-15 19:03:47');
-INSERT INTO asset (id, market_id, user_id, category_id, units, notes, modified, created) VALUES (6, 4, 2, 0, '64573.15932004', 'Coin Spot', '2021-10-15 19:04:27', '2021-10-15 19:04:27');
-INSERT INTO asset (id, market_id, user_id, category_id, units, notes, modified, created) VALUES (7, 6, 2, 0, '1432.64423145', 'Coin Spot', '2021-10-15 19:04:55', '2021-10-15 19:04:55');
+# INSERT INTO asset (id, market_id, user_id, category_id, units, notes, modified, created) VALUES (1, 3, 2, 0, '3019.739179', 'Exodus', '2021-10-15 19:00:29', '2021-10-15 18:59:40');
+# INSERT INTO asset (id, market_id, user_id, category_id, units, notes, modified, created) VALUES (2, 1, 2, 0, '0.15321209', 'Exodus', '2021-10-15 19:01:12', '2021-10-15 19:01:12');
+# INSERT INTO asset (id, market_id, user_id, category_id, units, notes, modified, created) VALUES (3, 2, 2, 0, '0.31440027', 'BTC Markets', '2021-10-15 19:02:36', '2021-10-15 19:02:36');
+# INSERT INTO asset (id, market_id, user_id, category_id, units, notes, modified, created) VALUES (4, 3, 2, 0, '31.98942602', 'Coin Spot', '2021-10-15 19:03:12', '2021-10-15 19:03:12');
+# INSERT INTO asset (id, market_id, user_id, category_id, units, notes, modified, created) VALUES (5, 5, 2, 0, '3.08451573', 'Coin Spot', '2021-10-15 19:03:47', '2021-10-15 19:03:47');
+# INSERT INTO asset (id, market_id, user_id, category_id, units, notes, modified, created) VALUES (6, 4, 2, 0, '64573.15932004', 'Coin Spot', '2021-10-15 19:04:27', '2021-10-15 19:04:27');
+# INSERT INTO asset (id, market_id, user_id, category_id, units, notes, modified, created) VALUES (7, 6, 2, 0, '1432.64423145', 'Coin Spot', '2021-10-15 19:04:55', '2021-10-15 19:04:55');
 
 
 -- --------------------------------------------------------
