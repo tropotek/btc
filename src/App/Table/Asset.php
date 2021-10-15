@@ -41,12 +41,12 @@ class Asset extends \Bs\TableIface
             return $value;
         });
         $this->appendCell(new Cell\Text('unitBuy'))->addCss('text-right')->addOnPropertyValue(function (\Tk\Table\Cell\Iface $cell, \App\Db\Asset $obj, $value) {
-            $value = $obj->getMarketUnitValue(\App\Db\Asset::MARKET_CURRENCY, \App\Db\Asset::MARKET_BID);
+            $value = $obj->getMarketUnitValue(\App\Db\Asset::MARKET_BID);
             $value = '$' . number_format($value, 2);
             return $value;
         });
         $this->appendCell(new Cell\Text('unitSell'))->addCss('text-right')->addOnPropertyValue(function (\Tk\Table\Cell\Iface $cell, \App\Db\Asset $obj, $value) {
-            $value = $obj->getMarketUnitValue(\App\Db\Asset::MARKET_CURRENCY, \App\Db\Asset::MARKET_ASK);
+            $value = $obj->getMarketUnitValue(\App\Db\Asset::MARKET_ASK);
             $value = '$' . number_format($value, 2);
             return $value;
         });
@@ -56,7 +56,7 @@ class Asset extends \Bs\TableIface
             return $value;
         });
         $this->appendCell(new Cell\Text('unitValue'))->setLabel('$')->addCss('text-right')->addOnPropertyValue(function (\Tk\Table\Cell\Iface $cell, \App\Db\Asset $obj, $value) {
-            $value = $obj->getMarketTotalValue(\App\Db\Asset::MARKET_CURRENCY, \App\Db\Asset::MARKET_BID);
+            $value = $obj->getMarketTotalValue(\App\Db\Asset::MARKET_BID);
             $value = '$' . number_format($value, 2);
             return $value;
         });

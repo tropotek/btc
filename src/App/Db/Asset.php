@@ -18,8 +18,6 @@ class Asset extends \Tk\Db\Map\Model implements \Tk\ValidInterface
     use MarketTrait;
     use TimestampTrait;
 
-    const MARKET_CURRENCY = 'AUD';
-
     const MARKET_BID = 'bid';
     const MARKET_ASK = 'ask';
 
@@ -86,12 +84,21 @@ class Asset extends \Tk\Db\Map\Model implements \Tk\ValidInterface
      */
     public function getAssetTick()
     {
+        $cur = 'AUD';
+        if ($this->getMarket() && $this->getMarket()->getExchange()) {
+            $cur = $this->getMarket()->getExchange()->getCurrency();
+        }
         if (!$this->_tick) {
-            $this->_tick = AssetTickMap::create()->findFiltered(['assetId' => $this->getId(), 'currency' => $this->getMarket()->getExchange()->getCurrency()], Tool::create('created DESC', 1))->current();
+            $this->_tick = AssetTickMap::create()->findFiltered(['assetId' => $this->getId(), 'currency' => $cur], Tool::create('created DESC', 1))->current();
         }
         return $this->_tick;
     }
 
+    /**
+     * @param string $returnType
+     * @return float|int
+     * @throws \Exception
+     */
     public function getMarketUnitValue($returnType = 'bid')
     {
         $val = 0;
@@ -105,6 +112,11 @@ class Asset extends \Tk\Db\Map\Model implements \Tk\ValidInterface
         return $val;
     }
 
+    /**
+     * @param string $returnType
+     * @return float|int
+     * @throws \Exception
+     */
     public function getMarketTotalValue($returnType = 'bid')
     {
         $val = 0;
@@ -120,7 +132,6 @@ class Asset extends \Tk\Db\Map\Model implements \Tk\ValidInterface
 
     /**
      * @param int $limit
-     * @param string $currency
      * @param string $returnType
      * @return array
      * @throws \Exception
