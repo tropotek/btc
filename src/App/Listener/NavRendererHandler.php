@@ -49,6 +49,8 @@ class NavRendererHandler implements Subscriber
             $menu->append(Item::create('Settings', \Bs\Uri::createHomeUrl('/settings.html'), 'fa fa-cogs'));
         }
         $menu->append(Item::create('Exchanges', \Bs\Uri::createHomeUrl('/exchangeManager.html'), 'fa fa-building-o'));
+        $menu->append(Item::create('Markets', \Bs\Uri::createHomeUrl('/marketManager.html'), 'fa fa-money'));
+        //$menu->append(Item::create('Assets', \Bs\Uri::createHomeUrl('/assetManager.html'), 'fa fa-btc'));
 
         $menu->append(Item::create('About', '#', 'fa fa-info-circle')
             ->setAttr('data-toggle', 'modal')->setAttr('data-target', '#aboutModal'));
@@ -71,16 +73,19 @@ class NavRendererHandler implements Subscriber
         if ($user->hasType(\Bs\Db\User::TYPE_ADMIN)) {
             $menu->append(Item::create('Settings', \Bs\Uri::createHomeUrl('/settings.html'), 'fa fa-cogs'));
         }
+        $menu->append(Item::create('Assets', \Bs\Uri::createHomeUrl('/assetManager.html'), 'fa fa-btc'));
         $menu->append(Item::create('TradingView', \Bs\Uri::createHomeUrl('/tradingview.html'), 'fa fa-line-chart'));
 
-        // Old equity table data
-        $exchangeList = \App\Db\ExchangeMap::create()->findFiltered(array('userId' => $this->getConfig()->getAuthUser()->getId()), \Tk\Db\Tool::create('driver'));
-        if ($exchangeList->count()) {
-            $sub = $menu->append(Item::create('Exchanges', '#', 'fa fa-building-o'));
-            foreach ($exchangeList as $exchange) {
-                $sub->append(Item::create($exchange->getName(), \Bs\Uri::createHomeUrl('/' . $exchange->driver . '/account.html'), $exchange->icon));
-            }
-        }
+
+
+//        // Old equity table data
+//        $exchangeList = \App\Db\ExchangeMap::create()->findFiltered(array('userId' => $this->getConfig()->getAuthUser()->getId()), \Tk\Db\Tool::create('driver'));
+//        if ($exchangeList->count()) {
+//            $sub = $menu->append(Item::create('Exchanges', '#', 'fa fa-building-o'));
+//            foreach ($exchangeList as $exchange) {
+//                $sub->append(Item::create($exchange->getName(), \Bs\Uri::createHomeUrl('/' . $exchange->driver . '/account.html'), $exchange->icon));
+//            }
+//        }
 
     }
 

@@ -1,7 +1,8 @@
 <?php
-namespace App\Controller\Btc\Exchange;
+namespace App\Controller\Exchange;
 
-use Tk\Request;
+
+use Tk\Table\Cell;
 use Dom\Template;
 
 /**
@@ -16,6 +17,11 @@ class Edit extends \Bs\Controller\AdminEditIface
      * @var \App\Db\Exchange
      */
     protected $exchange = null;
+
+    /**
+     * @var null|\Tk\Table
+     */
+    protected $currencyTable = null;
 
 
     /**
@@ -35,9 +41,22 @@ class Edit extends \Bs\Controller\AdminEditIface
     public function doDefault(\Tk\Request $request, $targetRole = 'user')
     {
         $this->init($request);
-
-
         $this->getForm()->execute();
+
+        $table = $this->currencyTable = $this->getConfig()->createTable('currency');
+        $this->getConfig()->createTableRenderer($table);
+
+        $table->appendCell(Cell\Text::create('symbol'));
+
+        $list = $this->exchange->getApi()->fetchMarkets();
+        foreach ($list as $k => $v) {
+            $list[$k] = ['symbol' => $v['base']];
+        }
+        $table->setList($list);
+
+
+        $table->execute();
+
     }
 
     /**
@@ -68,6 +87,10 @@ class Edit extends \Bs\Controller\AdminEditIface
 
         if ($this->exchange->getId())
             $template->setAttr('form', 'data-panel-title', $this->exchange->getDriver() . ' - [ID ' . $this->exchange->getId() . ']');
+
+        if ($this->currencyTable) {
+            $template->appendTemplate('table', $this->currencyTable->getRenderer()->show());
+        }
         
         return $template;
     }
@@ -81,10 +104,13 @@ class Edit extends \Bs\Controller\AdminEditIface
     public function __makeTemplate()
     {
         $xhtml = <<<HTML
-<div>
-
-  <div class="tk-panel" data-panel-icon="fa fa-building-o" var="form"></div>
-    
+<div class="row">
+  <div class="col-sm-8">
+    <div class="tk-panel" data-panel-icon="fa fa-building-o" var="form"></div>
+  </div>
+  <div class="col-sm-4">
+    <div class="tk-panel" data-panel-icon="fa fa-building-o" data-panel-title="Available Currencies" var="table"></div>
+  </div>
 </div>
 HTML;
 

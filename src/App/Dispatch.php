@@ -21,11 +21,6 @@ class Dispatch extends \Bs\Dispatch
         $dispatcher->addSubscriber(new \App\Listener\NavRendererHandler());
         $dispatcher->addSubscriber(new \Bs\Listener\PageLoaderHandler());
 
-        // Bot Handlers
-        $dispatcher->addSubscriber(new \App\Listener\BotMovingAverageHandler());
-        $dispatcher->addSubscriber(new \App\Listener\BotRelativeStrengthIndexHandler());
-
-
     }
 
 }

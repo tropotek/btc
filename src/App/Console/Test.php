@@ -2,6 +2,8 @@
 namespace App\Console;
 
 use App\Bot;
+use App\Db\AssetMap;
+use App\Db\AssetTick;
 use App\Db\Candle;
 use App\Db\CandleMap;
 use App\Db\Exchange;
@@ -49,83 +51,12 @@ class Test extends \Bs\Console\Iface
             $this->writeError('Error: Only run this command in a debug environment.');
             return;
         }
-        /** @var Exchange| $exchange */
-        $exchange = \App\Db\ExchangeMap::create()->find(1);
 
-        $this->testBot($exchange);
-        //$this->saveCandles($exchange);
+        vd();
+        AssetTick::updateAssetTicks();
 
     }
 
-
-
-
-    protected function testBot(\App\Db\Exchange $exchange)
-    {
-        $list = CandleMap::create()->findFiltered([
-            'exchangeId' => $exchange->getId(), 'symbol' => 'XRP/'.$exchange->getCurrency(), 'period' => 'm',
-            //'dateStart' => \Tk\Date::create("now", new \DateTimeZone("UTC"))->sub(new \DateInterval('PT1H')),
-            'dateEnd' => \Tk\Date::create("now", new \DateTimeZone("UTC"))
-        ]);
-
-        $bot = new Bot();
-        foreach ($list as $candle) {
-            $bot->execute($candle);
-            vd($candle->getSymbol(), $candle->getTimestamp(), $bot->getEvent()->getCollection());
-        }
-
-    }
-
-
-
-
-
-
-    /**
-     *
-     * (s=sec, m=minute, h=hour, d=day, w=week, M=month, y=year)
-     *
-     *        1504541580000, // UTC timestamp in milliseconds, integer
-     *        4235.4,        // (O)pen price, float
-     *        4240.6,        // (H)ighest price, float
-     *        4230.0,        // (L)owest price, float
-     *        4230.7,        // (C)losing price, float
-     *        37.72941911    // (V)olume (in terms of the base currency), float
-     *
-     *
-     * @param \App\Db\Exchange $exchange
-     * @throws \ccxt\NotSupported
-     */
-    protected function saveCandles(\App\Db\Exchange $exchange)
-    {
-        //$periods = ['s', 'm', 'h', 'd', 'w', 'M', 'y'];
-        $periods = ['m', 'h', 'd'];
-        //$periods = ['m'];
-
-        /** @var btcmarkets $api */
-        $api = $exchange->getApi();
-        if (!$api->has['fetchOHLCV']) return;
-        $api->loadMarkets();
-        foreach($api->markets as $symbol => $market) {
-            foreach ($periods as $period) {
-                usleep ($api->rateLimit * 1000);
-                $ohlcv = $api->fetch_ohlcv($symbol, '1'.$period);
-                foreach ($ohlcv as $i => $data) {
-                    // Note: that the info from the last (current) candle may be incomplete until
-                    //       the candle is closed (until the next candle starts).
-                    if ($i == count($ohlcv)-1) continue;    // do not save the last candle
-                    $found = CandleMap::create()->findFiltered([
-                        'exchangeId' => $exchange->getId(), 'symbol' => $symbol, 'period' => $period, 'timestamp' => ($data[0]/1000)
-                    ])->current();
-                    if (!$found) {
-                        $candle = Candle::create($exchange, $symbol, $period, $data);
-                        vd($candle);
-                        $candle->save();
-                    }
-                }
-            }
-        }
-    }
 
 
 

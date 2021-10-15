@@ -40,6 +40,19 @@ class Config extends \Bs\Config
         return $obj;
     }
 
+    /**
+     * @return null|\App\Db\Exchange
+     * @throws \Exception
+     */
+    public function getDefaultExchange()
+    {
+        if (!$this->get('exchange.default')) {
+            $obj = \App\Db\ExchangeMap::create()->findFiltered(['active' => true, 'default' => true])->current();
+            $this->set('exchange.default', $obj);
+        }
+        return $this->get('exchange.default');
+
+    }
 
 
 

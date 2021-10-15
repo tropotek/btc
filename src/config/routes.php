@@ -42,9 +42,16 @@ $routes->add('member-profile', new Route('/member/profile.html', 'App\Controller
 $routes->add('member-tradingview', new Route('/member/tradingview.html', 'App\Controller\Member\TradingView::doDefault'));
 
 
+$routes->add('btc-exchange-manager', new Route('/{role}/exchangeManager.html', 'App\Controller\Exchange\Manager::doDefault'));
+$routes->add('btc-exchange-edit', new Route('/{role}/exchangeEdit.html', 'App\Controller\Exchange\Edit::doDefault'));
 
-$routes->add('btc-exchange-manager', new Route('/{role}/exchangeManager.html', 'App\Controller\Btc\Exchange\Manager::doDefault'));
-$routes->add('btc-exchange-edit', new Route('/{role}/exchangeEdit.html', 'App\Controller\Btc\Exchange\Edit::doDefault'));
-$routes->add('btc-account', new Route('/{role}/{exchange}/account.html', 'App\Controller\Btc\Account::doDefault'));
-$routes->add('btc-summary', new Route('/{role}/{exchange}/summary.html', 'App\Controller\Btc\Summary::doDefault'));
+$routes->add('btc-market-manager', new Route('/{role}/marketManager.html', 'App\Controller\Market\Manager::doDefault'));
+$routes->add('btc-market-edit', new Route('/{role}/marketEdit.html', 'App\Controller\Market\Edit::doDefault'));
+$routes->add('btc-asset-manager', new Route('/{role}/assetManager.html', 'App\Controller\Asset\Manager::doDefault'));
+$routes->add('btc-asset-edit', new Route('/{role}/assetEdit.html', 'App\Controller\Asset\Edit::doDefault'));
+
+
+
+//$routes->add('btc-account', new Route('/{role}/{exchange}/account.html', 'App\Controller\Btc\Account::doDefault'));
+//$routes->add('btc-summary', new Route('/{role}/{exchange}/summary.html', 'App\Controller\Btc\Summary::doDefault'));
 

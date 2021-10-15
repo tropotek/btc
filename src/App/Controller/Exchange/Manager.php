@@ -1,5 +1,5 @@
 <?php
-namespace App\Controller\Btc\Exchange;
+namespace App\Controller\Exchange;
 
 use Dom\Template;
 use Tk\Request;

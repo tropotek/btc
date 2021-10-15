@@ -26,6 +26,7 @@ class ExchangeMap extends Mapper
             $this->dbMap = new \Tk\DataMap\DataMap();
             $this->dbMap->addPropertyMap(new Db\Integer('id'), 'key');
             $this->dbMap->addPropertyMap(new Db\Integer('userId', 'user_id'));
+            //$this->dbMap->addPropertyMap(new Db\Boolean('default'));
             $this->dbMap->addPropertyMap(new Db\Text('driver'));
             $this->dbMap->addPropertyMap(new Db\Text('username'));
             $this->dbMap->addPropertyMap(new Db\Text('apiKey', 'api_key'));
@@ -51,6 +52,7 @@ class ExchangeMap extends Mapper
             $this->formMap = new \Tk\DataMap\DataMap();
             $this->formMap->addPropertyMap(new Form\Integer('id'), 'key');
             $this->formMap->addPropertyMap(new Form\Integer('userId'));
+            //$this->formMap->addPropertyMap(new Form\Boolean('default'));
             $this->formMap->addPropertyMap(new Form\Text('driver'));
             $this->formMap->addPropertyMap(new Form\Text('username'));
             $this->formMap->addPropertyMap(new Form\Text('apiKey'));
@@ -62,7 +64,6 @@ class ExchangeMap extends Mapper
             $this->formMap->addPropertyMap(new Form\ObjectMap('options'));
             $this->formMap->addPropertyMap(new Form\Date('modified'));
             $this->formMap->addPropertyMap(new Form\Date('created'));
-
         }
         return $this->formMap;
     }
@@ -106,6 +107,9 @@ class ExchangeMap extends Mapper
         if (!empty($filter['userId'])) {
             $filter->appendWhere('a.user_id = %s AND ', (int)$filter['userId']);
         }
+//        if (!empty($filter['default'])) {
+//            $filter->appendWhere('a.default = %s AND ', (int)$filter['default']);
+//        }
         if (!empty($filter['driver'])) {
             $filter->appendWhere('a.driver = %s AND ', $this->quote($filter['driver']));
         }
@@ -127,73 +131,6 @@ class ExchangeMap extends Mapper
 
         return $filter;
     }
-
-
-
-
-
-
-    /**
-     * @param int $exchangeId
-     * @param string $market
-     * @param string $currency
-     * @param string $amount
-     * @throws \Tk\Db\Exception
-     */
-    public function addEquityTotal($exchangeId, $market, $currency, $amount)
-    {
-        $stm = $this->getDb()->prepare('INSERT INTO equity_total (exchange_id, market, currency, amount, created)  VALUES (?, ?, ?, ?, NOW())');
-        $stm->execute(array(
-            $exchangeId, $market, $currency, $amount
-        ));
-
-    }
-
-    /**
-     * @param int $exchangeId
-     * @param string $market
-     * @param string $currency
-     * @param \DateTime $dateFrom
-     * @param null|\Tk\Db\Tool $tool
-     * @return array
-     * @throws \Tk\Db\Exception
-     */
-    public function findEquityTotals($exchangeId, $market, $currency, $dateFrom = null, $tool = null)
-    {
-        if (!$tool)
-            $tool = \Tk\Db\Tool::create('created DESC');
-        if (!$dateFrom)
-            $dateFrom = \Tk\Date::create()->sub(new \DateInterval('P1D'));
-        $stm = $this->getDb()->prepare('SELECT * FROM equity_total a WHERE exchange_id = ? AND market = ? AND currency = ? AND created > ? ' . $tool->toSql());
-        $stm->execute(array(
-            $exchangeId, $market, $currency, $dateFrom->format(\Tk\Date::FORMAT_ISO_DATETIME)
-        ));
-        return $stm->fetchAll();
-    }
-
-    /**
-     * Find all available equity markets in the DB
-     *
-     * @param int $exchangeId
-     * @param null $dateFrom
-     * @param null $tool
-     * @return array
-     * @throws \Tk\Db\Exception
-     */
-    public function findEquityMarkets($exchangeId, $dateFrom = null, $tool = null)
-    {
-        if (!$tool)
-            $tool = \Tk\Db\Tool::create('market');
-        if (!$dateFrom)
-            $dateFrom = \Tk\Date::create()->sub(new \DateInterval('P1D'));
-        $stm = $this->getDb()->prepare('SELECT DISTINCT market FROM equity_total a WHERE exchange_id = ? AND created > ? ' . $tool->toSql());
-        $stm->execute(array(
-            $exchangeId, $dateFrom->format(\Tk\Date::FORMAT_ISO_DATETIME)
-        ));
-        $o = $stm->fetchAll(\PDO::FETCH_COLUMN);
-        return $o;
-    }
-
 
 
 }

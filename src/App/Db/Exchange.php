@@ -29,6 +29,11 @@ class Exchange extends \Tk\Db\Map\Model implements \Tk\ValidInterface
      */
     public $userId = 0;
 
+//    /**
+//     * @var bool
+//     */
+//    public $default = false;
+
     /**
      * @var string
      */
@@ -111,8 +116,9 @@ class Exchange extends \Tk\Db\Map\Model implements \Tk\ValidInterface
     public static function getDriverList()
     {
         $list = \Tk\Form\Field\Select::arrayToSelectList(\ccxt\Exchange::$exchanges);
-        array_shift($list);
-        array_shift($list);
+//        array_shift($list);
+//        array_shift($list);
+        //$list['coinspot'] = '\\App\\Driver\\coinspot';
         //$list['Btcmarkets V3'] = '\\App\\Driver\\BtcMarkets3';
         ksort($list);
         return $list;
@@ -140,6 +146,17 @@ class Exchange extends \Tk\Db\Map\Model implements \Tk\ValidInterface
     }
 
     /**
+     * @param $marketId
+     * @return bool
+     */
+    public function hasMarket($marketId)
+    {
+        $this->getApi()->load_markets();
+        $markets = array_keys($this->getApi()->fetch_markets());
+        return in_array($marketId, $markets);
+    }
+
+    /**
      * Live Call
      * Return the CCXT Exchange API object
      * @return \ccxt\Exchange
@@ -148,8 +165,12 @@ class Exchange extends \Tk\Db\Map\Model implements \Tk\ValidInterface
     {
         if (!$this->_api) {
             $driver = $this->driver;
-            if (!class_exists($driver))
+            if ($driver == 'coinspot') {
+                $driver = '\\App\\Driver\\coinspot';
+            }
+            if (!class_exists($driver)) {
                 $driver = '\\ccxt\\' . $this->driver;
+            }
 
             $this->_api = new $driver(array(
                 'apiKey' => $this->apiKey,
@@ -159,115 +180,6 @@ class Exchange extends \Tk\Db\Map\Model implements \Tk\ValidInterface
         }
         return $this->_api;
     }
-
-    /**
-     * @return array
-     */
-    public function getMarkets()
-    {
-        $balanceList = $this->getApi()->fetchBalance();
-        unset($balanceList['info']);
-        unset($balanceList['free']);
-        unset($balanceList['used']);
-        unset($balanceList['total']);
-        unset($balanceList['AUD']);
-        return array_keys($balanceList);
-    }
-
-    /**
-     * Live Call
-     * @param null|string $currency
-     * @return array
-     * @deprecated
-     */
-    public function getAccountSummary($currency = null)
-    {
-        if (!$currency)
-            $currency = $this->getCurrency();
-
-        // TODO: https://github.com/ccxt/ccxt/wiki/Manual
-
-
-        $api = $this->getApi();
-        $m = $api->loadMarkets();
-        //vd($m);
-        $balance = $api->fetchBalance();
-        //vd($balance);
-        $marketTotals = $balance['total'];
-        $totals = array();
-        foreach ($marketTotals as $coin => $amount) {
-            usleep ($api->rateLimit * 1000); // usleep wants microseconds
-            if (strtoupper($coin) == strtoupper($currency)) continue;
-            $marketId = strtoupper($coin) . '/' . strtoupper($currency);
-            if (array_key_exists($marketId, $api->markets)) {
-                //\Tk\Log::info($marketId);
-                try {
-                    $t = $api->fetchTicker($marketId);
-                    //vd($t);
-                    $totals[$coin] = 0;
-                    //vd($coin, $t, $amount, \ccxt\Exchange::truncate($amount, 8), self::truncateToString($amount, 8));
-                    if (self::truncateToString($amount, 8) > 0) {
-                        //$totals[$coin] = $t['bid'] * self::truncateToString($amount,8);
-                        $totals[$coin] = $t['ask'] * self::truncateToString($amount,8);       // I think this reflects a more accurate total
-                    }
-                } catch (ExchangeError $e) {
-                    \Tk\Log::error($marketId . ' ' . $e->getMessage());
-                } catch (\Exception $e) {
-                    \Tk\Log::error($e->__toString());
-                }
-            }
-        }
-        return $totals;
-    }
-
-    /**
-     * Live Call
-     * @param null $currency
-     * @return float|int
-     * @deprecated
-     */
-    public function getLiveTotalEquity($currency = null)
-    {
-        $marketTotals = $this->getAccountSummary($currency);
-        return array_sum($marketTotals);
-    }
-
-    /**
-     * @param null|string $currency
-     * @return float|string
-     * @deprecated
-     */
-    public function getTotalEquity($currency = null)
-    {
-        if (!$currency)
-            $currency = $this->getCurrency();
-        try {
-            $obj = current(ExchangeMap::create()->findEquityTotals($this->getId(), self::MARKET_ALL, $currency,
-                null, \Tk\Db\Tool::create('created DESC', 1)));
-            if ($obj && !empty($obj->amount)) {
-                return $obj->amount;
-            }
-        } catch (Exception $e) { }
-        return 0;
-    }
-
-    /**
-     * Live Call
-     * @return float
-     */
-    public function getAvailableCurrency()
-    {
-        $api = $this->getApi();
-        $api->loadMarkets();
-        $balance = $api->fetchBalance();
-        $totals = $balance['total'];
-        if (isset($totals[$this->currency]))
-            return $totals[$this->currency];
-        return 0.0;
-    }
-
-
-
 
     /**
      * @return string
@@ -413,46 +325,21 @@ class Exchange extends \Tk\Db\Map\Model implements \Tk\ValidInterface
         return $this;
     }
 
-
-    private static $marketNames = [
-        'AUD'   => 'Australian Dollar',
-        'BTC'   => 'Bitcoin',
-        'LTC' => 'Litecoin',
-        'ETH' => 'Ethereum',
-        'ETC' => 'Ethereum-Classic',
-        'XRP' => 'Ripple',
-        'OMG' => 'OmiseGO',
-        'POWR' => 'Power Ledger',
-        'BCH' => 'Bitcoin Cash',
-        'BAT' => 'Basic Attention',
-        'GNT' => 'Golem',
-        'XLM' => 'Stellar Lumens',
-        'ENJ' => 'Enjin Coin',
-        'LINK' => 'Chainlink',
-        'BSV' => 'Bitcoin SV',
-        'COMP' => 'Compound',
-        'ALGO' => 'Algorand',
-        'MCAU' => 'Meld Gold'
-    ];
-
     /**
-     * Return the full market name if known
-     *
-     * @param string $market
-     * @return mixed
+     * @param $number
+     * @param int $precision
+     * @return string
      */
-    public function getMarketName($market)
-    {
-        if (array_key_exists($market, self::$marketNames))
-            return self::$marketNames[$market];
-        return $market;
-    }
-
     public static function truncateToString($number, $precision = 0)
     {
         return \ccxt\Exchange::truncate_to_string($number, $precision);
     }
 
+    /**
+     * @param $number
+     * @param int $precision
+     * @return string
+     */
     public static function toFloat($number, $precision = 4)
     {
         return sprintf('%.'.$precision.'f', self::truncateToString($number));
@@ -471,10 +358,6 @@ class Exchange extends \Tk\Db\Map\Model implements \Tk\ValidInterface
         if (!$this->userId) {
             $errors['userId'] = 'Invalid value: userId';
         }
-
-//        if (!$this->username) {
-//            $errors['username'] = 'Invalid value: name';
-//        }
 
         if (!$this->driver) {
             $errors['driver'] = 'Invalid value: driver';
@@ -502,66 +385,3 @@ class Exchange extends \Tk\Db\Map\Model implements \Tk\ValidInterface
 
 }
 
-
-
-    /**
-     * Here's an overview of base exchange properties with values added for example:
-
-     {
-    'id':   'exchange'                  // lowercase string exchange id
-    'name': 'Exchange'                  // human-readable string
-    'countries': [ 'US', 'CN', 'EU' ],  // array of ISO country codes
-    'urls': {
-    'api': 'https://api.example.com/data',  // string or dictionary of base API URLs
-    'www': 'https://www.example.com'        // string website URL
-    'doc': 'https://docs.example.com/api',  // string URL or array of URLs
-    },
-    'version':         'v1',            // string ending with digits
-    'api':             { ... },         // dictionary of api endpoints
-    'has': {                            // exchange capabilities
-    'CORS': false,
-    'publicAPI': true,
-    'privateAPI': true,
-    'cancelOrder': true,
-    'createDepositAddress': false,
-    'createOrder': true,
-    'deposit': false,
-    'fetchBalance': true,
-    'fetchClosedOrders': false,
-    'fetchCurrencies': false,
-    'fetchDepositAddress': false,
-    'fetchMarkets': true,
-    'fetchMyTrades': false,
-    'fetchOHLCV': false,
-    'fetchOpenOrders': false,
-    'fetchOrder': false,
-    'fetchOrderBook': true,
-    'fetchOrders': false,
-    'fetchTicker': true,
-    'fetchTickers': false,
-    'fetchBidsAsks': false,
-    'fetchTrades': true,
-    'withdraw': false,
-    },
-    'timeframes': {                     // empty if the exchange !has.fetchOHLCV
-    '1m': '1minute',
-    '1h': '1hour',
-    '1d': '1day',
-    '1M': '1month',
-    '1y': '1year',
-    },
-    'timeout':          10000,          // number in milliseconds
-    'rateLimit':        2000,           // number in milliseconds
-    'userAgent':       'ccxt/1.1.1 ...' // string, HTTP User-Agent header
-    'verbose':          false,          // boolean, output error details
-    'markets':         { ... }          // dictionary of markets/pairs by symbol
-    'symbols':         [ ... ]          // sorted list of string symbols (traded pairs)
-    'currencies':      { ... }          // dictionary of currencies by currency code
-    'markets_by_id':   { ... },         // dictionary of dictionaries (markets) by id
-    'proxy': 'https://crossorigin.me/', // string URL
-    'apiKey':   '92560ffae9b8a0421...', // string public apiKey (ASCII, hex, Base64, ...)
-    'secret':   '9aHjPmW+EtRRKN/Oi...'  // string private secret key
-    'password': '6kszf4aci8r',          // string password
-    'uid':      '123456',               // string user id
-    }
-     */
