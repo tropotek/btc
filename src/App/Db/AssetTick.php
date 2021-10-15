@@ -75,7 +75,8 @@ class AssetTick extends \Tk\Db\Map\Model implements \Tk\ValidInterface
                 usleep($api->rateLimit * 1000); // usleep wants microseconds
                 $marketId = $asset->getMarket()->getSymbol() . '/' . $currency;
                 $data = $api->fetchTicker($marketId);
-                if (count($data)) {
+                vd($data);
+                if (count($data) && $data['symbol'] == $marketId) {
                     $tick = new AssetTick();
                     $tick->setAssetId($asset->getId());
                     $tick->setUnits($asset->getUnits());
