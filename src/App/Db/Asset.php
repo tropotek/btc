@@ -4,6 +4,7 @@ namespace App\Db;
 use App\Db\Traits\MarketTrait;
 use Bs\Db\Traits\TimestampTrait;
 use Bs\Db\Traits\UserTrait;
+use Bs\Db\User;
 use Tk\Db\Tool;
 
 /**
@@ -105,6 +106,9 @@ class Asset extends \Tk\Db\Map\Model implements \Tk\ValidInterface
     }
 
     /**
+     * Get the current market value per unit of this asset
+     *
+     *
      * @param string $returnType
      * @return float|int
      * @throws \Exception
@@ -123,6 +127,8 @@ class Asset extends \Tk\Db\Map\Model implements \Tk\ValidInterface
     }
 
     /**
+     * Get the current market value of all units in this asset
+     *
      * @param string $returnType
      * @return float|int
      * @throws \Exception
@@ -141,6 +147,8 @@ class Asset extends \Tk\Db\Map\Model implements \Tk\ValidInterface
     }
 
     /**
+     * Return the historic market unit price for this asset
+     *
      * @param int $limit
      * @param string $returnType
      * @return array
@@ -161,6 +169,8 @@ class Asset extends \Tk\Db\Map\Model implements \Tk\ValidInterface
     }
 
     /**
+     * Return the historic value of all units in this asset
+     *
      * @param int $limit
      * @param string $currency
      * @param string $returnType
@@ -178,6 +188,32 @@ class Asset extends \Tk\Db\Map\Model implements \Tk\ValidInterface
                 $dst[$tick->getCreated()->getTimestamp()] = round($tick->getUnits() * $tick->getAsk(), 2);
         }
         return $dst;
+    }
+
+
+    /**
+     * @param User $user
+     * @return AssetTick
+     * @throws \Exception
+     */
+    public static function updateAssetTotalTick($user)
+    {
+        $list = \App\Db\AssetMap::create()->findFiltered(['userId' => $user->getId()]);
+        $tBid = 0;
+        $tAsk = 0;
+        foreach ($list as $asset) {
+            if (!$asset->getMarket() && !$asset->getMarket()->getExchange())
+                continue;
+            $tBid += round($asset->getMarketTotalValue('bid'), 2);
+            $tAsk += round($asset->getMarketTotalValue('ask'), 2);
+        }
+        $tick = new AssetTick();
+        $tick->setUserId($user->getId());
+        $tick->setAssetId(0);       // 0 = AUser account totals
+        $tick->setBid($tBid);
+        $tick->setAsk($tAsk);
+        $tick->save();
+        return $tick;
     }
 
 

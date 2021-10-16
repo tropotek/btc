@@ -25,6 +25,7 @@ class AssetTickMap extends Mapper
         if (!$this->dbMap) { 
             $this->dbMap = new \Tk\DataMap\DataMap();
             $this->dbMap->addPropertyMap(new Db\Integer('id'), 'key');
+            $this->dbMap->addPropertyMap(new Db\Integer('userId', 'userid'));
             $this->dbMap->addPropertyMap(new Db\Integer('assetId', 'asset_id'));
             $this->dbMap->addPropertyMap(new Db\Decimal('units'));
             $this->dbMap->addPropertyMap(new Db\Text('currency'));
@@ -44,6 +45,7 @@ class AssetTickMap extends Mapper
         if (!$this->formMap) {
             $this->formMap = new \Tk\DataMap\DataMap();
             $this->formMap->addPropertyMap(new Form\Integer('id'), 'key');
+            $this->formMap->addPropertyMap(new Form\Integer('userId'));
             $this->formMap->addPropertyMap(new Form\Integer('assetId'));
             $this->formMap->addPropertyMap(new Form\Decimal('units'));
             $this->formMap->addPropertyMap(new Form\Text('currency'));
@@ -64,7 +66,6 @@ class AssetTickMap extends Mapper
         $stm = $this->getDb()->prepare('DELETE FROM asset_tick WHERE asset_id = ?');
         return $stm->execute(array($assetId));
     }
-
 
     /**
      * @param array|Filter $filter
@@ -101,7 +102,12 @@ class AssetTickMap extends Mapper
             if ($w) $filter->appendWhere('(%s) AND ', $w);
         }
 
-        if (!empty($filter['assetId'])) {
+        if (!empty($filter['userId'])) {
+            $w = $this->makeMultiQuery($filter['userId'], 'a.user_id');
+            if ($w) $filter->appendWhere('(%s) AND ', $w);
+        }
+
+        if (isset($filter['assetId'])) {
             $filter->appendWhere('a.asset_id = %s AND ', (int)$filter['assetId']);
         }
         if (!empty($filter['currency'])) {

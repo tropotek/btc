@@ -3,6 +3,7 @@ namespace App\Db;
 
 use App\Db\Traits\AssetTrait;
 use Bs\Db\Traits\CreatedTrait;
+use Bs\Db\Traits\UserTrait;
 
 /**
  * @author Mick Mifsud
@@ -13,12 +14,18 @@ use Bs\Db\Traits\CreatedTrait;
 class AssetTick extends \Tk\Db\Map\Model implements \Tk\ValidInterface
 {
     use AssetTrait;
+    use UserTrait;
     use CreatedTrait;
 
     /**
      * @var int
      */
     public $id = 0;
+
+    /**
+     * @var int
+     */
+    public $userId = 0;
 
     /**
      * @var int
@@ -57,7 +64,8 @@ class AssetTick extends \Tk\Db\Map\Model implements \Tk\ValidInterface
     public function __construct()
     {
         $this->_CreatedTrait();
-
+        if ($this->getAuthUser())
+            $this->setUserId($this->getAuthUser()->getId());
     }
 
     /**
@@ -65,8 +73,6 @@ class AssetTick extends \Tk\Db\Map\Model implements \Tk\ValidInterface
      */
     public static function updateAssetTicks()
     {
-
-
         $list = AssetMap::create()->findFiltered(['active' => true]);
         foreach ($list as $asset) {
             if (!$asset->getMarket()->getExchange()) continue;
@@ -81,6 +87,7 @@ class AssetTick extends \Tk\Db\Map\Model implements \Tk\ValidInterface
                 $data = $api->fetchTicker($marketId);
                 if (count($data) && $data['symbol'] == $marketId) {
                     $tick = new AssetTick();
+                    $tick->setUserId($asset->getUserId());
                     $tick->setAssetId($asset->getId());
                     $tick->setUnits($asset->getUnits());
                     $tick->setCurrency($currency);

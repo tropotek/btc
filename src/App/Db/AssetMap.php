@@ -86,7 +86,7 @@ class AssetMap extends Mapper
             if ($w) $filter->appendWhere('(%s) AND ', substr($w, 0, -3));
         }
 
-        if (!empty($filter['id'])) {
+        if (isset($filter['id'])) {     // Must be able to get records with 0 'asset_id' value for total
             $w = $this->makeMultiQuery($filter['id'], 'a.id');
             if ($w) $filter->appendWhere('(%s) AND ', $w);
         }
