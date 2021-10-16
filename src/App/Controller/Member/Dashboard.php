@@ -92,6 +92,12 @@ class Dashboard extends \Bs\Controller\AdminIface
 .table tbody > tr > td a {
   font-size: 1rem;
 }
+.table thead th {
+  text-align: center !important;
+}
+.table thead th.key {
+  text-align: left !important;
+}
 CSS;
         $template->appendCss($css);
 
