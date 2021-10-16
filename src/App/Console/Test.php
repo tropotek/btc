@@ -2,6 +2,7 @@
 namespace App\Console;
 
 use App\Bot;
+use App\Db\Asset;
 use App\Db\AssetMap;
 use App\Db\AssetTick;
 use App\Db\Candle;
@@ -9,6 +10,7 @@ use App\Db\CandleMap;
 use App\Db\Exchange;
 use App\Db\Tick;
 use App\Db\TickMap;
+use Bs\Db\User;
 use ccxt\btcmarkets;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -52,7 +54,12 @@ class Test extends \Bs\Console\Iface
             return;
         }
 
-        AssetTick::updateAssetTicks();
+        //AssetTick::updateAssetTicks();
+
+        $list = $this->getConfig()->getUserMapper()->findFiltered(['type' => User::TYPE_MEMBER]);
+        foreach ($list as $user) {
+            Asset::updateAssetTotalTick($user);
+        }
 
     }
 

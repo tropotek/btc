@@ -1,7 +1,11 @@
 <?php
 namespace App\Controller\Member;
 
+use App\Db\Asset;
+use App\Db\AssetTick;
+use App\Db\AssetTickMap;
 use Bs\Controller\ManagerTrait;
+use Tk\Db\Tool;
 use Tk\Request;
 
 /**
@@ -41,16 +45,30 @@ class Dashboard extends \Bs\Controller\AdminIface
 
     }
 
-    public function calculateTotal($currency = 'AUD')
+    /**
+     * @param string $type
+     * @return float|int|mixed
+     * @throws \Exception
+     */
+    public function calculateTotal($type = 'bid')
     {
-        $list = \App\Db\AssetMap::create()->findFiltered(['userId' => $this->getAuthUser()->getId()]);
         $total = 0;
+        $tick = AssetTickMap::create()->findFiltered(['userId' => $this->getAuthUser()->getId(), 'assetId' => 0], Tool::create('created DESC'))->current();
+        if ($type == Asset::MARKET_BID)
+            $total = $tick->getBid();
+        else
+            $total = $tick->getAsk();
+
+        /*
+         * // TODO: this would calculate it closer to the last tick but may not be required
+        $list = \App\Db\AssetMap::create()->findFiltered(['userId' => $this->getAuthUser()->getId()]);
         foreach ($list as $asset) {
             if (!$asset->getMarket() && !$asset->getMarket()->getExchange() && $asset->getMarket()->getExchange() != $currency)
                 continue;
             $t = round($asset->getMarketTotalValue(), 2);
             $total = $total + $t;
         }
+        */
         return $total;
     }
 
@@ -59,6 +77,11 @@ class Dashboard extends \Bs\Controller\AdminIface
         $template = parent::show();
 
         $template->insertText('total', '$' . number_format($this->calculateTotal(), 2));
+        $list = Asset::getUserTotalsHistory($this->getAuthUser()->getId(), 65);
+        $list = array_reverse($list);
+        $str = implode(',', $list);
+        vd($str);
+        $template->insertText('totalGraph', $str);
 
         $template->appendTemplate('panel', $this->getTable()->show());
 
@@ -83,10 +106,11 @@ CSS;
     {
         $xhtml = <<<HTML
 <div class="">
-
+  
   <div class="tk-panel tk-panel-totals" data-panel-icon="" data-panel-title="">
-    <div class="row text-center">
-      <div class="col-md-12"><strong>Total:</strong> <span var="total">$0.00</span></div>
+    <div class="row">
+      <div class="col-md-6 text-right" style="line-height: 50px;"><strong>Total:</strong> <span var="total">$0.00</span></div>
+      <div class="col-md-6 text-left"><span class="tk-graph" style="text-align: right;background: #EFEFEF;display: inline-block; padding: 3px;margin: 5px 25px;min-width: 200px;" var="totalGraph"></span></div>
     </div>
   </div>
 

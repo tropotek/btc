@@ -5,6 +5,7 @@ use App\Db\Traits\MarketTrait;
 use Bs\Db\Traits\TimestampTrait;
 use Bs\Db\Traits\UserTrait;
 use Bs\Db\User;
+use Tk\Db\Map\Model;
 use Tk\Db\Tool;
 
 /**
@@ -186,6 +187,28 @@ class Asset extends \Tk\Db\Map\Model implements \Tk\ValidInterface
                 $dst[$tick->getCreated()->getTimestamp()] = round($tick->getUnits() * $tick->getBid(), 2);
             else if ($returnType == self::MARKET_ASK)
                 $dst[$tick->getCreated()->getTimestamp()] = round($tick->getUnits() * $tick->getAsk(), 2);
+        }
+        return $dst;
+    }
+
+    /**
+     * @param string $userId
+     * @param int $limit
+     * @param string $returnType
+     * @return array
+     * @throws \Exception
+     */
+    public static function getUserTotalsHistory($userId, $limit = 10, $returnType = 'bid')
+    {
+        if (is_object($userId) && $userId instanceof Model)
+            $userId - $userId->getId();
+        $src = AssetTickMap::create()->findFiltered(['userId' => $userId, 'assetId' => 0], Tool::create('created DESC', $limit));
+        $dst = [];
+        foreach ($src as $tick) {
+            if ($returnType == self::MARKET_BID)
+                $dst[$tick->getCreated()->getTimestamp()] = round($tick->getBid(), 2);
+            else if ($returnType == self::MARKET_ASK)
+                $dst[$tick->getCreated()->getTimestamp()] = round($tick->getAsk(), 2);
         }
         return $dst;
     }

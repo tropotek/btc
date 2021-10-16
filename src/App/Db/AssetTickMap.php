@@ -25,7 +25,7 @@ class AssetTickMap extends Mapper
         if (!$this->dbMap) { 
             $this->dbMap = new \Tk\DataMap\DataMap();
             $this->dbMap->addPropertyMap(new Db\Integer('id'), 'key');
-            $this->dbMap->addPropertyMap(new Db\Integer('userId', 'userid'));
+            $this->dbMap->addPropertyMap(new Db\Integer('userId', 'user_id'));
             $this->dbMap->addPropertyMap(new Db\Integer('assetId', 'asset_id'));
             $this->dbMap->addPropertyMap(new Db\Decimal('units'));
             $this->dbMap->addPropertyMap(new Db\Text('currency'));
