@@ -22,8 +22,7 @@ class Edit extends AdminEditIface
      * @var \App\Db\Asset
      */
     protected $asset = null;
-    protected $days = 28;
-    protected $dateFrom = null;
+    protected $days = 288;
 
 
     /**
