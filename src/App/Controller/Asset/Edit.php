@@ -66,6 +66,14 @@ class Edit extends AdminEditIface
         // Render the form
         $template->appendTemplate('panel', $this->getForm()->show());
 
+        if ($this->asset->getId()) {
+            $template->setAttr('left-panel', 'class', 'col-sm-8');
+            $template->setVisible('right-panel');
+
+        }
+
+
+
         return $template;
     }
 
@@ -75,7 +83,18 @@ class Edit extends AdminEditIface
     public function __makeTemplate()
     {
         $xhtml = <<<HTML
-<div class="tk-panel" data-panel-title="Asset Edit" data-panel-icon="fa fa-btc" var="panel"></div>
+<div class="row">
+  <div class="col-sm-12" var="left-panel">
+    <div class="tk-panel" data-panel-title="Asset Edit" data-panel-icon="fa fa-btc" var="panel"></div>
+  </div>
+  <div class="col-sm-4" choice="right-panel">
+    <div class="tk-panel" data-panel-icon="fa fa-btc" data-panel-title="History" var="right">
+    
+    
+    </div>
+  </div>
+</div>
+
 HTML;
         return \Dom\Loader::load($xhtml);
     }
