@@ -29,9 +29,8 @@ class Asset extends \Bs\FormIface
     public function init()
     {
 
-
-
-        $list = MarketMap::create()->findFiltered(['active' => true]);
+        //$list = MarketMap::create()->findFiltered(['active' => true]);
+        $list = \App\Db\Market::getSelectList($this->getAsset()->getMarketId());
         $this->appendField(Field\Select::createSelect('marketId', $list)->prependOption('-- Select --'));
 //        $list = CategoryMap::create()->findFiltered(['active' => true]);
 //        $this->appendField(Field\Select::createSelect('categoryId', $list)->prependOption('-- Select --'));

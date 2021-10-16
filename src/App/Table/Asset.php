@@ -1,9 +1,6 @@
 <?php
 namespace App\Table;
 
-use App\Db\AssetTickMap;
-use Tk\Db\Tool;
-use Tk\Form\Field;
 use Tk\Table\Cell;
 
 /**
@@ -40,6 +37,13 @@ class Asset extends \Bs\TableIface
             }
             return $value;
         });
+        $this->appendCell(new Cell\Text('currency'))->addCss('text-center')->addOnPropertyValue(function (\Tk\Table\Cell\Iface $cell, \App\Db\Asset $obj, $value) {
+            $value = 'AUD';
+            if ($obj->getMarket() && $obj->getMarket()->getExchange()) {
+                $value = $obj->getMarket()->getExchange()->getCurrency();
+            }
+            return $value;
+        });
         $this->appendCell(new Cell\Text('unitBuy'))->addCss('text-right')->addOnPropertyValue(function (\Tk\Table\Cell\Iface $cell, \App\Db\Asset $obj, $value) {
             $value = $obj->getMarketUnitValue(\App\Db\Asset::MARKET_BID);
             $value = '$' . number_format($value, 2);
@@ -63,7 +67,7 @@ class Asset extends \Bs\TableIface
 
         // TODO: create historic graph
         $this->appendCell(new Cell\Text('spark'))->addCss('text-right')->addOnCellHtml(function (\Tk\Table\Cell\Iface $cell, \App\Db\Asset $obj, $html) {
-            $list = $obj->getAssetTotalHistory(20);
+            $list = $obj->getAssetTotalHistory(65);
             $vals = implode(',', $list);
             $html = sprintf('<span class="tk-graph" style="background: #EFEFEF;display: inline-block; padding: 3px;margin: 5px 25px;min-width: 200px;">%s</span>', $vals);
             return $html;

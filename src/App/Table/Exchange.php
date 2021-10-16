@@ -33,6 +33,7 @@ class Exchange extends \Bs\TableIface
         $this->appendCell(new Cell\Checkbox('id'));
         $this->appendCell(new Cell\Text('driver'))->setLabel('Exchange')->addCss('key')
             ->setUrl(\Bs\Uri::createHomeUrl('/exchangeEdit.html'));
+        $this->appendCell(new Cell\Text('currency'));
         $this->appendCell(new Cell\Text('username'));
         $this->appendCell(new Cell\Boolean('active'));
         //$this->appendCell(new Cell\Date('modified'));

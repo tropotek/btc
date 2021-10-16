@@ -41,21 +41,18 @@ class Dashboard extends \Bs\Controller\AdminIface
 
     }
 
-
-
-    public function calculateTotal()
+    public function calculateTotal($currency = 'AUD')
     {
         $list = \App\Db\AssetMap::create()->findFiltered(['userId' => $this->getAuthUser()->getId()]);
         $total = 0;
         foreach ($list as $asset) {
+            if (!$asset->getMarket() && !$asset->getMarket()->getExchange() && $asset->getMarket()->getExchange() != $currency)
+                continue;
             $t = round($asset->getMarketTotalValue(), 2);
             $total = $total + $t;
         }
         return $total;
     }
-
-
-
 
     public function show()
     {

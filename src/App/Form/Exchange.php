@@ -40,7 +40,7 @@ class Exchange extends \Bs\FormIface
         $this->appendField(new Field\Input('apiKey'));
         $this->appendField(new Field\Input('secret'));
 
-        $list = array('AUD' => 'AUD');
+        $list = array('AUD' => 'AUD', 'USD' => 'USD', 'BTC' => 'BTC');
         $this->appendField(new Field\Select('currency', $list))->prependOption('-- Select --', '');
         $this->appendField(new Field\Input('icon'));
         $this->appendField(new Field\Checkbox('active'))->setNotes('If active, the cron job will process this exchange.');

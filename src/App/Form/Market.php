@@ -34,7 +34,8 @@ class Market extends \Bs\FormIface
 
         $this->appendField(new Field\Input('name'));
         $this->appendField(new Field\Input('symbol'));
-        $list = ExchangeMap::create()->findFiltered(['active' => true]);
+        //$list = ExchangeMap::create()->findFiltered(['active' => true]);
+        $list = \App\Db\Exchange::getSelectList($this->getMarket()->getExchangeId());
         $this->appendField(Field\Select::createSelect('exchangeId', $list));
         //$this->appendField(new Field\Input('image'));
         //$this->appendField(new Field\Textarea('notes'));

@@ -3,7 +3,6 @@ namespace App\Db;
 
 use App\Db\Traits\ExchangeTrait;
 use Bs\Db\Traits\TimestampTrait;
-use Tk\Exception;
 
 /**
  * @author Mick Mifsud
@@ -158,6 +157,29 @@ class Market extends \Tk\Db\Map\Model implements \Tk\ValidInterface
     {
         $this->active = $active;
         return $this;
+    }
+
+    /**
+     * return the status list for a select field
+     * @param null|string $currentId
+     * @return array
+     */
+    public static function getSelectList($currentId = null)
+    {
+        $arr = MarketMap::create()->findFiltered(['active' => true]);
+        $arr2 = array();
+        foreach ($arr as $k => $obj) {
+            $k = $obj->getName();
+            if ($obj->getExchange())
+                $k .= ' [' . $obj->getExchange()->getName() . ' - ' .$obj->getExchange()->getCurrency() . ']';
+            if ($obj->getId() == $currentId) {
+                if ($obj->getExchange())
+                    $k .= ' (Current)';
+            }
+            $arr2[$k] = $obj->getId();
+            $arr = $arr2;
+        }
+        return $arr;
     }
 
     /**

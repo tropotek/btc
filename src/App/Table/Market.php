@@ -38,7 +38,7 @@ class Market extends \Bs\TableIface
         $this->appendCell(new Cell\Text('exchangeId'))->addOnPropertyValue(function (\Tk\Table\Cell\Iface $cell, \App\Db\Market $obj, $value) {
             $value = 'N/A';
             if ($obj->getExchange()) {
-                $value = $obj->getExchange()->getName();
+                $value = $obj->getExchange()->getName() . ' [' . $obj->getExchange()->getCurrency() . ']';
             }
             return $value;
         });

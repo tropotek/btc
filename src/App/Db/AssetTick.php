@@ -65,17 +65,20 @@ class AssetTick extends \Tk\Db\Map\Model implements \Tk\ValidInterface
      */
     public static function updateAssetTicks()
     {
-        $currency = 'AUD';
+
+
         $list = AssetMap::create()->findFiltered(['active' => true]);
         foreach ($list as $asset) {
             if (!$asset->getMarket()->getExchange()) continue;
+            $currency = 'AUD';
+            if ($asset->getMarket() && $asset->getMarket()->getExchange())
+                $currency = $asset->getMarket()->getExchange()->getCurrency();
             try {
                 $api = $asset->getMarket()->getExchange()->getApi();
                 $api->loadMarkets();
                 usleep($api->rateLimit * 1000); // usleep wants microseconds
                 $marketId = $asset->getMarket()->getSymbol() . '/' . $currency;
                 $data = $api->fetchTicker($marketId);
-                vd($data);
                 if (count($data) && $data['symbol'] == $marketId) {
                     $tick = new AssetTick();
                     $tick->setAssetId($asset->getId());

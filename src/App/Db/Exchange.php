@@ -347,6 +347,25 @@ class Exchange extends \Tk\Db\Map\Model implements \Tk\ValidInterface
         return sprintf('%.'.$precision.'f', self::truncateToString($number));
     }
 
+    /**
+     * return the status list for a select field
+     * @param null|string $currentId
+     * @return array
+     */
+    public static function getSelectList($currentId = null)
+    {
+        $arr = ExchangeMap::create()->findFiltered(['active' => true]);
+        $arr2 = array();
+        foreach ($arr as $k => $obj) {
+            $k = $obj->getName() . ' [' . $obj->getCurrency() . ']';
+            if ($obj->getId() == $currentId) {
+                $k .= ' (Current)';
+            }
+            $arr2[$k] = $obj->getId();
+            $arr = $arr2;
+        }
+        return $arr;
+    }
 
 
     /**

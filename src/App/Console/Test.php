@@ -52,7 +52,6 @@ class Test extends \Bs\Console\Iface
             return;
         }
 
-        vd();
         AssetTick::updateAssetTicks();
 
     }
