@@ -92,7 +92,7 @@ class Edit extends AdminEditIface
         $template->appendTemplate('panel', $this->getForm()->show());
 
         if ($this->asset->getId()) {
-            $template->setAttr('left-panel', 'class', 'col-sm-8');
+            $template->setAttr('left-panel', 'class', 'col-sm-6');
             $template->setVisible('right-panel');
 
             // historic profit graph
@@ -106,7 +106,6 @@ class Edit extends AdminEditIface
 
             $template->appendCssUrl('//cdnjs.cloudflare.com/ajax/libs/dygraph/2.1.0/dygraph.min.css');
             $template->appendJsUrl('//cdnjs.cloudflare.com/ajax/libs/dygraph/2.1.0/dygraph.min.js');
-
 
         $js = <<<JS
 $(document).ready(function () {
@@ -177,9 +176,9 @@ CSS;
   <div class="col-sm-12" var="left-panel">
     <div class="tk-panel" data-panel-title="Asset Edit" data-panel-icon="fa fa-btc" var="panel"></div>
   </div>
-  <div class="col-sm-4" choice="right-panel">
+  <div class="col-sm-6" choice="right-panel">
     <div class="tk-panel" data-panel-icon="fa fa-btc" data-panel-title="24h Asset Value" var="right">
-      <div class="graph" style="max-width: 100%;  margin-top: 25px;" var="graph"></div>
+      <div class="graph" style="width: 100%;  margin-top: 25px;" var="graph"></div>
     </div>
   </div>
 </div>
