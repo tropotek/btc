@@ -178,7 +178,7 @@ CSS;
     <div class="tk-panel" data-panel-title="Asset Edit" data-panel-icon="fa fa-btc" var="panel"></div>
   </div>
   <div class="col-sm-4" choice="right-panel">
-    <div class="tk-panel" data-panel-icon="fa fa-btc" data-panel-title="History" var="right">
+    <div class="tk-panel" data-panel-icon="fa fa-btc" data-panel-title="Last 24h Asset Value" var="right">
       <div class="graph" style="max-width: 100%;  margin-top: 25px;" var="graph"></div>
     </div>
   </div>
