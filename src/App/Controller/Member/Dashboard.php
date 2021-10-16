@@ -80,7 +80,6 @@ class Dashboard extends \Bs\Controller\AdminIface
         $list = Asset::getUserTotalsHistory($this->getAuthUser()->getId(), 65);
         $list = array_reverse($list);
         $str = implode(',', $list);
-        vd($str);
         $template->insertText('totalGraph', $str);
 
         $template->appendTemplate('panel', $this->getTable()->show());
