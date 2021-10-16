@@ -79,6 +79,16 @@ class Asset extends \Tk\Db\Map\Model implements \Tk\ValidInterface
     }
 
     /**
+     * @return int
+     * @throws \Tk\Db\Exception
+     */
+    public function delete()
+    {
+        AssetTickMap::create()->deleteTicksByAssetId($this->getVolatileId());
+        return parent::delete();
+    }
+
+    /**
      * @return AssetTick|object|\Tk\Db\Map\Model|null
      * @throws \Exception
      */

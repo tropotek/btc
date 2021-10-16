@@ -55,6 +55,18 @@ class AssetTickMap extends Mapper
     }
 
     /**
+     * @param int $assetId
+     * @return bool
+     * @throws \Tk\Db\Exception
+     */
+    public function deleteTicksByAssetId($assetId)
+    {
+        $stm = $this->getDb()->prepare('DELETE FROM asset_tick WHERE asset_id = ?');
+        return $stm->execute(array($assetId));
+    }
+
+
+    /**
      * @param array|Filter $filter
      * @param Tool $tool
      * @return ArrayObject|AssetTick[]
