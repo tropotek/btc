@@ -54,11 +54,12 @@ class Dashboard extends \Bs\Controller\AdminIface
     {
         $total = 0;
         $tick = AssetTickMap::create()->findFiltered(['userId' => $this->getAuthUser()->getId(), 'assetId' => 0], Tool::create('created DESC'))->current();
-        if ($type == Asset::MARKET_BID)
-            $total = $tick->getBid();
-        else
-            $total = $tick->getAsk();
-
+        if ($tick) {
+            if ($type == Asset::MARKET_BID)
+                $total = $tick->getBid();
+            else
+                $total = $tick->getAsk();
+        }
         /*
          * // TODO: this would calculate it closer to the last tick but may not be required
         $list = \App\Db\AssetMap::create()->findFiltered(['userId' => $this->getAuthUser()->getId()]);
