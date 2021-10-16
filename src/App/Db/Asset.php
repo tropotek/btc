@@ -167,7 +167,6 @@ class Asset extends \Tk\Db\Map\Model implements \Tk\ValidInterface
             else if ($returnType == self::MARKET_ASK)
                 $dst[$tick->getCreated()->getTimestamp()] = round($tick->getUnits() * $tick->getAsk(), 2);
         }
-        $dst = array_reverse($dst);
         return $dst;
     }
 

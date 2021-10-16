@@ -68,6 +68,7 @@ class Asset extends \Bs\TableIface
         // TODO: create historic graph
         $this->appendCell(new Cell\Text('spark'))->addCss('text-right')->addOnCellHtml(function (\Tk\Table\Cell\Iface $cell, \App\Db\Asset $obj, $html) {
             $list = $obj->getAssetTotalHistory(65);
+            $list = array_reverse($list);
             $vals = implode(',', $list);
             $html = sprintf('<span class="tk-graph" style="background: #EFEFEF;display: inline-block; padding: 3px;margin: 5px 25px;min-width: 200px;">%s</span>', $vals);
             return $html;
