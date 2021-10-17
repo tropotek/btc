@@ -2,7 +2,6 @@
 namespace App\Controller\Member;
 
 use App\Db\Asset;
-use App\Db\AssetTick;
 use App\Db\AssetTickMap;
 use Bs\Controller\ManagerTrait;
 use Tk\Db\Tool;
@@ -85,6 +84,22 @@ class Dashboard extends \Bs\Controller\AdminIface
 
         $template->appendTemplate('panel', $this->getTable()->show());
 
+        $js = <<<JS
+jQuery(function($) {
+  $('.tk-graph2').each(function () {
+    $(this).sparkline('html', {
+      height: '55px',
+      lineWidth: 3,
+      lineColor: 'white',
+      spotRadius: 0,
+      fillColor: 'transparent',
+      enableTagOptions: true
+    });
+  });
+})
+JS;
+        $template->appendJs($js);
+
         $css = <<<CSS
 .table tbody > tr > td {
   font-size: 1rem;
@@ -97,6 +112,23 @@ class Dashboard extends \Bs\Controller\AdminIface
 }
 .table thead th.key {
   text-align: left !important;
+}
+
+.infographic-box .emerald-bg .fa {
+
+}
+.infographic-box .tk-graph2 {
+  background-color: transparent;
+  /*background-color: rgba(255, 255, 255, 0.5);*/
+  text-align: right;
+  display: inline-block; 
+  padding: 3px;
+  margin: 0 0 0 0px;
+  min-width: 60%;
+  height: 65px;
+  /* 0399e2 */
+  border: 1px solid #c0e8ff;
+  border-width: 0 0 1px 1px;
 }
 CSS;
         $template->appendCss($css);
@@ -113,16 +145,23 @@ CSS;
         $xhtml = <<<HTML
 <div class="">
   
-  <div class="tk-panel tk-panel-totals" data-panel-icon="" data-panel-title="">
-    <div class="row">
-      <div class="col-md-6 text-right" style="line-height: 50px;"><strong>Total:</strong> <span var="total">$0.00</span></div>
-      <div class="col-md-6 text-left"><span class="tk-graph" style="text-align: right;background: #EFEFEF;display: inline-block; padding: 3px;margin: 5px 25px;min-width: 200px;" var="totalGraph"></span></div>
+  <div class="row">
+    <div class="col-sm-6">
+      <div class="main-box infographic-box colored green-bg">
+        <i class="fa fa-money"></i>
+        <span class="headline">Total</span>
+        <span class="value" var="total" ></span>
+      </div>
     </div>
+    <div class="col-sm-6">
+      <div class="main-box infographic-box colored emerald-bg clearfix">
+        <i class="fa fa-line-chart"></i>
+        <span class="tk-graph2 float-right" var="totalGraph"></span>
+      </div>
+    </div>   
   </div>
-
-  <div class="tk-panel" data-panel-icon="fa fa-bar-chart" var="panel" repeat1="panel">
-     
-  </div>
+  
+  <div class="tk-panel" data-panel-icon="fa fa-bar-chart" var="panel"></div>
 </div>
 HTML;
 

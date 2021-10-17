@@ -79,7 +79,7 @@ class Asset extends \Bs\TableIface
         $js = <<<JS
 jQuery(function($) {
   $('.tk-graph').each(function () {
-    $(this).sparkline('html', {height: '2.5em'});
+    $(this).sparkline('html', {height: '2.5em', enableTagOptions: true});
   });
 })
 JS;
