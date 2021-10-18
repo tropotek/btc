@@ -77,7 +77,7 @@ class Dashboard extends \Bs\Controller\AdminIface
         $template = parent::show();
 
         $template->insertText('total', '$' . number_format($this->calculateTotal(), 2));
-        $list = Asset::getUserTotalsHistory($this->getAuthUser()->getId(), 190);
+        $list = Asset::getUserTotalsHistory($this->getAuthUser()->getId(), 160);
         $list = array_reverse($list);
         $str = implode(',', $list);
         $template->insertText('totalGraph', $str);
@@ -89,6 +89,7 @@ jQuery(function($) {
   $('.tk-graph2').each(function () {
     $(this).sparkline('html', {
       height: '55px',
+      
       lineWidth: 3,
       lineColor: 'white',
       spotRadius: 0,
@@ -117,18 +118,29 @@ JS;
 .infographic-box .emerald-bg .fa {
 
 }
+.infographic-box .graph-wrap {
+  
+  /* 0399e2 */
+  border: 1px solid #c0e8ff;
+  border-width: 0 0 1px 1px;
+  background-color: transparent;
+  float: right;
+  padding: 3px;
+  margin: 0 0 0 0px;
+  width: 60%;
+  height: 65px;
+  overflow: hidden;
+  
+}
 .infographic-box .tk-graph2 {
   background-color: transparent;
   /*background-color: rgba(255, 255, 255, 0.5);*/
   text-align: right;
-  display: inline-block; 
-  padding: 3px;
-  margin: 0 0 0 0px;
-  min-width: 60%;
-  height: 65px;
-  /* 0399e2 */
-  border: 1px solid #c0e8ff;
-  border-width: 0 0 1px 1px;
+}
+
+.infographic-box .tk-graph2 canvas {
+
+  /*min-width: 100%;*/
 }
 CSS;
         $template->appendCss($css);
@@ -156,7 +168,9 @@ CSS;
     <div class="col-sm-6">
       <div class="main-box infographic-box colored emerald-bg clearfix">
         <i class="fa fa-line-chart"></i>
-        <span class="tk-graph2 float-right" var="totalGraph"></span>
+        <div class="graph-wrap">
+          <span class="tk-graph2 float-right" var="totalGraph"></span>
+        </div>
       </div>
     </div>   
   </div>

@@ -37,19 +37,19 @@ class Asset extends \Bs\TableIface
             }
             return $value;
         });
-        $this->appendCell(new Cell\Text('currency'))->addCss('text-center')->addOnPropertyValue(function (\Tk\Table\Cell\Iface $cell, \App\Db\Asset $obj, $value) {
+        $this->appendCell(new Cell\Text('currency'))->addCss('d-none d-lg-table-cell text-center')->addOnPropertyValue(function (\Tk\Table\Cell\Iface $cell, \App\Db\Asset $obj, $value) {
             $value = 'AUD';
             if ($obj->getMarket() && $obj->getMarket()->getExchange()) {
                 $value = $obj->getMarket()->getExchange()->getCurrency();
             }
             return $value;
         });
-        $this->appendCell(new Cell\Text('unitBuy'))->addCss('text-right')->addOnPropertyValue(function (\Tk\Table\Cell\Iface $cell, \App\Db\Asset $obj, $value) {
+        $this->appendCell(new Cell\Text('unitSell'))->addCss('d-none d-md-table-cell text-right')->addOnPropertyValue(function (\Tk\Table\Cell\Iface $cell, \App\Db\Asset $obj, $value) {
             $value = $obj->getMarketUnitValue(\App\Db\Asset::MARKET_BID);
             $value = '$' . number_format($value, 2);
             return $value;
         });
-        $this->appendCell(new Cell\Text('unitSell'))->addCss('text-right')->addOnPropertyValue(function (\Tk\Table\Cell\Iface $cell, \App\Db\Asset $obj, $value) {
+        $this->appendCell(new Cell\Text('unitBuy'))->addCss('d-none d-lg-table-cell text-right')->addOnPropertyValue(function (\Tk\Table\Cell\Iface $cell, \App\Db\Asset $obj, $value) {
             $value = $obj->getMarketUnitValue(\App\Db\Asset::MARKET_ASK);
             $value = '$' . number_format($value, 2);
             return $value;
@@ -65,8 +65,7 @@ class Asset extends \Bs\TableIface
             return $value;
         });
 
-        // TODO: create historic graph
-        $this->appendCell(new Cell\Text('spark'))->addCss('text-right')->addOnCellHtml(function (\Tk\Table\Cell\Iface $cell, \App\Db\Asset $obj, $html) {
+        $this->appendCell(new Cell\Text('spark'))->addCss('d-none d-md-table-cell text-right')->addOnCellHtml(function (\Tk\Table\Cell\Iface $cell, \App\Db\Asset $obj, $html) {
             $list = $obj->getAssetTotalHistory(65);
             $list = array_reverse($list);
             $vals = implode(',', $list);
