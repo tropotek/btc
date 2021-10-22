@@ -32,7 +32,7 @@ class Auth extends \Bs\FormIface
         $this->appendField(new Field\Input('name'));
         $this->appendField(new Field\Input('url'));
         $this->appendField(new Field\Input('username'));
-        $this->appendField(new Field\Input('password'));
+        //$this->appendField(new Field\Input('password'));
         $this->appendField(new Field\Input('authtool'));
         $this->appendField(new Field\Textarea('keys'))
             ->addCss('mce-min')->setAttr('data-elfinder-path', $mediaPath);
