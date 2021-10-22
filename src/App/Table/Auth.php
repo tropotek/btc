@@ -93,16 +93,13 @@ jQuery(function($) {
     document.execCommand("copy");
     window.getSelection().removeAllRanges();
     
+    // Select the text
     range = document.createRange();
     range.selectNodeContents(el);
     var sel = window.getSelection();
     sel.removeAllRanges();
-    sel.addRange(range);
-    //sel.removeAllRanges();
-    
+    sel.addRange(range);s
   }
-
-  
   
   $('button.authtool').each(function () {
     var btn = $(this);
