@@ -51,6 +51,7 @@ class NavRendererHandler implements Subscriber
         $menu->append(Item::create('Exchanges', \Bs\Uri::createHomeUrl('/exchangeManager.html'), 'fa fa-building-o'));
         $menu->append(Item::create('Markets', \Bs\Uri::createHomeUrl('/marketManager.html'), 'fa fa-money'));
         //$menu->append(Item::create('Assets', \Bs\Uri::createHomeUrl('/assetManager.html'), 'fa fa-btc'));
+        $menu->append(Item::create('Accounts', \Bs\Uri::createHomeUrl('/authManager.html'), 'fa fa-id-badge'));
 
         $menu->append(Item::create('About', '#', 'fa fa-info-circle')
             ->setAttr('data-toggle', 'modal')->setAttr('data-target', '#aboutModal'));
@@ -73,7 +74,7 @@ class NavRendererHandler implements Subscriber
         if ($user->hasType(\Bs\Db\User::TYPE_ADMIN)) {
             $menu->append(Item::create('Settings', \Bs\Uri::createHomeUrl('/settings.html'), 'fa fa-cogs'));
         }
-        $menu->append(Item::create('Accounts', \Bs\Uri::createHomeUrl('/authManager.html'), 'fa fa-id-badge'));
+        //$menu->append(Item::create('Accounts', \Bs\Uri::createHomeUrl('/authManager.html'), 'fa fa-id-badge'));
         $menu->append(Item::create('Assets', \Bs\Uri::createHomeUrl('/assetManager.html'), 'fa fa-btc'));
         $menu->append(Item::create('TradingView', \Bs\Uri::createHomeUrl('/tradingview.html'), 'fa fa-line-chart'));
 
