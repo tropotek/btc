@@ -27,15 +27,17 @@ class Auth extends \Bs\FormIface
      */
     public function init()
     {
+        $mediaPath = 'Auth/'.$this->getAuthUser()->getId();
 
-        //$this->appendField(new Field\Select('userId', array()))->prependOption('-- Select --', '');
         $this->appendField(new Field\Input('name'));
         $this->appendField(new Field\Input('url'));
         $this->appendField(new Field\Input('username'));
         $this->appendField(new Field\Input('password'));
         $this->appendField(new Field\Input('authtool'));
-        $this->appendField(new Field\Textarea('keys'));
-        $this->appendField(new Field\Textarea('notes'));
+        $this->appendField(new Field\Textarea('keys'))
+            ->addCss('mce-min')->setAttr('data-elfinder-path', $mediaPath);
+        $this->appendField(new Field\Textarea('notes'))
+            ->addCss('mce-min')->setAttr('data-elfinder-path', $mediaPath);
 
         $this->appendField(new Event\Submit('update', array($this, 'doSubmit')));
         $this->appendField(new Event\Submit('save', array($this, 'doSubmit')));

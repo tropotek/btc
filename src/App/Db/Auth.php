@@ -82,6 +82,17 @@ class Auth extends \Tk\Db\Map\Model implements \Tk\ValidInterface
     }
 
     /**
+     * Get the Case root file folder, all content related to the case must be stored in here
+     *
+     * @return string
+     * @throws \Exception
+     */
+    public function getDataPath()
+    {
+        return sprintf('auth/%s', $this->getVolatileId());
+    }
+
+    /**
      * @param string $name
      * @return Auth
      */
