@@ -75,7 +75,7 @@ class Auth extends \Bs\TableIface
 
         // Actions
         //$this->appendAction(\Tk\Table\Action\Link::createLink('New Auth', \Bs\Uri::createHomeUrl('/authEdit.html'), 'fa fa-plus'));
-        $this->appendAction(\Tk\Table\Action\ColumnSelect::create()->setUnselected(array('modified', 'created')));
+        //$this->appendAction(\Tk\Table\Action\ColumnSelect::create()->setUnselected(array('modified', 'created')));
         $this->appendAction(\Tk\Table\Action\Delete::create());
         //$this->appendAction(\Tk\Table\Action\Csv::create());
 
