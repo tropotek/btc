@@ -40,6 +40,13 @@ $config['template.maintenance']     = $config['system.template.path']   . '/them
 
 
 
+/*
+ * TODO: Change this to your own key
+ * The key to use for DB data TextEncrypt fields.
+ * NOTE: Do not change this after install as you will not be able to decode the existing saved fields.
+ */
+$config['db.encrypt.key']     = '1234567890123456';
+
 
 
 

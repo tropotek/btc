@@ -50,8 +50,6 @@ $routes->add('btc-market-edit', new Route('/{role}/marketEdit.html', 'App\Contro
 $routes->add('btc-asset-manager', new Route('/{role}/assetManager.html', 'App\Controller\Asset\Manager::doDefault'));
 $routes->add('btc-asset-edit', new Route('/{role}/assetEdit.html', 'App\Controller\Asset\Edit::doDefault'));
 
-
-
-//$routes->add('btc-account', new Route('/{role}/{exchange}/account.html', 'App\Controller\Btc\Account::doDefault'));
-//$routes->add('btc-summary', new Route('/{role}/{exchange}/summary.html', 'App\Controller\Btc\Summary::doDefault'));
+$routes->add('auth-manager', new Route('/{role}/authManager.html', 'App\Controller\Auth\Manager::doDefault'));
+$routes->add('auth-edit', new Route('/{role}/authEdit.html', 'App\Controller\Auth\Edit::doDefault'));
 

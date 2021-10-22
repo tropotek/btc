@@ -73,6 +73,7 @@ class NavRendererHandler implements Subscriber
         if ($user->hasType(\Bs\Db\User::TYPE_ADMIN)) {
             $menu->append(Item::create('Settings', \Bs\Uri::createHomeUrl('/settings.html'), 'fa fa-cogs'));
         }
+        $menu->append(Item::create('Accounts', \Bs\Uri::createHomeUrl('/authManager.html'), 'fa fa-id-badge'));
         $menu->append(Item::create('Assets', \Bs\Uri::createHomeUrl('/assetManager.html'), 'fa fa-btc'));
         $menu->append(Item::create('TradingView', \Bs\Uri::createHomeUrl('/tradingview.html'), 'fa fa-line-chart'));
 
