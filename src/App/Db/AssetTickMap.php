@@ -1,6 +1,7 @@
 <?php
 namespace App\Db;
 
+use Tk\Date;
 use Tk\Db\Tool;
 use Tk\Db\Map\ArrayObject;
 use Tk\DataMap\Db;
@@ -65,6 +66,54 @@ class AssetTickMap extends Mapper
     {
         $stm = $this->getDb()->prepare('DELETE FROM asset_tick WHERE asset_id = ?');
         return $stm->execute(array($assetId));
+    }
+
+    /**
+     * @param int $assetId
+     * @param \DateTime $start
+     * @param \DateTime $end
+     * @param string $period          The tick unit time frame minute|hour|day|week|month|year
+     * @return ArrayObject|AssetTick[]
+     */
+    public function getTicksByDateRange($assetId, \DateTime $start, \DateTime $end, $period = 'minute')
+    {
+        switch ($period) {
+            case 'minute':
+                $period = "CONCAT(DATE(created), ' ', HOUR(created), ':', MINUTE(created))";
+                break;
+            default:
+            case 'hour':
+                $period = "CONCAT(DATE(created), ' ', HOUR(created))";
+                break;
+            case 'day':
+                $period = "DATE(created)";
+                break;
+            case 'week':
+                $period = "CONCAT(YEAR(created), '-', WEEK(created))";
+                break;
+            case 'month':
+                $period = "CONCAT(YEAR(created), '-', MONTH(created))";
+                break;
+            case 'year':
+                $period = "YEAR(created)";
+                break;
+        }
+
+        $stmt = $this->getDb()->prepare('SELECT SQL_CALC_FOUND_ROWS id, user_id, asset_id, AVG(units) as \'units\', currency, AVG(bid) as \'bid\', AVG(ask) as \'ask\', created, '.$period.' as period
+            FROM asset_tick 
+            WHERE 
+                asset_id = ? AND
+                created BETWEEN ? AND ?
+            GROUP BY '.$period.'
+            ORDER BY created DESC
+        ');
+        $stmt->execute([
+            $assetId,
+            $start->format(Date::FORMAT_ISO_DATETIME),
+            $end->format(Date::FORMAT_ISO_DATETIME)
+        ]);
+        $arr = ArrayObject::createFromMapper($this, $stmt);
+        return $arr;
     }
 
     /**

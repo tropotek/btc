@@ -4,6 +4,7 @@ namespace App\Controller\Member;
 use App\Db\Asset;
 use App\Db\AssetTickMap;
 use Bs\Controller\ManagerTrait;
+use Tk\Date;
 use Tk\Db\Tool;
 use Tk\Request;
 
@@ -59,16 +60,6 @@ class Dashboard extends \Bs\Controller\AdminIface
             else
                 $total = $tick->getAsk();
         }
-        /*
-         * // TODO: this would calculate it closer to the last tick but may not be required
-        $list = \App\Db\AssetMap::create()->findFiltered(['userId' => $this->getAuthUser()->getId()]);
-        foreach ($list as $asset) {
-            if (!$asset->getMarket() && !$asset->getMarket()->getExchange() && $asset->getMarket()->getExchange() != $currency)
-                continue;
-            $t = round($asset->getMarketTotalValue(), 2);
-            $total = $total + $t;
-        }
-        */
         return $total;
     }
 

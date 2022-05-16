@@ -150,14 +150,17 @@ class Asset extends \Tk\Db\Map\Model implements \Tk\ValidInterface
     /**
      * Return the historic market unit price for this asset
      *
-     * @param int $limit
-     * @param string $returnType
+     * @param \DateTime $start
+     * @param \DateTime $end
+     * @param string $period            (optional) minute|hour|[day]|week|month|year The tick total time period
+     * @param string $returnType        (optional) [bid]|ask    The tick column to get totals from
      * @return array
      * @throws \Exception
      */
-    public function getMarketHistory($limit = 10, $returnType = 'bid')
+    public function getMarketHistory($start, $end, $period = 'day', $returnType = 'bid')
     {
-        $src = AssetTickMap::create()->findFiltered(['assetId' => $this->getId()], Tool::create('created DESC', $limit));
+        $src = AssetTickMap::create()->getTicksByDateRange($this->getId(), $start, $end, $period);
+        //$src = AssetTickMap::create()->findFiltered(['assetId' => $this->getId()], Tool::create('created DESC', $limit));
         $dst = [];
         foreach ($src as $tick) {
             if ($returnType == self::MARKET_BID)
@@ -172,15 +175,16 @@ class Asset extends \Tk\Db\Map\Model implements \Tk\ValidInterface
     /**
      * Return the historic value of all units in this asset
      *
-     * @param int $limit
-     * @param string $currency
-     * @param string $returnType
+     * @param \DateTime $start
+     * @param \DateTime $end
+     * @param string $period            (optional) minute|hour|[day]|week|month|year The tick total time period
+     * @param string $returnType        (optional) [bid]|ask    The tick column to get totals from
      * @return array
      * @throws \Exception
      */
-    public function getAssetTotalHistory($limit = 10, $returnType = 'bid')
+    public function getAssetTotalHistory($start, $end, $period = 'day', $returnType = 'bid')
     {
-        $src = AssetTickMap::create()->findFiltered(['assetId' => $this->getId()], Tool::create('created DESC', $limit));
+        $src = AssetTickMap::create()->getTicksByDateRange($this->getId(), $start, $end, $period);
         $dst = [];
         foreach ($src as $tick) {
             if ($returnType == self::MARKET_BID)

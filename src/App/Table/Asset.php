@@ -1,6 +1,7 @@
 <?php
 namespace App\Table;
 
+use Tk\Date;
 use Tk\Table\Cell;
 
 /**
@@ -65,8 +66,10 @@ class Asset extends \Bs\TableIface
             return $value;
         });
 
-        $this->appendCell(new Cell\Text('spark'))->addCss('d-none d-md-table-cell text-right')->addOnCellHtml(function (\Tk\Table\Cell\Iface $cell, \App\Db\Asset $obj, $html) {
-            $list = $obj->getAssetTotalHistory(65);
+        $this->appendCell(new Cell\Text('spark'))->setLabel('90 Day - Daily History')->addCss('d-none d-md-table-cell text-right')->addOnCellHtml(function (\Tk\Table\Cell\Iface $cell, \App\Db\Asset $obj, $html) {
+            //$cell->setAttr('title', '90 Day - Daily History');
+            $start = Date::create()->sub(new \DateInterval('P90D'));
+            $list = $obj->getAssetTotalHistory($start, Date::create(), 'day', 'bid');
             $list = array_reverse($list);
             $vals = implode(',', $list);
             $html = sprintf('<span class="tk-graph" style="background: #EFEFEF;display: inline-block; padding: 3px;margin: 5px 25px;min-width: 200px;">%s</span>', $vals);

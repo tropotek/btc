@@ -59,8 +59,8 @@ class Edit extends AdminEditIface
      */
     public function doData(\Tk\Request $request)
     {
-        //$totals = $this->getMarketData($request->get('m'));
-        $totals = $this->asset->getAssetTotalHistory($this->days);
+        $start = Date::create()->sub(new \DateInterval('P'.$this->days.'D'));
+        $totals = $this->asset->getAssetTotalHistory($start, Date::create(), 'hour', 'bid');
         $data = [];
         foreach ($totals as $c => $t) {
             $date = Date::create($c);
