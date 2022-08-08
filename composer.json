@@ -9,7 +9,6 @@
     "authors":  [
          {
             "name": "Michael Mifsud",
-            "email": "info@tropotek.com.au",
             "homepage": "http://www.tropotek.com/"
         }
     ],
@@ -33,10 +32,10 @@
     },
     "require":  {
         "php": "^7.3.0",
-        "ttek/tk-base": "~3.2.0",
-        "ttek/theme-cube": "~1.2.0",
+        "ttek/tk-base": "~3.4.0",
+        "ttek/theme-cube": "~1.4.0",
 
-        "ttek-plg/mailog": "~1.0.0",
+        "ttek-plg/mailog": "~3.0.0",
         "ccxt/ccxt": "~1.58.0"
     },
     "require-dev":  {
