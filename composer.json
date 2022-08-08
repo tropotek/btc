@@ -1,7 +1,7 @@
 {
     "name": "ttek/btc",
     "type": "project",
-    "description": "A site to track basic bitcoin trnds",
+    "description": "A site to track basic bitcoin trends",
     "keywords":  ["tropotek"],
     "time": "2019-04-09",
     "license": "MIT",
