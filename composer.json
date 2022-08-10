@@ -2,12 +2,10 @@
     "name": "ttek/btc",
     "type": "project",
     "description": "A site to track basic bitcoin trends",
-    "keywords":  [
-        "tropotek"
-    ],
-    "time": "2022-08-10",
+    "keywords":  ["tropotek"],
+    "time": "2019-04-09",
     "license": "MIT",
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "authors":  [
          {
             "name": "Michael Mifsud",
@@ -36,12 +34,13 @@
         "php": "^7.3.0",
         "ttek/tk-base": "~3.4.0",
         "ttek/theme-cube": "~1.4.0",
+
         "ttek-plg/mailog": "~3.0.0",
         "ccxt/ccxt": "~1.58.0",
         "spomky-labs/otphp": "v10.0.x-dev"
     },
-    "config":  {
-        "allow-plugins":  {
+    "config": {
+        "allow-plugins": {
             "ttek/tk-installers": true
         }
     }
