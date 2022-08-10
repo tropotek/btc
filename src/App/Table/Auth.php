@@ -34,9 +34,6 @@ class Auth extends \Bs\TableIface
      */
     public function init()
     {
-        if ($this->getRequest()->has('c')) {
-            $this->doAuthtool($this->getRequest());
-        }
         if ($this->getRequest()->has('d')) {
             $this->doAuthtool2($this->getRequest());
         }
@@ -122,25 +119,7 @@ jQuery(function($) {
 JS;
         $this->getRenderer()->getTemplate()->appendJs($js);
 
-
         return $this;
-    }
-
-    public function doAuthtool(Request $request)
-    {
-        /** @var \App\Db\Auth $auth */
-        $auth = AuthMap::create()->find($request->get('c'));
-        if ($auth) {
-            $code = '------';
-            $str = trim(exec($auth->getAuthtool()));
-            if (preg_match('/^[0-9]{6}$/', $str)) {
-                $code = $str;
-            }
-            \Tk\ResponseJson::createJson(['status' => 'ok', 'code' => $code])->send();
-            exit();
-        }
-        \Tk\ResponseJson::createJson(['status' => 'err', 'msg' => 'Invalid Auth ID'], Response::HTTP_INTERNAL_SERVER_ERROR)->send();
-        exit();
     }
 
     public function doAuthtool2(Request $request)
@@ -148,7 +127,6 @@ JS;
         /** @var \App\Db\Auth $auth */
         $auth = AuthMap::create()->find($request->get('d'));
         if ($auth) {
-            $code = '------';
             $key = str_replace('oathtool --totp -b ', '', $auth->getAuthtool());
             try {
                 $otp = TOTP::create($key);
@@ -164,7 +142,6 @@ JS;
         \Tk\ResponseJson::createJson(['status' => 'err', 'msg' => 'Invalid Auth ID'], Response::HTTP_INTERNAL_SERVER_ERROR)->send();
         exit();
     }
-
 
     /**
      * @param array $filter
