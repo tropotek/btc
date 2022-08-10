@@ -36,9 +36,8 @@
         "ttek/theme-cube": "~1.4.0",
 
         "ttek-plg/mailog": "~3.0.0",
-        "ccxt/ccxt": "~1.58.0"
-    },
-    "require-dev":  {
+        "ccxt/ccxt": "~1.58.0",
+        "spomky-labs/otphp": "v10.0.x-dev"
     },
     "config": {
         "allow-plugins": {

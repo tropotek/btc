@@ -3,6 +3,7 @@ namespace App\Table;
 
 use App\Db\AuthMap;
 use Bs\Uri;
+use OTPHP\TOTP;
 use Tk\Form\Field;
 use Tk\Request;
 use Tk\Response;
@@ -36,6 +37,9 @@ class Auth extends \Bs\TableIface
         if ($this->getRequest()->has('c')) {
             $this->doAuthtool($this->getRequest());
         }
+        if ($this->getRequest()->has('d')) {
+            $this->doAuthtool2($this->getRequest());
+        }
 
         $this->appendCell(new Cell\Checkbox('id'));
 
@@ -50,14 +54,13 @@ class Auth extends \Bs\TableIface
             });
         $this->appendCell($this->getActionCell());
 
-
         $this->appendCell(new Cell\Text('authtool'))
             ->addOnPropertyValue(function (\Tk\Table\Cell\Iface $cell, \App\Db\Auth $obj, $value) {
                 $value = '';
                 return $value;
             })->addOnCellHtml(function (\Tk\Table\Cell\Iface $cell, \App\Db\Auth $obj, $html) {
                 if ($obj->getAuthtool()) {
-                    $html = sprintf('<button class="btn btn-sm btn-success authtool" data-auth-id="%s"><i class="fa fa-refresh"></i></button> <strong class="authcode">------</strong>',
+                    $html = sprintf('<button class="btn btn-sm btn-success authtool" data-auth-id="%s"><i class="fa fa-refresh"></i></button> <strong class="authcode2">------</strong>',
                         $obj->getId());
                 }
                 return $html;
@@ -74,37 +77,38 @@ class Auth extends \Bs\TableIface
         $this->appendFilter(new Field\Input('keywords'))->setAttr('placeholder', 'Search');
 
         // Actions
-        //$this->appendAction(\Tk\Table\Action\Link::createLink('New Auth', \Bs\Uri::createHomeUrl('/authEdit.html'), 'fa fa-plus'));
-        //$this->appendAction(\Tk\Table\Action\ColumnSelect::create()->setUnselected(array('modified', 'created')));
         $this->appendAction(\Tk\Table\Action\Delete::create());
-        //$this->appendAction(\Tk\Table\Action\Csv::create());
-
-        // load table
-        //$this->setList($this->findList());
 
         $js = <<<JS
 
 jQuery(function($) {
   function copyToClipboard(el) {
-    var range = document.createRange();
-    range.selectNode(el);
-    window.getSelection().removeAllRanges();
-    window.getSelection().addRange(range);
-    document.execCommand("copy");
-    window.getSelection().removeAllRanges();
-    
-    // Select the text
-    range = document.createRange();
-    range.selectNodeContents(el);
-    var sel = window.getSelection();
-    sel.removeAllRanges();
-    sel.addRange(range);s
+    if(navigator.clipboard) {
+        let text = $(el).text();
+        console.log(text);
+        navigator.clipboard.writeText(text)
+    } else {
+        var range = document.createRange();
+        range.selectNode(el);
+        window.getSelection().removeAllRanges();
+        window.getSelection().addRange(range);
+        document.execCommand("copy");
+        window.getSelection().removeAllRanges();
+        
+        // Select the text
+        range = document.createRange();
+        range.selectNodeContents(el);
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+    }
   }
   
   $('button.authtool').each(function () {
     var btn = $(this);
     btn.on('click', function (e) {
-      var params = {'c': btn.data('authId'), 'nolog': 'nolog'};
+      //var params = {'d': btn.data('authId'), 'nolog': 'nolog'};
+      var params = {'d': btn.data('authId')};
       $.post(document.location, params, function (data) {
         btn.next().text(data.code);
         var txt = btn.next().get(0);
@@ -113,6 +117,7 @@ jQuery(function($) {
       return false;
     });
   });
+  
 });
 JS;
         $this->getRenderer()->getTemplate()->appendJs($js);
@@ -130,6 +135,28 @@ JS;
             $str = trim(exec($auth->getAuthtool()));
             if (preg_match('/^[0-9]{6}$/', $str)) {
                 $code = $str;
+            }
+            \Tk\ResponseJson::createJson(['status' => 'ok', 'code' => $code])->send();
+            exit();
+        }
+        \Tk\ResponseJson::createJson(['status' => 'err', 'msg' => 'Invalid Auth ID'], Response::HTTP_INTERNAL_SERVER_ERROR)->send();
+        exit();
+    }
+
+    public function doAuthtool2(Request $request)
+    {
+        /** @var \App\Db\Auth $auth */
+        $auth = AuthMap::create()->find($request->get('d'));
+        if ($auth) {
+            $code = '------';
+            $key = str_replace('oathtool --totp -b ', '', $auth->getAuthtool());
+            try {
+                $otp = TOTP::create($key);
+                $code = $otp->now();
+            } catch (\Exception $e) {
+                \Tk\Log::error($e->__toString());
+                \Tk\ResponseJson::createJson(['status' => 'err', 'msg' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR)->send();
+                exit();
             }
             \Tk\ResponseJson::createJson(['status' => 'ok', 'code' => $code])->send();
             exit();
