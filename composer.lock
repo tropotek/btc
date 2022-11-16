@@ -2783,12 +2783,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/tropotek/tk-base.git",
-                "reference": "e6d49151dfa45eafc6b3a7257de900ddf2328b22"
+                "reference": "0f5be62d0b001d2f7346ceb1bdc370e4ab1911bd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tropotek/tk-base/zipball/e6d49151dfa45eafc6b3a7257de900ddf2328b22",
-                "reference": "e6d49151dfa45eafc6b3a7257de900ddf2328b22",
+                "url": "https://api.github.com/repos/tropotek/tk-base/zipball/0f5be62d0b001d2f7346ceb1bdc370e4ab1911bd",
+                "reference": "0f5be62d0b001d2f7346ceb1bdc370e4ab1911bd",
                 "shasum": ""
             },
             "require": {
