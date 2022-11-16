@@ -2,6 +2,7 @@
 namespace App\Controller\Member;
 
 use App\Db\Asset;
+use App\Db\AssetMap;
 use App\Db\AssetTickMap;
 use Bs\Controller\ManagerTrait;
 use Tk\Date;
@@ -53,7 +54,10 @@ class Dashboard extends \Bs\Controller\AdminIface
     public function calculateTotal($type = 'bid')
     {
         $total = 0;
-        $tick = AssetTickMap::create()->findFiltered(['userId' => $this->getAuthUser()->getId(), 'assetId' => 0], Tool::create('created DESC'))->current();
+        $tick = AssetTickMap::create()->findFiltered([
+            'userId' => $this->getAuthUser()->getId(),
+            'assetId' => 0
+        ], Tool::create('created DESC'))->current();
         if ($tick) {
             if ($type == Asset::MARKET_BID)
                 $total = $tick->getBid();
