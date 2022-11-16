@@ -18,7 +18,14 @@ $config['db.pass'] = 'password';
  * The key to use for DB data TextEncrypt fields.
  * NOTE: Do not change this after install as you will not be able to decode the existing saved fields.
  */
-$config['db.encrypt.key']     = '1234567890123456';
+$config['db.encrypt.key']     = '';
+
+/*
+ * DB secret API key used for the mirror command
+ * Use this  key for the mirror command in a dev environment.
+ * Keep this key secret. Access to the sites DB can be gained with it.
+ */
+//$config['db.skey'] = '';
 
 /*
  * Enable exception emails
@@ -44,16 +51,8 @@ $config['db.encrypt.key']     = '1234567890123456';
 //$config['log.path'] = '/home/user/log/error.log';
 //$config['system.debug.email'] = 'dev@example.com';
 
-
-
 if ($config->isDebug()) {
-//Used for the Mirror command
-    $config['live.db'] = array(
-        'type' => 'mysql',
-        'host' => 'localhost',
-        'name' => 'dev_live',
-        'user' => 'dev',
-        'pass' => ''
-    );
-    $config['live.data.path'] = 'user@example.com:/home/user/public_html/data';
+    // Used for the Mirror command
+    //$config['mirror.db']   = 'https://localhost/util/mirrorDb';
+    //$config['mirror.data'] = 'https://localhost/util/mirrorData';
 }
