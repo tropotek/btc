@@ -165,7 +165,6 @@ class Asset extends \Tk\Db\Map\Model implements \Tk\ValidInterface
     public function getMarketHistory($start, $end, $period = 'day', $returnType = 'bid')
     {
         $src = AssetTickMap::create()->getTicksByDateRange($this->getId(), $start, $end, $period);
-        //$src = AssetTickMap::create()->findFiltered(['assetId' => $this->getId()], Tool::create('created DESC', $limit));
         $dst = [];
         foreach ($src as $tick) {
             if ($returnType == self::MARKET_BID)
@@ -210,8 +209,8 @@ class Asset extends \Tk\Db\Map\Model implements \Tk\ValidInterface
     public static function getUserTotalsHistory($userId, $limit = 10, $returnType = 'bid')
     {
         if (is_object($userId) && $userId instanceof Model)
-            $userId - $userId->getId();
-        $src = AssetTickMap::create()->findFiltered(['userId' => $userId, 'assetId' => 0], Tool::create('created DESC', $limit));
+            $userId = $userId->getId();
+        $src = AssetTickMap::create()->findFilteredTotals(['userId' => $userId], Tool::create('created DESC', $limit));
         $dst = [];
         foreach ($src as $tick) {
             if ($returnType == self::MARKET_BID)
@@ -221,33 +220,6 @@ class Asset extends \Tk\Db\Map\Model implements \Tk\ValidInterface
         }
         return $dst;
     }
-
-
-    /**
-     * @param User $user
-     * @return AssetTick
-     * @throws \Exception
-     */
-    public static function updateAssetTotalTick($user)
-    {
-        $list = \App\Db\AssetMap::create()->findFiltered(['userId' => $user->getId()]);
-        $tBid = 0;
-        $tAsk = 0;
-        foreach ($list as $asset) {
-            if (!$asset->getMarket() && !$asset->getMarket()->getExchange())
-                continue;
-            $tBid += round($asset->getMarketTotalValue('bid'), 2);
-            $tAsk += round($asset->getMarketTotalValue('ask'), 2);
-        }
-        $tick = new AssetTick();
-        $tick->setUserId($user->getId());
-        $tick->setAssetId(0);       // 0 = AUser account totals
-        $tick->setBid($tBid);
-        $tick->setAsk($tAsk);
-        $tick->save();
-        return $tick;
-    }
-
 
     /**
      * @return string

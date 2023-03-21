@@ -95,24 +95,28 @@ class Cron extends \Bs\Console\Iface
     protected function execNow()
     {
         try {
-            AssetTick::updateAssetTicks();
+            if ($this->getConfig()->isDebug()) {
+                AssetTick::updateAssetTicks();
+            }
         } catch (\Exception $e) { $this->writeError($e->__toString()); }
     }
 
     protected function exec5min()
     {
         try {
-            //AssetTick::updateAssetTicks();
+            if (!$this->getConfig()->isDebug()) {
+                AssetTick::updateAssetTicks();
+            }
         } catch (\Exception $e) { $this->writeError($e->__toString()); }
     }
 
     protected function exec10min()
     {
         try {
-            $list = $this->getConfig()->getUserMapper()->findFiltered(['type' => User::TYPE_MEMBER]);
-            foreach ($list as $user) {
-                Asset::updateAssetTotalTick($user);
-            }
+//            $list = $this->getConfig()->getUserMapper()->findFiltered(['type' => User::TYPE_MEMBER]);
+//            foreach ($list as $user) {
+//                Asset::updateAssetTotalTick($user);
+//            }
         } catch (\Exception $e) { $this->writeError($e->__toString()); }
     }
 

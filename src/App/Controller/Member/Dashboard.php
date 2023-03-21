@@ -54,18 +54,15 @@ class Dashboard extends \Bs\Controller\AdminIface
     public function calculateTotal($type = 'bid')
     {
         $total = 0;
-        $tick = AssetTickMap::create()->findFiltered([
-            'userId' => $this->getAuthUser()->getId(),
-            'inTotal' => true,
-            'assetId' => 0
-        ], Tool::create('created DESC'))->current();
+        $tick = AssetTickMap::create()->findFilteredTotals([
+            'userId' => $this->getAuthUser()->getId()
+        ], Tool::create('created DESC', 1))->current();
         if ($tick) {
             if ($type == Asset::MARKET_BID)
                 $total = $tick->getBid();
             else
                 $total = $tick->getAsk();
         }
-        vd($this->getDb()->getLastQuery());
         return $total;
     }
 

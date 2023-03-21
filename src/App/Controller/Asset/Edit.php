@@ -7,9 +7,6 @@ use Tk\Date;
 use Tk\Request;
 
 /**
- * TODO: Add Route to routes.php:
- *      $routes->add('asset-edit', Route::create('/staff/assetEdit.html', 'App\Controller\Asset\Edit::doDefault'));
- *
  * @author Mick Mifsud
  * @created 2021-10-15
  * @link http://tropotek.com.au/
@@ -147,9 +144,9 @@ $(document).ready(function () {
 
 });
 JS;
-        $template->appendJs($js);
+            $template->appendJs($js);
 
-        $css = <<<CSS
+            $css = <<<CSS
 .dygraph-label .tk-dn {
   color: red;
 }
@@ -157,7 +154,7 @@ JS;
   color: green;
 }
 CSS;
-        $template->appendCss($css);
+            $template->appendCss($css);
 
         }
 

@@ -47,33 +47,26 @@ class Asset extends \Bs\TableIface
         });
         $this->appendCell(new Cell\Text('unitSell'))->addCss('d-none d-md-table-cell text-right')->addOnPropertyValue(function (\Tk\Table\Cell\Iface $cell, \App\Db\Asset $obj, $value) {
             $value = $obj->getMarketUnitValue(\App\Db\Asset::MARKET_BID);
-            $value = '$' . number_format($value, 2);
-            return $value;
+            return '$' . number_format($value, 2);
         });
         $this->appendCell(new Cell\Text('unitBuy'))->addCss('d-none d-lg-table-cell text-right')->addOnPropertyValue(function (\Tk\Table\Cell\Iface $cell, \App\Db\Asset $obj, $value) {
             $value = $obj->getMarketUnitValue(\App\Db\Asset::MARKET_ASK);
-            $value = '$' . number_format($value, 2);
-            return $value;
+            return '$' . number_format($value, 2);
         });
         $this->appendCell(new Cell\Text('units'))->addCss('text-right')->addOnPropertyValue(function (\Tk\Table\Cell\Iface $cell, \App\Db\Asset $obj, $value) {
-            // TODO: have a global long flot format function
-            $value = sprintf('%01.8f', $value);
-            return $value;
+            return sprintf('%01.8f', $value);
         });
         $this->appendCell(new Cell\Text('unitValue'))->setLabel('$')->addCss('text-right')->addOnPropertyValue(function (\Tk\Table\Cell\Iface $cell, \App\Db\Asset $obj, $value) {
             $value = $obj->getMarketTotalValue(\App\Db\Asset::MARKET_BID);
-            $value = '$' . number_format($value, 2);
-            return $value;
+            return '$' . number_format($value, 2);
         });
 
         $this->appendCell(new Cell\Text('spark'))->setLabel('90 Day - Daily History')->addCss('d-none d-md-table-cell text-right')->addOnCellHtml(function (\Tk\Table\Cell\Iface $cell, \App\Db\Asset $obj, $html) {
-            //$cell->setAttr('title', '90 Day - Daily History');
             $start = Date::create()->sub(new \DateInterval('P90D'));
             $list = $obj->getAssetTotalHistory($start, Date::create(), 'day', 'bid');
-            $list = array_reverse($list);
-            $vals = implode(',', $list);
-            $html = sprintf('<span class="tk-graph" style="background: #EFEFEF;display: inline-block; padding: 3px;margin: 5px 25px;min-width: 200px;">%s</span>', $vals);
-            return $html;
+            return sprintf('<span class="tk-graph" style="background: #EFEFEF;display: inline-block; padding: 3px;margin: 5px 25px;min-width: 200px;">%s</span>',
+                implode(',', array_reverse($list))
+            );
         });
 
         $template = $this->getRenderer()->getTemplate();

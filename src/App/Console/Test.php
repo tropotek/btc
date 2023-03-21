@@ -56,10 +56,10 @@ class Test extends \Bs\Console\Iface
 
         //AssetTick::updateAssetTicks();
 
-        $list = $this->getConfig()->getUserMapper()->findFiltered(['type' => User::TYPE_MEMBER]);
-        foreach ($list as $user) {
-            Asset::updateAssetTotalTick($user);
-        }
+//        $list = $this->getConfig()->getUserMapper()->findFiltered(['type' => User::TYPE_MEMBER]);
+//        foreach ($list as $user) {
+//            Asset::updateAssetTotalTick($user);
+//        }
 
     }
 

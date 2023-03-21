@@ -99,21 +99,12 @@ class AssetTickMap extends Mapper
                 break;
         }
 
-        $stmt = $this->getDb()->prepare('SELECT SQL_CALC_FOUND_ROWS id, user_id, asset_id, AVG(units) as \'units\', currency, AVG(bid) as \'bid\', AVG(ask) as \'ask\', created, '.$period.' as period
-            FROM asset_tick 
-            WHERE 
-                asset_id = ? AND
-                created BETWEEN ? AND ?
-            GROUP BY '.$period.'
-            ORDER BY created DESC
-        ');
-        $stmt->execute([
-            $assetId,
-            $start->format(Date::FORMAT_ISO_DATETIME),
-            $end->format(Date::FORMAT_ISO_DATETIME)
-        ]);
-        $arr = ArrayObject::createFromMapper($this, $stmt);
-        return $arr;
+        $tool = Tool::create('created DESC');
+        $tool->setGroupBy($period);
+        $filter = \Tk\Db\Filter::create();
+        $filter->set('assetId', $assetId);
+        $filter->set('between', ['start' => $start, 'end' => $end]);
+        return $this->findFiltered($filter, $tool);
     }
 
     /**
@@ -124,61 +115,10 @@ class AssetTickMap extends Mapper
      */
     public function findFiltered($filter, $tool = null)
     {
-        $r = $this->selectFromFilter($this->makeQuery(\Tk\Db\Filter::create($filter)), $tool);
-        vd($this->getDb()->getLastQuery());
-        return $r;
+        $filter = \Tk\Db\Filter::create($filter);
+        $filter->appendFrom('%s a', $this->quoteParameter('v_asset_tick'));
+        return $this->selectFromFilter($this->queryView($filter), $tool);
     }
-
-    /**
-     * @param Filter $filter
-     * @return Filter
-     */
-    public function makeQuery(Filter $filter)
-    {
-        $filter->appendFrom('%s a', $this->quoteParameter($this->getTable()));
-
-        if (!empty($filter['keywords'])) {
-            $kw = '%' . $this->escapeString($filter['keywords']) . '%';
-            $w = '';
-            $w .= sprintf('a.currency LIKE %s OR ', $this->quote($kw));
-            if (is_numeric($filter['keywords'])) {
-                $id = (int)$filter['keywords'];
-                $w .= sprintf('a.id = %d OR ', $id);
-            }
-            if ($w) $filter->appendWhere('(%s) AND ', substr($w, 0, -3));
-        }
-
-        if (!empty($filter['id'])) {
-            $w = $this->makeMultiQuery($filter['id'], 'a.id');
-            if ($w) $filter->appendWhere('(%s) AND ', $w);
-        }
-
-        if (!empty($filter['userId'])) {
-            $w = $this->makeMultiQuery($filter['userId'], 'a.user_id');
-            if ($w) $filter->appendWhere('(%s) AND ', $w);
-        }
-
-        if (isset($filter['assetId'])) {
-            $filter->appendWhere('a.asset_id = %s AND ', (int)$filter['assetId']);
-        }
-
-        if (!empty($filter['currency'])) {
-            $filter->appendWhere('a.currency = %s AND ', $this->quote($filter['currency']));
-        }
-
-        if (!empty($filter['inTotal']) && $filter['inTotal'] !== '' && $filter['inTotal'] !== null) {
-            $filter->appendFrom(' JOIN asset b ON (a.asset_id = b.id)');
-            $filter->appendWhere(' b.in_total = 1 AND ');
-        }
-
-        if (!empty($filter['exclude'])) {
-            $w = $this->makeMultiQuery($filter['exclude'], 'a.id', 'AND', '!=');
-            if ($w) $filter->appendWhere('(%s) AND ', $w);
-        }
-
-        return $filter;
-    }
-
 
     /**
      * @param array|Filter $filter
@@ -186,9 +126,11 @@ class AssetTickMap extends Mapper
      * @return ArrayObject|AssetTick[]
      * @throws \Exception
      */
-    public function findFilteredView($filter, $tool = null)
+    public function findFilteredTotals($filter, $tool = null)
     {
-        return $this->selectFromFilter($this->makeQuery(\Tk\Db\Filter::create($filter)), $tool);
+        $filter = \Tk\Db\Filter::create($filter);
+        $filter->appendFrom('%s a', $this->quoteParameter('v_tick_totals'));
+        return $this->selectFromFilter($this->queryView($filter), $tool);
     }
 
     /**
@@ -197,19 +139,6 @@ class AssetTickMap extends Mapper
      */
     public function queryView(Filter $filter)
     {
-        $filter->appendFrom('%s a', $this->quoteParameter('v_user_ticks'));
-
-        if (!empty($filter['keywords'])) {
-            $kw = '%' . $this->escapeString($filter['keywords']) . '%';
-            $w = '';
-            $w .= sprintf('a.currency LIKE %s OR ', $this->quote($kw));
-            if (is_numeric($filter['keywords'])) {
-                $id = (int)$filter['keywords'];
-                $w .= sprintf('a.id = %d OR ', $id);
-            }
-            if ($w) $filter->appendWhere('(%s) AND ', substr($w, 0, -3));
-        }
-
         if (!empty($filter['id'])) {
             $w = $this->makeMultiQuery($filter['id'], 'a.id');
             if ($w) $filter->appendWhere('(%s) AND ', $w);
@@ -224,13 +153,23 @@ class AssetTickMap extends Mapper
             $filter->appendWhere('a.asset_id = %s AND ', (int)$filter['assetId']);
         }
 
+        if (isset($filter['categoryId'])) {
+            $filter->appendWhere('a.category_id = %s AND ', (int)$filter['categoryId']);
+        }
+
         if (!empty($filter['currency'])) {
             $filter->appendWhere('a.currency = %s AND ', $this->quote($filter['currency']));
         }
 
+        if (!empty($filter['between'])) {
+            $filter->appendWhere('a.created BETWEEN %s AND %s AND ',
+                $this->quote($filter['between']['start']->format(Date::FORMAT_ISO_DATETIME)),
+                $this->quote($filter['between']['end']->format(Date::FORMAT_ISO_DATETIME))
+            );
+        }
+
         if (!empty($filter['inTotal']) && $filter['inTotal'] !== '' && $filter['inTotal'] !== null) {
-            $filter->appendFrom(' JOIN asset b ON (a.asset_id = b.id)');
-            $filter->appendWhere(' b.in_total = 1 AND ');
+            $filter->appendWhere('a.in_total = %s AND ', (int)$filter['inTotal']);
         }
 
         if (!empty($filter['exclude'])) {
