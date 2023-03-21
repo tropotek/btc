@@ -35,6 +35,7 @@ class Asset extends \Bs\FormIface
 //        $list = CategoryMap::create()->findFiltered(['active' => true]);
 //        $this->appendField(Field\Select::createSelect('categoryId', $list)->prependOption('-- Select --'));
         $this->appendField(new Field\Input('units'));
+        $this->appendField(new Field\Checkbox('inTotal'))->setNotes('Include this asset in the totals calculations');
         $this->appendField(new Field\Textarea('notes'));
 
         $this->appendField(new Event\Submit('update', array($this, 'doSubmit')));

@@ -29,6 +29,7 @@ class AssetMap extends Mapper
             $this->dbMap->addPropertyMap(new Db\Integer('userId', 'user_id'));
             $this->dbMap->addPropertyMap(new Db\Integer('categoryId', 'category_id'));
             $this->dbMap->addPropertyMap(new Db\Decimal('units'));
+            $this->dbMap->addPropertyMap(new Db\Boolean('inTotal', 'in_total'));
             $this->dbMap->addPropertyMap(new Db\Text('notes'));
             $this->dbMap->addPropertyMap(new Db\Date('modified'));
             $this->dbMap->addPropertyMap(new Db\Date('created'));
@@ -50,6 +51,7 @@ class AssetMap extends Mapper
             $this->formMap->addPropertyMap(new Form\Integer('categoryId'));
             $this->formMap->addPropertyMap(new Form\Text('symbol'));
             $this->formMap->addPropertyMap(new Form\Decimal('units'));
+            $this->formMap->addPropertyMap(new Form\Boolean('inTotal'));
             $this->formMap->addPropertyMap(new Form\Text('notes'));
 
         }
@@ -97,6 +99,10 @@ class AssetMap extends Mapper
         if (!empty($filter['categoryId'])) {
             $w = $this->makeMultiQuery($filter['categoryId'], 'a.category_id');
             if ($w) $filter->appendWhere('(%s) AND ', $w);
+        }
+
+        if (!empty($filter['inTotal']) && $filter['inTotal'] !== '' && $filter['inTotal'] !== null) {
+            $filter->appendWhere('a.in_total = %s AND ', (int)$filter['inTotal']);
         }
 
         if (!empty($filter['userId'])) {

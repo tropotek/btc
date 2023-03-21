@@ -95,13 +95,14 @@ class Cron extends \Bs\Console\Iface
     protected function execNow()
     {
         try {
+            AssetTick::updateAssetTicks();
         } catch (\Exception $e) { $this->writeError($e->__toString()); }
     }
 
     protected function exec5min()
     {
         try {
-            AssetTick::updateAssetTicks();
+            //AssetTick::updateAssetTicks();
         } catch (\Exception $e) { $this->writeError($e->__toString()); }
     }
 

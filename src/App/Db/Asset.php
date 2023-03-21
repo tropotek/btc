@@ -50,6 +50,11 @@ class Asset extends \Tk\Db\Map\Model implements \Tk\ValidInterface
     public $units = 0;
 
     /**
+     * @var bool
+     */
+    public $inTotal = true;
+
+    /**
      * @var string
      */
     public $notes = '';
@@ -272,6 +277,22 @@ class Asset extends \Tk\Db\Map\Model implements \Tk\ValidInterface
     public function getUnits() : float
     {
         return $this->units;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isInTotal(): bool
+    {
+        return $this->inTotal;
+    }
+
+    /**
+     * @param bool $inTotal
+     */
+    public function setInTotal(bool $inTotal): void
+    {
+        $this->inTotal = $inTotal;
     }
 
     /**

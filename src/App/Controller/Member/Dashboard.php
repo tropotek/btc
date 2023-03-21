@@ -56,6 +56,7 @@ class Dashboard extends \Bs\Controller\AdminIface
         $total = 0;
         $tick = AssetTickMap::create()->findFiltered([
             'userId' => $this->getAuthUser()->getId(),
+            'inTotal' => true,
             'assetId' => 0
         ], Tool::create('created DESC'))->current();
         if ($tick) {
@@ -64,6 +65,7 @@ class Dashboard extends \Bs\Controller\AdminIface
             else
                 $total = $tick->getAsk();
         }
+        vd($this->getDb()->getLastQuery());
         return $total;
     }
 

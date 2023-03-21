@@ -4,6 +4,8 @@ namespace App\Db;
 use App\Db\Traits\AssetTrait;
 use Bs\Db\Traits\CreatedTrait;
 use Bs\Db\Traits\UserTrait;
+use Tk\Date;
+use Tk\Db\Map\Mapper;
 
 /**
  * @author Mick Mifsud
@@ -74,6 +76,9 @@ class AssetTick extends \Tk\Db\Map\Model implements \Tk\ValidInterface
     public static function updateAssetTicks()
     {
         $list = AssetMap::create()->findFiltered(['active' => true]);
+        //$created = Date::create(Date::create()->format('Y-m-d H:i:00'));
+        $created = Date::create();
+        Mapper::$AUTO_DATES = false;
         foreach ($list as $asset) {
             if (!$asset->getMarket()->getExchange()) continue;
             $currency = 'AUD';
@@ -93,10 +98,12 @@ class AssetTick extends \Tk\Db\Map\Model implements \Tk\ValidInterface
                     $tick->setCurrency($currency);
                     $tick->setBid($data['bid']);
                     $tick->setAsk($data['ask']);
+                    $tick->setCreated($created);
                     $tick->save();
                 }
             } catch (\Exception $e) { continue; }
         }
+        Mapper::$AUTO_DATES = true;
     }
 
     /**
