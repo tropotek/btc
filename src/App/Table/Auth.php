@@ -65,7 +65,7 @@ class Auth extends \Bs\TableIface
         $this->appendCell(new Cell\Text('name'))->addCss('key')->setUrl($this->getEditUrl());
         //$this->appendCell(new Cell\Text('url'));  // Make a button
         $this->appendCell(new Cell\Text('username'));
-        $this->appendCell(new Cell\Text('password'));
+        //$this->appendCell(new Cell\Text('password'));
 
         $this->appendCell(new Cell\Date('modified'));
         $this->appendCell(new Cell\Date('created'));
